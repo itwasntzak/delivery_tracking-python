@@ -2,8 +2,7 @@ import datetime
 import order
 
 def time():
-   currentTime = datetime.datetime.now().time()
-   return(currentTime)
+   return(datetime.datetime.now().time())
 
 
 def orderEnd():
@@ -24,10 +23,10 @@ def startDlv():
    numbOfOrders = int(input())
    while True:
       if numbOfOrders == 1:
-         orders = order.order()
+         orders = orderEnd()
 
       elif numbOfOrders > 1:
-         orders = [order.order() for value in range(numbOfOrders)]
+         orders = [orderEnd() for value in range(numbOfOrders)]
 
       print('invalid input')
 
