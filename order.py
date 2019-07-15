@@ -7,8 +7,7 @@ def order():
 
 def orderNumb():
    print('order number:')
-   orderNumb = int(input())
-   return(orderNumb)
+   return(int(input()))
 
 
 def tip():
@@ -17,8 +16,7 @@ def tip():
    while True:
       if tipOption == 1:
          print('tip amount:')
-         tipAmount = float(input())
-         return([tipAmount, tipType()])
+         return([float(input()), tipType()])
 
       elif userInput == 2:
          return('N/A')
@@ -41,5 +39,4 @@ def tipType():
 
 def milesTrav():
    print('mile traveled:')
-   milesTrav = float(input())
-   return(milesTrav)
+   return(float(input()))
