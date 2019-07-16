@@ -11,9 +11,9 @@ def orderNumb():
 
 
 def tip():
-   print('tip?\n1 = yes, 2 = no')
-   tipOption = int(input())
    while True:
+      print('tip?\n1 = yes, 2 = no')
+      tipOption = int(input())
       if tipOption == 1:
          print('tip amount:')
          return([float(input()), tipType()])
@@ -25,9 +25,9 @@ def tip():
 
 
 def tipType():
-   print('type of tip?\n1 = card, 2 = cash')
-   tipTypeOption = int(input())
    while True:
+      print('type of tip?\n1 = card, 2 = cash')
+      tipTypeOption = int(input())
       if tipTypeOption == 1:
          return('card')
 
