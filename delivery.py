@@ -5,39 +5,42 @@ def time():
    return(datetime.datetime.now().time())
 
 
-def orderEnd():
-   print('waiting...\n1 to continue')
-   waitForUser = int(input())
-      
+def orderEnd():     
    while True:
+      print('waiting...\n1 to continue')
+      waitForUser = int(input())
+      
       if waitForUser == 1:
          return(order.order())
       
       print('invalid input')
 
 
-def startDlv():
-   startTime = time()
-   
-   print('number of orders?')
-   numbOfOrders = int(input())
+def orders():
    while True:
+      print('number of orders?')
+      numbOfOrders = int(input())
       if numbOfOrders == 1:
-         orders = orderEnd()
+         return(orderEnd())
 
       elif numbOfOrders > 1:
-         orders = [orderEnd() for value in range(numbOfOrders)]
+         return([orderEnd() for value in range(numbOfOrders)])
 
       print('invalid input')
 
 
-   print('waiting...\n1 to continue')
-   waitForUser = int(input())
+def startDlv():
+   startTime = time()
+
+   numbOrders = orders()
+
    while True:
+      print('waiting...\n1 to continue')
+      waitForUser = int(input())
       if waitForUser == 1:
          endTime = time()
          totalMilesTrav = order.milesTrav()
-         return([startTime, orders, totalMilesTrav, endTime])
+         return([startTime, numbOrders, totalMilesTrav, endTime])
       
       print('invalid input')
 
