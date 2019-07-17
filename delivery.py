@@ -7,7 +7,7 @@ def time():
 
 def orderEnd():     
    while True:
-      print('waiting...\n1 to continue')
+      print('driving to address...\nafter returning to car, 1 to continue')
       waitForUser = int(input())
       
       if waitForUser == 1:
@@ -16,7 +16,7 @@ def orderEnd():
       print('invalid input')
 
 
-def orders():
+def numbOfOrders():
    while True:
       print('number of orders?')
       numbOfOrders = int(input())
@@ -29,20 +29,16 @@ def orders():
       print('invalid input')
 
 
-def startDlv():
+def delivery():
    startTime = time()
 
-   numbOrders = orders()
+   orders = numbOfOrders()
 
    while True:
-      print('waiting...\n1 to continue')
+      print('returning to store...\nupon arival, 1 to continue')
       waitForUser = int(input())
       if waitForUser == 1:
          endTime = time()
-         totalMilesTrav = order.milesTrav()
-         return([startTime, numbOrders, totalMilesTrav, endTime])
+         return([startTime, orders, order.milesTrav('Total '), endTime])
       
       print('invalid input')
-
-
-delivery0 = startDlv()
