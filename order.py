@@ -1,7 +1,10 @@
 import datetime
 
+def time():
+   return(str(datetime.datetime.now().time()))
+
 def order():
-   endTime = datetime.datetime.now().time()
+   endTime = time()
    orderInfo = [orderNumb(), [tip(), milesTrav(), endTime]]
    return(orderInfo)
 
