@@ -1,5 +1,4 @@
 import order
-import main
 
 
 def orderEnd():     
