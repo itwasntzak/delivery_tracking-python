@@ -2,6 +2,14 @@ import datetime
 import shift
 import delivery
 
+def date():
+    return(str(datetime.datetime.now().date()))
+
+
+def time():
+    return(str(datetime.datetime.now().time()))
+
+
 def startMenu():
     while True:
         print('what would you like to do?\n1 to start shift, 2 to continue shift, 3 to return from split')
@@ -9,14 +17,16 @@ def startMenu():
             userInput = int(input())
             if userInput == 1:
                 shift.startShift()
+                shiftMenu()
                 continue
 
             elif userInput == 2:
-                shift.continueShift()
+                shiftMenu()
                 continue
 
             elif userInput == 3:
                 shift.endSplit()
+                shiftMenu()
                 continue
 
         except ValueError:
@@ -50,5 +60,5 @@ def shiftMenu():
             print('invalid input...')
 
 
-
-startMenu()
+if __name__ == "__main__":
+    startMenu()

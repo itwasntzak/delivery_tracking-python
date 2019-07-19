@@ -1,8 +1,5 @@
-import datetime
 import order
-
-def time():
-   return(str(datetime.datetime.now().time()))
+import main
 
 
 def orderEnd():     
@@ -30,7 +27,7 @@ def numbOfOrders():
 
 
 def delivery():
-   startTime = time()
+   startTime = main.time()
 
    orders = numbOfOrders()
 
@@ -38,7 +35,7 @@ def delivery():
       print('returning to store...\nupon arival, 1 to continue')
       waitForUser = int(input())
       if waitForUser == 1:
-         endTime = time()
+         endTime = main.time()
          return([startTime, orders, order.milesTrav('Total '), endTime])
       
       print('invalid input')
@@ -50,10 +47,11 @@ def createDelivery():
       try:
          dlvNumbInput = int(input())
 
-         with open(str(date) + '.txt', 'a+') as today:
+         with open(main.date() + '.txt', 'a+') as today:
             content = today.read()
             today.seek(len(content))
             today.write('\ndlv' + str(dlvNumbInput) + ' = ' + str(delivery()))
+            break
 
       except ValueError:
          print('invalid input...')

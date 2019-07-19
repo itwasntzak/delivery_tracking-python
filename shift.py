@@ -1,45 +1,26 @@
-import datetime
 import main
 
-date = datetime.datetime.now().date()
-
-def time():
-    return(str(datetime.datetime.now().time()))
-
-
 def startShift():
-    with open(str(date) + '.txt', 'w') as today:
-        today.write('startShift = ' + "'" + time() + "'")
-
-    return(main.shiftMenu())
-
-
-def continueShift():
-    return(main.shiftMenu())
+    with open(main.date() + '.txt', 'w') as today:
+        today.write('startShift = ' + "'" + main.time() + "'")
 
 
 def endShift():
-   with open(str(date) + '.txt', 'a+') as today:
-      content = today.read()
-      today.seek(len(content))
-      today.write('\nendShift = ' + "'" + time() + "'")
-
-      return(main.startMenu())
+    with open(main.date() + '.txt', 'a+') as today:
+        content = today.read()
+        today.seek(len(content))
+        today.write('\nendShift = ' + "'" + main.time() + "'")
 
 
 def startSplit():
-   with open(str(date) + '.txt', 'a+') as today:
-      content = today.read()
-      today.seek(len(content))
-      today.write('\nstartSplit = ' + "'" + time() + "'")
-
-      return(main.startMenu())
+    with open(main.date() + '.txt', 'a+') as today:
+        content = today.read()
+        today.seek(len(content))
+        today.write('\nstartSplit = ' + "'" + main.time() + "'")
 
 
 def endSplit():
-   with open(str(date) + '.txt', 'a+') as today:
-      content = today.read()
-      today.seek(len(content))
-      today.write('\nendSplit = ' + "'" + time() + "'")
-
-      return(main.shiftMenu())
+    with open(main.date() + '.txt', 'a+') as today:
+        content = today.read()
+        today.seek(len(content))
+        today.write('\nendSplit = ' + "'" + main.time() + "'")
