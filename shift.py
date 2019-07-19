@@ -1,3 +1,6 @@
+import main
+
+
 def startShift():
     with open(main.date() + '.txt', 'w') as today:
         today.write('startShift = ' + "'" + main.time() + "'")
