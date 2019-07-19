@@ -53,7 +53,7 @@ def createDelivery():
          with open(str(date) + '.txt', 'a+') as today:
             content = today.read()
             today.seek(len(content))
-            today.write('\ndlv' + str(dlvNumbInput) + ' = ' + str(delivery.delivery()))
+            today.write('\ndlv' + str(dlvNumbInput) + ' = ' + str(delivery()))
 
       except ValueError:
          print('invalid input...')
