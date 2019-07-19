@@ -2,7 +2,7 @@ import datetime
 import order
 
 def time():
-   return(datetime.datetime.now().time())
+   return(str(datetime.datetime.now().time()))
 
 
 def orderEnd():     
@@ -21,10 +21,10 @@ def numbOfOrders():
       print('number of orders?')
       numbOfOrders = int(input())
       if numbOfOrders == 1:
-         return(orderEnd())
+         return([numbOfOrders, orderEnd()])
 
       elif numbOfOrders > 1:
-         return([orderEnd() for value in range(numbOfOrders)])
+         return([numbOfOrders, [orderEnd() for value in range(numbOfOrders)]])
 
       print('invalid input')
 
@@ -42,3 +42,18 @@ def delivery():
          return([startTime, orders, order.milesTrav('Total '), endTime])
       
       print('invalid input')
+
+
+def createDelivery():
+   while True:
+      print('What delivery number is this?')
+      try:
+         dlvNumbInput = int(input())
+
+         with open(str(date) + '.txt', 'a+') as today:
+            content = today.read()
+            today.seek(len(content))
+            today.write('\ndlv' + str(dlvNumbInput) + ' = ' + str(delivery.delivery()))
+
+      except ValueError:
+         print('invalid input...')

@@ -1,53 +1,23 @@
 import datetime
-import delivery as dlv
+import shift
+import delivery
 
-date = datetime.datetime.now().date()
-
-def time():
-    return(datetime.datetime.now().time())
-
-
-def createShift():
-    with open('shifts\\' + str(date) + '.py', 'w') as today:
-        today.write('Start Shift = ' + "'" + str(time()) + "'")
-
-    return(shiftMenu())
-
-
-def continueShift():
-    with open('shifts\\' + str(date) + '.py', 'a+') as today:
-        content = today.read()
-        today.seek(len(content))
-
-    return(shiftMenu())
-
-
-def createDelivery():
-    with open('shifts\\' + str(date) + '.py', 'a+') as today:
-        content = today.read()
-        today.seek(len(content))
-        today.write('\n' + str(dlv.delivery()))
-
-
-def endShift():
-    with open('shifts\\' + str(date) + '.py', 'a+') as today:
-        content = today.read()
-        today.seek(len(content))
-        today.write('\nEnd Shift = ' + "'" + str(time()) + "'")
-
-
-def shiftMenu():
+def startMenu():
     while True:
-        print('what next?\n1 = start new delivery, 2 = end shift')
+        print('what would you like to do?\n1 to start shift, 2 to continue shift, 3 to return from split')
         try:
             userInput = int(input())
             if userInput == 1:
-                createDelivery()
+                shift.startShift()
                 continue
 
             elif userInput == 2:
-                endShift()
-                break
+                shift.continueShift()
+                continue
+
+            elif userInput == 3:
+                shift.endSplit()
+                continue
 
         except ValueError:
             print('invalid input...')
@@ -56,18 +26,22 @@ def shiftMenu():
             print('invalid input...')
 
 
-def startMenu():
+def shiftMenu():
     while True:
-        print('what would you like to do?\n1 to start shift, 2 to continue shift')
+        print('what next?\n1 to start new delivery, 2 to end shift, 3 to start split')
         try:
             userInput = int(input())
             if userInput == 1:
-                createShift()
+                delivery.createDelivery()
                 continue
 
             elif userInput == 2:
-                continueShift()
-                continue
+                shift.endShift()
+                break
+
+            elif userInput == 3:
+                shift.startSplit()
+                break
 
         except ValueError:
             print('invalid input...')
