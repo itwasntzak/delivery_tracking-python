@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+#!/data/data/com.termux/files/usr/bin/bash python
+
 import datetime
 import shift
 import delivery
@@ -62,3 +65,4 @@ def shiftMenu():
 
 if __name__ == "__main__":
     startMenu()
+    
