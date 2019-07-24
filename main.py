@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-#!/data/data/com.termux/files/usr/bin/bash python
+#!/usr/bin/env python3
+#!/data/data/com.termux/files/usr/bin/bash python3
 
 import datetime
 import shift
