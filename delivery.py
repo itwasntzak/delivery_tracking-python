@@ -1,4 +1,3 @@
-import re
 import order
 import main
 
@@ -11,21 +10,6 @@ def endOrder():
 
             if waitForUser == 1:
                 return (order.order())
-#                endTime = ord[1][2]
-#                eTime = [int(endTime[0:2]), int(endTime[3:5]), int(endTime[6:8]), int(endTime[9:15])]
-
-#                hour = eTime[0] - sTime[0]
-#                min = eTime[1] - sTime[1]
-#                sec = eTime[2] - sTime[2]
-#                mSec = eTime[3] - sTime[3]
-
-#                if mSec >= 500000:
-#                    sec + 1
-#                    print('it took you ' + str(hour) + 'hours' + str(min) + 'minutes' + str(sec) + 'seconds' + ' to complete the order')
-
-#                if mSec < 500000:
-#                    print('it took you ' + str(hour) + 'hours' + str(min) + 'minutes' + str(sec) + 'seconds' + ' to complete the order')
-#                    return(ord)
 
         except ValueError:
             print('invalid input')
@@ -35,7 +19,6 @@ def endOrder():
 
 
 def numbOfOrders():
-#    sTime = sTime
     while True:
         print('number of orders?')
         try:
@@ -51,7 +34,6 @@ def numbOfOrders():
 
 
 def delivery():
-#    sTime = sTime
     orders = numbOfOrders()
 
     while True:
@@ -67,7 +49,6 @@ def delivery():
 
 def createDelivery():
     startTime = main.time()
-#    sTime = [int(startTime[0:1]), int(startTime[3:4]), int(startTime[6:7]), int(startTime[9:14])]
 
     with open('dlvNumb.txt', 'r+') as dlvNumb:
         dlvNum = int(dlvNumb.read())
