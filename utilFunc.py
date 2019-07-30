@@ -9,7 +9,7 @@ def milesTrav(varWord = ''):
          return milesTravInput
 
       except ValueError:
-         print('invalid input...')
+         print('\ninvalid input...')
 
 
 def overWriteCheck():
@@ -24,10 +24,10 @@ def overWriteCheck():
                 return False
 
         except ValueError:
-            print('invalid input')
+            print('\ninvalid input')
 
         else:
-            print('invalid input')
+            print('\ninvalid input')
 
 
 def timeTook(startTime, endTime, varWord):

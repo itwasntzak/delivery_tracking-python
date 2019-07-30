@@ -79,10 +79,10 @@ def shiftMenu():
                 break
 
         except ValueError:
-            print('invalid input...')
+            print('\ninvalid input...')
 
         else:
-            print('invalid input...')
+            print('\ninvalid input...')
 
 
 if __name__ == "__main__":
