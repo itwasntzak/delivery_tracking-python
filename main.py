@@ -10,7 +10,7 @@ def now():
 
 def startMenu():
     while True:
-        if os.path.exists(os.path.join("deliveryTracking", "shifts", str(now().date()) + '.py')) == False:
+        if os.path.exists(os.path.join("shifts", str(now().date()) + '.py')) == False:
             print('what would you like to do?\n1 to start a new shifts | 2 to return from split')
             try:
                 userInput = int(input())
@@ -31,7 +31,7 @@ def startMenu():
                 print('\ninvalid input...')
 
 
-        elif os.path.exists(os.path.join("deliveryTracking", "shifts", str(now().date()) + '.py')) == True:
+        elif os.path.exists(os.path.join("shifts", str(now().date()) + '.py')) == True:
             while True:
                 print('what would you like to do?\n1 to continue shift | 2 to return from split | 0 to overwrite shift')
                 try:
@@ -79,10 +79,10 @@ def shiftMenu():
                 break
 
         except ValueError:
-            print('invalid input...')
+            print('\ninvalid input...')
 
         else:
-            print('invalid input...')
+            print('\ninvalid input...')
 
 
 if __name__ == "__main__":
