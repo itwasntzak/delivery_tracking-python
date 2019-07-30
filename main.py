@@ -1,47 +1,69 @@
-#!/usr/bin/env python3
-#!/data/data/com.termux/files/usr/bin/bash python3
-
 import datetime
+import os
 import shift
 import delivery
+import utilFunc
 
-def date():
-    return(str(datetime.datetime.now().date()))
-
-
-def time():
-    return(str(datetime.datetime.now().time()))
+def now():
+    return datetime.datetime.now()
 
 
 def startMenu():
     while True:
-        print('what would you like to do?\n1 to start shift, 2 to continue shift, 3 to return from split')
-        try:
-            userInput = int(input())
-            if userInput == 1:
-                shift.startShift()
-                shiftMenu()
-                continue
+        if os.path.exists(os.path.join("shifts", str(now().date()) + '.py')) == False:
+            print('what would you like to do?\n1 to start a new shifts | 2 to return from split')
+            try:
+                userInput = int(input())
+                if userInput == 1:
+                    shift.startShift()
+                    shiftMenu()
+                    continue
 
-            elif userInput == 2:
-                shiftMenu()
-                continue
+                elif userInput == 2:
+                    shift.endSplit()
+                    shiftMenu()
+                    continue
 
-            elif userInput == 3:
-                shift.endSplit()
-                shiftMenu()
-                continue
+            except ValueError:
+                print('\ninvalid input...')
 
-        except ValueError:
-            print('invalid input...')
+            else:
+                print('\ninvalid input...')
 
-        else:
-            print('invalid input...')
+
+        elif os.path.exists(os.path.join("shifts", str(now().date()) + '.py')) == True:
+            while True:
+                print('what would you like to do?\n1 to continue shift | 2 to return from split | 0 to overwrite shift')
+                try:
+                    userInput = int(input())
+                    if userInput == 1:
+                        shiftMenu()
+                        continue
+
+                    elif userInput == 2:
+                        shift.endSplit()
+                        shiftMenu()
+                        continue
+
+                    elif userInput == 0:
+                        if utilFunc.overWriteCheck() == True:
+                            shift.startShift()
+                            shiftMenu()
+                            continue
+
+                        else:
+                            continue
+
+                except ValueError:
+                    print('\ninvalid input...')
+
+                else:
+                    print('\ninvalid input...')
 
 
 def shiftMenu():
     while True:
-        print('what next?\n1 to start new delivery, 2 to end shift, 3 to start split')
+        print('\nwhat next?\n1 to start delivery | 2 to end shift | 3 to start split')
         try:
             userInput = int(input())
             if userInput == 1:
@@ -65,4 +87,3 @@ def shiftMenu():
 
 if __name__ == "__main__":
     startMenu()
-    
