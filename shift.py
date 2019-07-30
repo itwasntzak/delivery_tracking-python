@@ -1,29 +1,30 @@
+import os
 import main
 
 def startShift():
-    with open(main.date() + '.py', 'w') as today:
-        today.write('startShift = ' + "'" + main.time() + "'")
+    with open(os.path.join("shifts", str(main.now().date()) + '.py'), 'w') as today:
+        today.write('startShift = ' + str(main.now()))
 
 
 def endShift():
-    with open(main.date() + '.py', 'a+') as today:
+    with open(os.path.join("shifts", str(main.now().date()) + '.py'), 'a+') as today:
         content = today.read()
         today.seek(len(content))
-        today.write('\nendShift = ' + "'" + main.time() + "'")
+        today.write('\nendShift = ' + str(main.now()))
 
-    with open('dlvNumb.txt', 'w') as dlvNumb:
+    with open(os.path.join("dlvNumb.txt"), 'w') as dlvNumb:
         dlvNumb.write('0')
 
 
 def startSplit():
-    with open(main.date() + '.py', 'a+') as today:
+    with open(os.path.join("shifts", str(main.now().date()) + '.py'), 'a+') as today:
         content = today.read()
         today.seek(len(content))
-        today.write('\nstartSplit = ' + "'" + main.time() + "'")
+        today.write('\nstartSplit = ' + str(main.now()))
 
 
 def endSplit():
-    with open(main.date() + '.py', 'a+') as today:
+    with open(os.path.join("shifts", str(main.now().date()) + '.py'), 'a+') as today:
         content = today.read()
         today.seek(len(content))
-        today.write('\nendSplit = ' + "'" + main.time() + "'")
+        today.write('\nendSplit = ' + str(main.now()))
