@@ -30,19 +30,19 @@ def overWriteCheck():
             print('invalid input')
 
 
-def timeTook(startTime, endTime):
+def timeTook(startTime, endTime, varWord):
     timeDif = endTime - startTime
     mins = int(timeDif.total_seconds() / 60)
     secs = timeDif.total_seconds() - (mins * 60)
 
     if mins == 0:
-        print('\nit took you ' + str(secs) + ' seconds to complete this order')
+        print('\nit took you ' + str(secs) + ' seconds to complete this ' + varWord)
 
     elif mins == 1:
-        print('\nit took you ' + str(mins) + ' minute and ' + str(secs) + ' seconds to complete this order')
+        print('\nit took you ' + str(mins) + ' minute and ' + str(secs) + ' seconds to complete this ' + varWord)
 
     elif mins > 1:
-        print('\nit took you ' + str(mins) + ' minutes and ' + str(secs) + ' seconds to complete this order')
+        print('\nit took you ' + str(mins) + ' minutes and ' + str(secs) + ' seconds to complete this ' + varWord)
 
     elif mins >= 60:
         print('\nit took you more then an hour to complete this order')

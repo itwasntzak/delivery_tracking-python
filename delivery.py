@@ -12,7 +12,7 @@ def endOrder(startTime):
 
             if waitForUser == 1:
                 ord = order.order()
-                utilFunc.timeTook(startTime, ord[1][2])
+                utilFunc.timeTook(startTime, ord[1][2], 'order')
                 return ord
 
         except ValueError:
@@ -56,10 +56,10 @@ def delivery(startTime):
 def createDelivery():
     startTime = main.now()
     dlv = delivery(startTime)
-    totalMilesTrav = utilFunc.milesTrav('Total ')
+    totalMilesTrav = utilFunc.milesTrav('total ')
     endTime = main.now()
     
-    utilFunc.timeTook(startTime, endTime)
+    utilFunc.timeTook(startTime, endTime, 'delivery')
 
     with open(os.path.join("deliveryTracking", "dlvNumb.txt"), 'r+') as dlvNumb:
         dlvNum = int(dlvNumb.read())
