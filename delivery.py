@@ -1,63 +1,74 @@
+import os
 import order
 import main
+import utilFunc
 
 
-def endOrder():
+def endOrder(startTime):
     while True:
-        print('driving to address...\n1 to continue after returning to vehicle\n2 for extra stop')
+        print('\ndriving to address...\n1 after returning to vehicle')
         try:
             waitForUser = int(input())
 
             if waitForUser == 1:
-                return (order.order())
+                ord = order.order()
+                utilFunc.timeTook(startTime, ord[1][2])
+                return ord
 
         except ValueError:
-            print('invalid input')
+            print('\ninvalid input')
 
         else:
-            print('invalid input')
+            print('\ninvalid input')
 
 
-def numbOfOrders():
+def numbOfOrders(startTime):
     while True:
-        print('number of orders?')
+        print('\nnumber of orders?')
         try:
             numbOfOrders = int(input())
+
             if numbOfOrders == 1:
-                return([numbOfOrders, endOrder()])
+                return [numbOfOrders, endOrder(startTime)]
 
             elif numbOfOrders > 1:
-                return([numbOfOrders, [endOrder() for value in range(numbOfOrders)]])
+                return [numbOfOrders, [endOrder(startTime) for value in range(numbOfOrders)]]
 
         except ValueError:
-            print('invalid input')
+            print('\ninvalid input')
 
 
-def delivery():
-    orders = numbOfOrders()
-
+def delivery(startTime):
+    orders = numbOfOrders(startTime)
+    
     while True:
-        print('returning to store...\nupon arival, 1 to continue\n2 for extra stop')
+        print('\nreturning to store...\nupon arival, 1 to continue')
         try:
             waitForUser = int(input())
+
             if waitForUser == 1:
-                return([orders])
+                return orders
 
         except ValueError:
-            print('invalid input')
+            print('\ninvalid input')
 
 
 def createDelivery():
-    startTime = main.time()
+    startTime = main.now()
+    dlv = delivery(startTime)
+    totalMilesTrav = utilFunc.milesTrav('Total ')
+    endTime = main.now()
+    
+    utilFunc.timeTook(startTime, endTime)
 
-    with open('dlvNumb.txt', 'r+') as dlvNumb:
+    with open(os.path.join("dlvNumb.txt"), 'r+') as dlvNumb:
         dlvNum = int(dlvNumb.read())
-        dlv = delivery()
+        
 
-        with open(main.date() + '.py', 'a+') as today:
+        with open(os.path.join("shifts", str(main.now().date()) + '.py'), 'a+') as today:
             content = today.read()
             today.seek(len(content))
-            today.write('\ndlv' + str(dlvNum) + ' = ' + str([startTime, dlv, order.milesTrav('Total '), main.time()]))
+            today.write('\ndlv' + str(dlvNum) + ' = ' + str([startTime, dlv, totalMilesTrav, endTime]))
 
         dlvNum = str(dlvNum + 1)
         dlvNumb.seek(0)
