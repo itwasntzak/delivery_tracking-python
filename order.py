@@ -1,71 +1,61 @@
 import main
+import utilFunc
 
 
 def order():
-   endTime = main.time()
-   return([orderNumb(), [tip(), milesTrav(), endTime]])
+   endTime = main.now()
+   return [orderNumb(), [tip(), utilFunc.milesTrav(), endTime]]
 
 
 def orderNumb():
    while True:
-      print('enter order number: ######')
+      print('\nenter order number: ######')
       try:
          orderNumb = int(input())
-         return(orderNumb)
+         return orderNumb
 
       except ValueError:
-         print('invalid input...')
+         print('\ninvalid input...')
 
 
 def tip():
    while True:
-      print('did they tip?\n1 = yes, 2 = no')
+      print('\ndid they tip?\n1 for yes | 2 for no')
       try:
          tipOption = int(input())
          if tipOption == 1:
             while True:
-               print('enter tip amount: #.##')
+               print('\nenter tip amount: #.##')
                try:
                   tipAmount = float(input())
-                  return([tipAmount, tipType()])
+                  return [tipAmount, tipType()]
 
                except ValueError:
-                  print('invalid input...')
+                  print('\ninvalid input...')
 
          elif tipOption == 2:
-            return('N/A')
+            return 'N/A'
 
       except ValueError:
-         print('invalid input...')
+         print('\ninvalid input...')
 
       else:
-         print('invalid input...')
+         print('\ninvalid input...')
 
 
 def tipType():
    while True:
-      print('type of tip?\n1 for card, 2 for cash')
+      print('\ntype of tip?\n1 for card, 2 for cash')
       try:
          tipTypeOption = int(input())
          if tipTypeOption == 1:
-            return('card')
+            return 'card'
 
          elif tipTypeOption == 2:
-            return('cash')
+            return 'cash'
 
       except ValueError:
-         print('invalid input...')
+         print('\ninvalid input...')
 
       else:
-         print('invalid input...')
-
-
-def milesTrav(varWord = ''):
-   while True:
-      print(varWord + 'mile traveled:')
-      try:
-         milesTravInput = float(input())
-         return(milesTravInput)
-
-      except ValueError:
-         print('invalid input...')
+         print('\ninvalid input...')
