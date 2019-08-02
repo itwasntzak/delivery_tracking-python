@@ -10,17 +10,17 @@ def now():
 
 def deliveryNumb(option):
     if option == 'number':
-        with open(os.path.join('deliveryNumb.txt'), 'r') as dlvNumb:
+        with open(os.path.join("deliveryTracking", "deliveryNumb.txt"), 'r') as dlvNumb:
             return dlvNumb.read()
 
     elif option == 'update':
-        with open(os.path.join('deliveryNumb.txt'), 'r+') as dlvNumb:
+        with open(os.path.join("deliveryTracking", "deliveryNumb.txt"), 'r+') as dlvNumb:
             prevDlvNumb = int(dlvNumb.read())
             dlvNumb.seek(0)
             dlvNumb.write(str(prevDlvNumb + 1))
 
     elif option == 'reset':
-        with open(os.path.join('deliveryNumb.txt'), 'w') as dlvNumb:
+        with open(os.path.join("deliveryTracking", "deliveryNumb.txt"), 'w') as dlvNumb:
             dlvNumb.write('0')
 
     elif option == 'change':
@@ -32,7 +32,7 @@ def deliveryNumb(option):
                     print('\nwhat is the new current delivery number:')
                     try:
                         changeDeliveryNumb = int(input())
-                        with open(os.path.join('deliveryNumb.txt'), 'w') as dlvNumb:
+                        with open(os.path.join("deliveryTracking", "deliveryNumb.txt"), 'w') as dlvNumb:
                             dlvNumb.write(str(changeDeliveryNumb))
                             break
 
@@ -51,7 +51,7 @@ def deliveryNumb(option):
 
 def beginOrdNumb(option):
    if option == 'whatIs':
-      with open(os.path.join('beginOrdNumb.txt'), 'r') as first3:
+      with open(os.path.join("deliveryTracking", "beginOrdNumb.txt"), 'r') as first3:
          return first3.read()
 
    elif option == 'change':
@@ -62,7 +62,7 @@ def beginOrdNumb(option):
               if userInput == 1:
                   print('\nwhat is the new set of 3 numbers for order number preset:')
                   first3Numbs = input()
-                  with open(os.path.join('beginOrdNumb.txt'), 'w') as first3:
+                  with open(os.path.join("deliveryTracking", "beginOrdNumb.txt"), 'w') as first3:
                       first3.write(str(first3Numbs))
                   return first3Numbs
 

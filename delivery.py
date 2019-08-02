@@ -60,5 +60,5 @@ def createDelivery():
     
     utilFunc.timeTook(startTime, endTime, 'delivery')
 
-    with open(os.path.join("shifts", str(utilFunc.now().date()) + '.py'), 'a') as today:
+    with open(os.path.join("deliveryTracking", "shifts", str(utilFunc.now().date()) + '.py'), 'a') as today:
         today.write('\ndlv' + str(utilFunc.deliveryNumb('number')) + ' = ' + str([startTime, dlv, totalMilesTrav, endTime]))

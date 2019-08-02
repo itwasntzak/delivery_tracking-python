@@ -10,7 +10,7 @@ import utilFunc
 
 def startMenu():
     while True:
-        if os.path.exists(os.path.join("shifts", str(utilFunc.now().date()) + '.py')) == False:
+        if os.path.exists(os.path.join("deliveryTracking", "shifts", str(utilFunc.now().date()) + '.py')) == False:
             print('what would you like to do?\n1 to start a new shifts | 0 for settings')
             try:
                 userInput = int(input())
@@ -30,7 +30,7 @@ def startMenu():
                 print('\ninvalid input...')
 
 
-        elif os.path.exists(os.path.join("shifts", str(utilFunc.now().date()) + '.py')) == True:
+        elif os.path.exists(os.path.join("deliveryTracking", "shifts", str(utilFunc.now().date()) + '.py')) == True:
             while True:
                 print('what would you like to do?\n1 to continue shift | 2 to return from split | 0 for settings')
                 try:
