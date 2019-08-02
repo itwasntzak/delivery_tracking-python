@@ -1,18 +1,18 @@
+import os
+
 import main
 import utilFunc
 
-
 def order():
-   endTime = main.now()
-   return [orderNumb(), [tip(), utilFunc.milesTrav(), endTime]]
+   return [orderNumb(), [tip(), utilFunc.milesTrav(), utilFunc.now()]]
 
 
 def orderNumb():
    while True:
-      print('\nenter order number: ######')
+      print('\nenter order number:    ' + utilFunc.beginOrdNumb('whatIs') + '###')
       try:
          orderNumb = int(input())
-         return orderNumb
+         return int(utilFunc.beginOrdNumb('whatIs') + str(orderNumb))
 
       except ValueError:
          print('\ninvalid input...')
@@ -45,7 +45,7 @@ def tip():
 
 def tipType():
    while True:
-      print('\ntype of tip?\n1 for card, 2 for cash')
+      print('\ntype of tip:\n1 for card, 2 for cash')
       try:
          tipTypeOption = int(input())
          if tipTypeOption == 1:

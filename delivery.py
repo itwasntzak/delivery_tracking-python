@@ -24,7 +24,7 @@ def endOrder(startTime):
 
 def numbOfOrders(startTime):
     while True:
-        print('\nnumber of orders?')
+        print('\nnumber of orders:')
         try:
             numbOfOrders = int(input())
 
@@ -45,7 +45,6 @@ def delivery(startTime):
         print('\nreturning to store...\nupon arival, 1 to continue')
         try:
             waitForUser = int(input())
-
             if waitForUser == 1:
                 return orders
 
@@ -54,22 +53,12 @@ def delivery(startTime):
 
 
 def createDelivery():
-    startTime = main.now()
+    startTime = utilFunc.now()
     dlv = delivery(startTime)
     totalMilesTrav = utilFunc.milesTrav('total ')
-    endTime = main.now()
+    endTime = utilFunc.now()
     
     utilFunc.timeTook(startTime, endTime, 'delivery')
 
-    with open(os.path.join("dlvNumb.txt"), 'r+') as dlvNumb:
-        dlvNum = int(dlvNumb.read())
-        
-
-        with open(os.path.join("shifts", str(main.now().date()) + '.py'), 'a+') as today:
-            content = today.read()
-            today.seek(len(content))
-            today.write('\ndlv' + str(dlvNum) + ' = ' + str([startTime, dlv, totalMilesTrav, endTime]))
-
-        dlvNum = str(dlvNum + 1)
-        dlvNumb.seek(0)
-        dlvNumb.write(dlvNum)
+    with open(os.path.join("shifts", str(utilFunc.now().date()) + '.py'), 'a') as today:
+        today.write('\ndlv' + str(utilFunc.deliveryNumb('number')) + ' = ' + str([startTime, dlv, totalMilesTrav, endTime]))
