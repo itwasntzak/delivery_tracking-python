@@ -1,17 +1,17 @@
 import datetime
 import os
+import shelve
+
 import shift
 import delivery
+import order
 import utilFunc
-
-def now():
-    return datetime.datetime.now()
 
 
 def startMenu():
     while True:
-        if os.path.exists(os.path.join("deliveryTracking", "shifts", str(now().date()) + '.py')) == False:
-            print('what would you like to do?\n1 to start a new shifts | 2 to return from split')
+        if os.path.exists(os.path.join("shifts", str(utilFunc.now().date()) + '.py')) == False:
+            print('what would you like to do?\n1 to start a new shifts | 0 for settings')
             try:
                 userInput = int(input())
                 if userInput == 1:
@@ -19,9 +19,8 @@ def startMenu():
                     shiftMenu()
                     continue
 
-                elif userInput == 2:
-                    shift.endSplit()
-                    shiftMenu()
+                elif userInput == 0:
+                    settingMenu()
                     continue
 
             except ValueError:
@@ -31,9 +30,9 @@ def startMenu():
                 print('\ninvalid input...')
 
 
-        elif os.path.exists(os.path.join("deliveryTracking", "shifts", str(now().date()) + '.py')) == True:
+        elif os.path.exists(os.path.join("shifts", str(utilFunc.now().date()) + '.py')) == True:
             while True:
-                print('what would you like to do?\n1 to continue shift | 2 to return from split | 0 to overwrite shift')
+                print('what would you like to do?\n1 to continue shift | 2 to return from split | 0 for settings')
                 try:
                     userInput = int(input())
                     if userInput == 1:
@@ -46,13 +45,8 @@ def startMenu():
                         continue
 
                     elif userInput == 0:
-                        if utilFunc.overWriteCheck() == True:
-                            shift.startShift()
-                            shiftMenu()
-                            continue
-
-                        else:
-                            continue
+                        settingMenu()
+                        continue
 
                 except ValueError:
                     print('\ninvalid input...')
@@ -68,6 +62,7 @@ def shiftMenu():
             userInput = int(input())
             if userInput == 1:
                 delivery.createDelivery()
+                utilFunc.deliveryNumb('update')
                 continue
 
             elif userInput == 2:
@@ -77,6 +72,35 @@ def shiftMenu():
             elif userInput == 3:
                 shift.startSplit()
                 break
+
+        except ValueError:
+            print('\ninvalid input...')
+
+        else:
+            print('\ninvalid input...')
+
+
+def settingMenu():
+    while True:
+        print('\nwhat setting to change:\n1 to overwrite shift file | 2 to change deliver number | 3 to change order number preset | 0 to go back')
+        try:
+            userInput = int(input())
+            if userInput == 1:
+                utilFunc.overWriteCheck()
+                continue
+
+            elif userInput == 2:
+                print('\ncurrently delivery number is at:    ' + str(utilFunc.deliveryNumb('number')))
+                utilFunc.deliveryNumb('change')
+                continue
+
+            elif userInput == 3:
+                print('\ncurrently first 3 numbers of order numbers are set to:    ' + utilFunc.beginOrdNumb('whatIs'))
+                utilFunc.beginOrdNumb('change')
+                continue
+
+            elif userInput == 0:
+                return 'return'
 
         except ValueError:
             print('\ninvalid input...')
