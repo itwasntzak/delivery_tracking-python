@@ -1,0 +1,17 @@
+startShift = 2019-08-03 10:19:33.679959
+dlv0 = [datetime.datetime(2019, 8, 3, 10, 53, 23, 866692), [2, [[713941, [[2.0, 'card'], 1.5, datetime.datetime(2019, 8, 3, 10, 54, 20, 146685)]], [713939, [[10.0, 'card'], 2.4, datetime.datetime(2019, 8, 3, 10, 59, 6, 831801)]]]], 4.0, datetime.datetime(2019, 8, 3, 11, 4, 43, 871855)]
+dlv1 = [datetime.datetime(2019, 8, 3, 11, 25, 54, 943245), [1, [713945, [[1.25, 'cash'], 3.0, datetime.datetime(2019, 8, 3, 11, 34, 52, 945831)]]], 6.0, datetime.datetime(2019, 8, 3, 11, 43, 1, 771801)]
+dlv2 = [datetime.datetime(2019, 8, 3, 11, 48, 14, 802310), [1, [713947, [[2.0, 'card'], 1.5, datetime.datetime(2019, 8, 3, 11, 56, 19, 175107)]]], 3.4, datetime.datetime(2019, 8, 3, 12, 2, 55, 468331)]
+dlv3 = [datetime.datetime(2019, 8, 3, 12, 17, 34, 147992), [1, [713955, [[2.0, 'card'], 0.6, datetime.datetime(2019, 8, 3, 12, 23, 38, 449708)]]], 1.0, datetime.datetime(2019, 8, 3, 12, 31, 7, 304408)]
+dlv4 = [datetime.datetime(2019, 8, 3, 12, 39, 1, 643712), [2, [[713937, [[5.0, 'card'], 1.7, datetime.datetime(2019, 8, 3, 12, 45, 34, 77713)]], [713957, [[1.64, 'cash'], 4.9, datetime.datetime(2019, 8, 3, 12, 56, 46, 173643)]]]], 6.8, datetime.datetime(2019, 8, 3, 13, 2, 31, 113716)]
+dlv5 = [datetime.datetime(2019, 8, 3, 13, 10, 23, 246050), [2, [[713967, [[5.0, 'cash'], 0.5, datetime.datetime(2019, 8, 3, 13, 16, 27, 425377)]], [713962, [[6.0, 'card'], 1.9, datetime.datetime(2019, 8, 3, 13, 23, 25, 612142)]]]], 3.1, datetime.datetime(2019, 8, 3, 13, 27, 19, 780441)]
+dlv6 = [datetime.datetime(2019, 8, 3, 13, 31, 34, 173670), [2, [[713968, [[3.25, 'card'], 2.2, datetime.datetime(2019, 8, 3, 13, 39, 46, 273800)]], [713972, [[2.49, 'cash'], 2.4, datetime.datetime(2019, 8, 3, 13, 44, 6, 928205)]]]], 5.0, datetime.datetime(2019, 8, 3, 13, 51, 14, 723812)]
+dlv7 = [datetime.datetime(2019, 8, 3, 13, 57, 16, 553717), [2, [[713976, [[4.0, 'card'], 1.8, datetime.datetime(2019, 8, 3, 14, 4, 48, 331191)]], [713977, [[5.04, 'card'], 6.7, datetime.datetime(2019, 8, 3, 14, 14, 8, 572211)]]]], 13.6, datetime.datetime(2019, 8, 3, 14, 28, 1, 295486)]
+dlv8 = [datetime.datetime(2019, 8, 3, 14, 28, 3, 217483), [1, [713984, [[3.0, 'card'], 3.4, datetime.datetime(2019, 8, 3, 14, 37, 6, 405247)]]], 6.4, datetime.datetime(2019, 8, 3, 14, 45, 20, 769126)]
+dlv9 = [datetime.datetime(2019, 8, 3, 15, 6, 42, 575587), [1, [713990, [[2.58, 'cash'], 3.4, datetime.datetime(2019, 8, 3, 15, 17, 35, 412473)]]], 7.8, datetime.datetime(2019, 8, 3, 15, 37, 16, 580175)]
+dlv10 = [datetime.datetime(2019, 8, 3, 15, 40, 52, 226447), [1, [713995, [[9.45, 'cash'], 1.9, datetime.datetime(2019, 8, 3, 15, 47, 58, 954728)]]], 4.5, datetime.datetime(2019, 8, 3, 15, 58, 27, 932020)]
+dlv11 = [datetime.datetime(2019, 8, 3, 16, 24, 12, 111477), [1, [7138, [[4.0, 'card'], 1.9, datetime.datetime(2019, 8, 3, 16, 33, 54, 793696)]]], 5.3, datetime.datetime(2019, 8, 3, 16, 41, 57, 753851)]
+dlv12 = [datetime.datetime(2019, 8, 3, 16, 56, 12, 427764), [1, [71319, [[5.0, 'card'], 1.0, datetime.datetime(2019, 8, 3, 17, 1, 18, 929805)]]], 2.0, datetime.datetime(2019, 8, 3, 17, 4, 8, 887948)]
+dlv13 = [datetime.datetime(2019, 8, 3, 17, 33, 54, 18311), [1, [71434, [[3.0, 'cash'], 3.5, datetime.datetime(2019, 8, 3, 17, 45, 5, 486029)]]], 7.0, datetime.datetime(2019, 8, 3, 17, 51, 44, 184369)]
+dlv14 = [datetime.datetime(2019, 8, 3, 18, 13, 8, 116888), [1, [71460, [[5.0, 'card'], 1.1, datetime.datetime(2019, 8, 3, 18, 18, 10, 204917)]]], 2.7, datetime.datetime(2019, 8, 3, 18, 26, 42, 27739)]
+endShift = 2019-08-03 19:08:34.970051

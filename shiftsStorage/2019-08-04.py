@@ -1,0 +1,11 @@
+startShift = 2019-08-04 09:20:15.501792
+startSplit = 2019-08-04 11:36:37.185012
+endSplit = 2019-08-04 13:24:32.936471
+dlv0 = [datetime.datetime(2019, 8, 4, 13, 27, 37, 761738), [1, [714211, [[1.46, 'card'], 4.0, datetime.datetime(2019, 8, 4, 13, 41, 25, 491060)]]], 6.8, datetime.datetime(2019, 8, 4, 13, 50, 26, 519611)]
+dlv1 = [datetime.datetime(2019, 8, 4, 13, 54, 21, 227457), [1, [714217, [[3.0, 'cash'], 1.0, datetime.datetime(2019, 8, 4, 14, 1, 34, 686645)]]], 3.0, datetime.datetime(2019, 8, 4, 14, 5, 16, 327755)]
+dlv2 = [datetime.datetime(2019, 8, 4, 14, 9, 37, 842071), [2, [[714222, [[3.03, 'cash'], 0.7, datetime.datetime(2019, 8, 4, 14, 16, 23, 769456)]], [714223, [[1.81, 'cash'], 2.6, datetime.datetime(2019, 8, 4, 14, 25, 12, 32650)]]]], 3.6, datetime.datetime(2019, 8, 4, 14, 29, 16, 429868)]
+dlv3 = [datetime.datetime(2019, 8, 4, 14, 50, 15, 158982), [1, [714231, [[6.0, 'card'], 2.2, datetime.datetime(2019, 8, 4, 14, 59, 14, 436558)]]], 4.4, datetime.datetime(2019, 8, 4, 15, 6, 23, 390805)]
+dlv4 = [datetime.datetime(2019, 8, 4, 15, 17, 49, 448759), [1, [714234, [[3.0, 'card'], 2.1, datetime.datetime(2019, 8, 4, 15, 37, 15, 136551)]]], 4.0, datetime.datetime(2019, 8, 4, 15, 43, 9, 633087)]
+dlv7 = [datetime.datetime(2019, 8, 4, 16, 29, 8, 821477), [1, [714252, [[3.86, 'cash'], 1.2, datetime.datetime(2019, 8, 4, 16, 36, 1, 841838)]]], 2.4, datetime.datetime(2019, 8, 4, 16, 40, 10, 207925)]
+dlv8 = [datetime.datetime(2019, 8, 4, 16, 48, 17, 492350), [1, [714257, [[5.0, 'card'], 2.7, datetime.datetime(2019, 8, 4, 16, 58, 3, 400240)]]], 5.3, datetime.datetime(2019, 8, 4, 17, 8, 42, 442751)]
+endShift = 2019-08-04 17:32:39.859491
