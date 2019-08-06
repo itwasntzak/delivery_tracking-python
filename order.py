@@ -1,46 +1,58 @@
 import os
 
-import main
 import utilFunc
 
-def order():
-   return [orderNumb(), [tip(), utilFunc.milesTrav(), utilFunc.now()]]
-
-
 def orderNumb():
-   while True:
-      print('\nenter order number:    ' + utilFunc.beginOrdNumb('whatIs') + '###')
-      try:
-         orderNumb = int(input())
-         return int(utilFunc.beginOrdNumb('whatIs') + str(orderNumb))
+    while True:
+        print('\nenter order number:    ' + utilFunc.beginOrdNumb('number') + '###\n' + utilFunc.beginOrdNumb('number'), end='')
+        try:
+            orderNumb = int(input())
 
-      except ValueError:
-         print('\ninvalid input...')
+            areYouSure = utilFunc.areYouSure(utilFunc.beginOrdNumb('number') + str(orderNumb))
 
+            if areYouSure == True:
+                utilFunc.writeData("delivery", utilFunc.beginOrdNumb('number') + str(orderNumb) + "OrderNumb.txt", utilFunc.beginOrdNumb('number') + str(orderNumb))
 
-def tip():
-   while True:
-      print('\ndid they tip?\n1 for yes | 2 for no')
-      try:
-         tipOption = int(input())
-         if tipOption == 1:
-            while True:
-               print('\nenter tip amount: #.##')
-               try:
-                  tipAmount = float(input())
-                  return [tipAmount, tipType()]
+                return utilFunc.beginOrdNumb('number') + str(orderNumb)
 
-               except ValueError:
-                  print('\ninvalid input...')
+            elif areYouSure == False:
+                continue
 
-         elif tipOption == 2:
-            return 'N/A'
+        except ValueError:
+            print('\ninvalid input...')
 
-      except ValueError:
-         print('\ninvalid input...')
+def tip(orderNumber):
+    while True:
+        print('\ntip?\n1 for yes | 2 for no')
+        try:
+            tipOption = int(input())
 
-      else:
-         print('\ninvalid input...')
+            if tipOption == 1:
+                    print('\nenter tip amount: $#.##')
+                    try:
+                        tipAmount = float(input())
+
+                        areYouSure = utilFunc.areYouSure('$' + str(tipAmount))
+
+                        if areYouSure == True:
+                            utilFunc.writeData("delivery", str(orderNumber) + "Tip.txt", [tipAmount, tipType()])
+                            break
+
+                        elif areYouSure == False:
+                            continue
+
+                    except ValueError:
+                        print('\ninvalid input...')
+
+            elif tipOption == 2:
+                utilFunc.writeData("delivery", str(orderNumber) + "Tip.txt", '"N/A"')
+                break
+
+        except ValueError:
+            print('\ninvalid input...')
+
+        else:
+            print('\ninvalid input...')
 
 
 def tipType():
@@ -49,10 +61,10 @@ def tipType():
       try:
          tipTypeOption = int(input())
          if tipTypeOption == 1:
-            return 'card'
+            return "card"
 
          elif tipTypeOption == 2:
-            return 'cash'
+            return "cash"
 
       except ValueError:
          print('\ninvalid input...')

@@ -1,5 +1,6 @@
 import datetime
 import os
+import shutil
 
 import shift
 
@@ -50,8 +51,8 @@ def deliveryNumb(option):
 
 
 def beginOrdNumb(option):
-   if option == 'whatIs':
-      with open(os.path.join("deliveryTracking", "beginOrdNumb.txt"), 'r') as first3:
+   if option == 'number':
+      with open(os.path.join("deliveryTracking", 'beginOrdNumb.txt'), 'r') as first3:
          return first3.read()
 
    elif option == 'change':
@@ -76,35 +77,28 @@ def beginOrdNumb(option):
               print('\ninvalid input...')
 
 
-def milesTrav(varWord = ''):
-   while True:
-      print('\n' + varWord + 'mile traveled:')
-      try:
-         milesTravInput = float(input())
-         return milesTravInput
-
-      except ValueError:
-         print('\ninvalid input...')
-
-
 def overWriteCheck():
-    while True:
-        print("\nALERT!!!\nare you sure you want to overwrite today's file?\n1 for yes | 2 for no")
-        try:
-            userInput = int(input())
-            if userInput == 1:
-                shift.startShift()
-                break
+    if os.path.exists(os.path.join("shift")) == True:
+        while True:
+            print("\nALERT!!!\nare you sure you want to overwrite today's file?\n1 for yes | 2 for no")
+            try:
+                userInput = int(input())
+                if userInput == 1:
+                    shutil.rmtree(os.path.join("shift"))
+                    shift.startShift()
+                    break
 
-            elif userInput == 2:
-                break
+                elif userInput == 2:
+                    break
 
-        except ValueError:
-            print('\ninvalid input')
+            except ValueError:
+                print('\ninvalid input...')
 
-        else:
-            print('\ninvalid input')
+            else:
+                print('\ninvalid input...')
 
+    else:
+        return print("\nALERT!!!\nfile doesn't exist")
 
 def timeTook(startTime, endTime, varWord):
     timeDif = endTime - startTime
@@ -122,3 +116,32 @@ def timeTook(startTime, endTime, varWord):
 
     elif mins >= 60:
         print('\nit took you more then an hour to complete this order')
+
+
+def areYouSure(option):
+    while True:
+        print('\n' + option + ' is this correct?\n1 for yes | 2 for no')
+        try:
+            areYouSure = int(input())
+            if areYouSure == 1:
+                return True
+
+            elif areYouSure == 2:
+                return False
+
+        except ValueError:
+            print('\ninvalid input...')
+
+        else:
+            print('\ninvalid input...')
+
+
+def writeData(folder, folder1, file, data, back=''):
+    with open(os.path.join(folder, folder1, file), 'w') as fileObject:
+        fileObject.write(str(data))
+
+    if back == 'back':
+        return data
+
+    else:
+        pass
