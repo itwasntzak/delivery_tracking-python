@@ -38,7 +38,7 @@ def startMenu():
                     if areYouSure == True:
                         os.remove(os.path.join("shift", "shiftEndTime.txt"))
                         with open(os.path.join("shift", "numbOfDeliveries.txt"), 'r') as file:
-                            utilFunc.writeData("", "deliveryNumb.txt", str(file.read()))
+                            utilFunc.writeData("", "deliveryNumb.txt", file.read())
                         continue
 
                 elif userInput == 0:

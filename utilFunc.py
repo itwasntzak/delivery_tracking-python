@@ -138,6 +138,17 @@ def areYouSure(option):
             print('\ninvalid input...')
 
 
-def writeData(folder, file, data):
-    with open(os.path.join(folder, file), 'w') as fileObj:
-        fileObj.write(str(data))
+def writeData(folder, file, data, back=''):
+    with open(os.path.join(folder, file), 'w') as fileObject:
+        fileObject.write(str(data))
+
+    if back == 'back':
+        return data
+
+    else:
+        pass
+
+
+def readData(folder, file):
+    with open(os.path.join(folder, file)) as fileObject:
+        return fileObject.read()

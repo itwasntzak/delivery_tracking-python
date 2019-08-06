@@ -4,7 +4,7 @@ import utilFunc
 import order
 
 
-def onDelivery(option):
+def onDelivery(option, startTime):
     while True:
         print('\n' + option + '\n1 after returning | 2 for extra stop')
         try:
@@ -13,7 +13,7 @@ def onDelivery(option):
                 break
 
             elif waitForUser == 2:
-                extraStop()
+                extraStop(startTime)
                 continue
 
         except ValueError:
@@ -22,7 +22,7 @@ def onDelivery(option):
             print('\ninvalid input')
 
 
-def extraStop():
+def extraStop(startTime):
     while True:
         print('\nmaking extra stop...\n1 to continue')
         try:
@@ -49,8 +49,11 @@ def extraStop():
                                             areYouSure2 = utilFunc.areYouSure(extraStopReason + '.')
 
                                             if areYouSure2 == True:
-                                                utilFunc.writeData("delivery", extraStopName + "EndTime.txt", utilFunc.now())
                                                 utilFunc.writeData("delivery", extraStopName + "MilesTrav.txt", milesTrav('extra'))
+                                                extraEndTime = utilFunc.writeData("delivery", extraStopName + "EndTime.txt", utilFunc.now(), 'back')
+
+                                                utilFunc.timeTook(startTime, extraEndTime, "extra stop")
+
                                                 utilFunc.writeData("delivery", extraStopName + "Reason.txt", "'" + extraStopReason + "'")
                                                 return
 
@@ -83,7 +86,7 @@ def milesTrav(varPath, varWord=''):
         print('\n' + varWord + 'miles traveled:')
         try:
             milesTravInput = float(input())
-            utilFunc.writeData("delivery", str(varPath) + 'MilesTrav.txt', str(milesTravInput))
+            utilFunc.writeData("delivery", str(varPath) + 'MilesTrav.txt', milesTravInput)
             break
 
         except ValueError:
@@ -107,28 +110,26 @@ def numbOfOrders():
 
 def delivery():
     os.mkdir(os.path.join("delivery"))
-    utilFunc.writeData("delivery", "deliveryStartTime.txt", str(utilFunc.now()))
+    startTime = utilFunc.writeData("delivery", "deliveryStartTime.txt", utilFunc.now(), 'back')
     numberOfOrder = int(numbOfOrders())
 
     if numberOfOrder == 1:
-        onDelivery('driving to address...')
+        onDelivery('driving to address...', startTime)
 
         orderNumb = order.orderNumb()
-
-        utilFunc.writeData("delivery", str(orderNumb) + "EndTime.txt", str(utilFunc.now()))
 
         order.tip(orderNumb)
 
         milesTrav(orderNumb)
 
-        onDelivery('driving back to store...')
+        orderEndTime = utilFunc.writeData("delivery", str(orderNumb) + "EndTime.txt", utilFunc.now(), 'back')
 
-        milesTrav('total', 'total ')
+        utilFunc.timeTook(startTime, orderEndTime, 'order')
 
 
     elif numberOfOrder >= 1:
         for value in range(numberOfOrder):
-            onDelivery('driving to address...')
+            onDelivery('driving to address...', startTime)
 
             orderNumb = order.orderNumb()
 
@@ -136,11 +137,16 @@ def delivery():
 
             milesTrav(orderNumb)
 
-            utilFunc.writeData("delivery", str(orderNumb) + "EndTime.txt", str(utilFunc.now()))
+            orderEndTime = utilFunc.writeData("delivery", str(orderNumb) + "EndTime.txt", utilFunc.now(), 'back')
 
-        onDelivery('driving back to store...')
+            utilFunc.timeTook(startTime, orderEndTime, 'order')
 
-        milesTrav('total', 'total ')
+    onDelivery('driving back to store...', startTime)
 
-    utilFunc.writeData("delivery", "deliveryEndTime.txt", str(utilFunc.now()))
-    utilFunc.writeData("shift", "numbOfDeliveries.txt", str(int(utilFunc.deliveryNumb('number')) + 1))
+    milesTrav('total', 'total ')
+
+    delivEndTime = utilFunc.writeData("delivery", "deliveryEndTime.txt", utilFunc.now(), 'back')
+
+    utilFunc.timeTook(startTime, delivEndTime, 'delivery')
+
+    utilFunc.writeData("shift", "numbOfDeliveries.txt", int(utilFunc.deliveryNumb('number'))+ 1)
