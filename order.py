@@ -11,7 +11,7 @@ def orderNumb():
             areYouSure = utilFunc.areYouSure(utilFunc.beginOrdNumb('number') + str(orderNumb))
 
             if areYouSure == True:
-                utilFunc.writeData("delivery", utilFunc.beginOrdNumb('number') + str(orderNumb) + "OrderNumb.txt", utilFunc.beginOrdNumb('number') + str(orderNumb))
+                utilFunc.writeData("deliveryTracking", "delivery", utilFunc.beginOrdNumb('number') + str(orderNumb) + "OrderNumb.txt", utilFunc.beginOrdNumb('number') + str(orderNumb))
 
                 return utilFunc.beginOrdNumb('number') + str(orderNumb)
 
@@ -35,7 +35,7 @@ def tip(orderNumber):
                         areYouSure = utilFunc.areYouSure('$' + str(tipAmount))
 
                         if areYouSure == True:
-                            utilFunc.writeData("delivery", str(orderNumber) + "Tip.txt", [tipAmount, tipType()])
+                            utilFunc.writeData("deliveryTracking", "delivery", str(orderNumber) + "Tip.txt", [tipAmount, tipType()])
                             break
 
                         elif areYouSure == False:
@@ -45,7 +45,7 @@ def tip(orderNumber):
                         print('\ninvalid input...')
 
             elif tipOption == 2:
-                utilFunc.writeData("delivery", str(orderNumber) + "Tip.txt", '"N/A"')
+                utilFunc.writeData("deliveryTracking", "delivery", str(orderNumber) + "Tip.txt", '"N/A"')
                 break
 
         except ValueError:

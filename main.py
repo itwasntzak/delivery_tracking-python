@@ -52,7 +52,7 @@ def startMenu():
                 print('\ninvalid input...')
 
 
-        elif os.path.exists(os.path.join("deliveryTracking", "shift", "shiftStartTime.txt")) == True and os.path.exists(os.path.join("shift", "splitStartTime.txt")) == False or os.path.exists(os.path.join("shift", "splitEndTime.txt")) == True:
+        elif os.path.exists(os.path.join("deliveryTracking", "shift", "shiftStartTime.txt")) == True and os.path.exists(os.path.join("deliveryTracking", "shift", "splitStartTime.txt")) == False or os.path.exists(os.path.join("deliveryTracking", "shift", "splitEndTime.txt")) == True:
             shiftMenu()
             print('\nwhat would you like to do?\n1 to continue shift | 0 for settings')
             try:
@@ -72,7 +72,7 @@ def startMenu():
                 print('\ninvalid input...')
 
 
-        elif os.path.exists(os.path.join("deliveryTracking", "shift", "shiftStartTime.txt")) == True and os.path.exists(os.path.join("shift", "splitStartTime.txt")) == True:
+        elif os.path.exists(os.path.join("deliveryTracking", "shift", "shiftStartTime.txt")) == True and os.path.exists(os.path.join("deliveryTracking", "shift", "splitStartTime.txt")) == True:
             print('\nwhat would you like to do?\n1 to end split | 0 for settings')
             try:
                 userInput = int(input())
@@ -123,7 +123,7 @@ def shiftMenu():
 
 def settingMenu():
     while True:
-        print('\nwhat setting to change:\n1 to overwrite shift file | 2 to change deliver number | 3 to change order number preset | 0 to go back')
+        print('\nwhat setting to change:\n1 to overwrite shift file | 2 to change delivery number | 3 to change order number preset | 0 to go back')
         try:
             userInput = int(input())
             if userInput == 1:

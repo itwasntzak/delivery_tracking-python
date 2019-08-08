@@ -109,7 +109,7 @@ def numbOfOrders():
 
 
 def delivery():
-    os.mkdir(os.path.join("delivery"))
+    os.mkdir(os.path.join("deliveryTracking", "delivery"))
     startTime = utilFunc.writeData("deliveryTracking", "delivery", "deliveryStartTime.txt", utilFunc.now(), 'back')
     numberOfOrder = int(numbOfOrders())
 
@@ -150,4 +150,3 @@ def delivery():
     utilFunc.timeTook(startTime, delivEndTime, 'delivery')
 
     utilFunc.writeData("deliveryTracking", "shift", "numbOfDeliveries.txt", int(utilFunc.deliveryNumb('number'))+ 1)
->>>>>>> master

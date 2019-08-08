@@ -5,7 +5,7 @@ import utilFunc
 
 def startShift():
     utilFunc.deliveryNumb('reset')
-    os.mkdir(os.path.join("shift"))
+    os.mkdir(os.path.join("deliveryTracking", "shift"))
     utilFunc.writeData("deliveryTracking", "shift", "shiftStartTime.txt", utilFunc.now())
 
 
