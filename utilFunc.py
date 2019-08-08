@@ -149,6 +149,6 @@ def writeData(folder, file, data, back=''):
         pass
 
 
-def readData(folder, file):
-    with open(os.path.join(folder, file)) as fileObject:
+def readData(folder, folder1, file):
+    with open(os.path.join(folder, folder1, file)) as fileObject:
         return fileObject.read()

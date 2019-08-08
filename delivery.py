@@ -5,15 +5,18 @@ import order
 
 
 def onDelivery(option, startTime):
+    os.mknod(os.path.join('delivery', 'onDelivery'))
     while True:
         print('\n' + option + '\n1 after returning | 2 for extra stop')
         try:
             waitForUser = int(input())
             if waitForUser == 1:
+                os.remove(os.path.join('delivery', 'onDelivery'))
                 break
 
             elif waitForUser == 2:
                 extraStop(startTime)
+                os.remove(os.path.join('delivery', 'onDelivery'))
                 continue
 
         except ValueError:
@@ -23,6 +26,7 @@ def onDelivery(option, startTime):
 
 
 def extraStop(startTime):
+    os.mknod(os.path.join('delivery', 'extraStop'))
     while True:
         print('\nmaking extra stop...\n1 to continue')
         try:
@@ -49,12 +53,11 @@ def extraStop(startTime):
                                             areYouSure2 = utilFunc.areYouSure(extraStopReason + '.')
 
                                             if areYouSure2 == True:
+                                                utilFunc.writeData("delivery", extraStopName + "Reason.txt", extraStopReason)
                                                 utilFunc.writeData("delivery", extraStopName + "MilesTrav.txt", milesTrav('extra'))
                                                 extraEndTime = utilFunc.writeData("delivery", extraStopName + "EndTime.txt", utilFunc.now(), 'back')
-
                                                 utilFunc.timeTook(startTime, extraEndTime, "extra stop")
-
-                                                utilFunc.writeData("delivery", extraStopName + "Reason.txt", "'" + extraStopReason + "'")
+                                                os.remove(os.path.join('delivery', 'extraStop'))
                                                 return
 
                                             else:
@@ -100,7 +103,7 @@ def numbOfOrders():
             numbOfOrders = int(input())
 
             if numbOfOrders >= 1:
-                utilFunc.writeData("delivery", "numbOfOrders.txt", numbOfOrders)
+                utilFunc.writeData('delivery', 'numbOfOrders.txt', numbOfOrders)
 
                 return numbOfOrders
 
@@ -109,8 +112,8 @@ def numbOfOrders():
 
 
 def delivery():
-    os.mkdir(os.path.join("delivery"))
-    startTime = utilFunc.writeData("delivery", "deliveryStartTime.txt", utilFunc.now(), 'back')
+    os.mkdir(os.path.join('delivery'))
+    startTime = utilFunc.writeData('delivery', 'deliveryStartTime.txt', utilFunc.now(), 'back')
     numberOfOrder = int(numbOfOrders())
 
     if numberOfOrder == 1:
@@ -122,7 +125,7 @@ def delivery():
 
         milesTrav(orderNumb)
 
-        orderEndTime = utilFunc.writeData("delivery", str(orderNumb) + "EndTime.txt", utilFunc.now(), 'back')
+        orderEndTime = utilFunc.writeData('delivery', str(orderNumb) + 'EndTime.txt', utilFunc.now(), 'back')
 
         utilFunc.timeTook(startTime, orderEndTime, 'order')
 
@@ -137,7 +140,7 @@ def delivery():
 
             milesTrav(orderNumb)
 
-            orderEndTime = utilFunc.writeData("delivery", str(orderNumb) + "EndTime.txt", utilFunc.now(), 'back')
+            orderEndTime = utilFunc.writeData('delivery', str(orderNumb) + 'EndTime.txt', utilFunc.now(), 'back')
 
             utilFunc.timeTook(startTime, orderEndTime, 'order')
 
@@ -145,8 +148,8 @@ def delivery():
 
     milesTrav('total', 'total ')
 
-    delivEndTime = utilFunc.writeData("delivery", "deliveryEndTime.txt", utilFunc.now(), 'back')
+    delivEndTime = utilFunc.writeData('delivery', 'deliveryEndTime.txt', utilFunc.now(), 'back')
 
     utilFunc.timeTook(startTime, delivEndTime, 'delivery')
 
-    utilFunc.writeData("shift", "numbOfDeliveries.txt", int(utilFunc.deliveryNumb('number'))+ 1)
+    utilFunc.writeData('shift', 'numbOfDeliveries.txt', int(utilFunc.deliveryNumb('number'))+ 1)
