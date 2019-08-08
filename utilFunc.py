@@ -78,7 +78,7 @@ def beginOrdNumb(option):
 
 
 def overWriteCheck():
-    if os.path.exists(os.path.join("shift")) == True:
+    if os.path.exists(os.path.join("deliveryTracking", "shift")) == True:
         while True:
             print("\nALERT!!!\nare you sure you want to overwrite today's file?\n1 for yes | 2 for no")
             try:
