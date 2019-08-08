@@ -84,7 +84,7 @@ def overWriteCheck():
             try:
                 userInput = int(input())
                 if userInput == 1:
-                    shutil.rmtree(os.path.join("shift"))
+                    shutil.rmtree(os.path.join("deliveryTracking", "shift"))
                     shift.startShift()
                     break
 
