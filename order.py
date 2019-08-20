@@ -1,73 +1,86 @@
-import os
+import util_func
+import input_data
 
-import utilFunc
 
-def orderNumb():
+def order_number():
+    order_number = input_data.input_data(
+        prompt1='\nEnter order number:    ' + util_func.begin_order_number('number') + '###\n' + util_func.begin_order_number('number'),
+        input_type1=int,
+        prompt2='\nIs this correct? [y/n]\n',
+        input_type2=str,
+        option_yes='y',
+        option_no='n')
+    util_func.write_data(
+        path='delivery',
+        file=util_func.begin_order_number('number') + str(order_number) + "_order_number.txt",
+        data=util_func.begin_order_number('number') + str(order_number))
+    return order_number
+
+
+def tip(var_path):
     while True:
-        print('\nenter order number:    ' + utilFunc.beginOrdNumb('number') + '###\n' + utilFunc.beginOrdNumb('number'), end='')
+        print('\nDid they tip? [y/n]')
         try:
-            orderNumb = int(input())
+            tip_option = str(input())
 
-            areYouSure = utilFunc.areYouSure(utilFunc.beginOrdNumb('number') + str(orderNumb))
-
-            if areYouSure == True:
-                utilFunc.writeData("delivery", utilFunc.beginOrdNumb('number') + str(orderNumb) + "OrderNumb.txt", utilFunc.beginOrdNumb('number') + str(orderNumb))
-
-                return utilFunc.beginOrdNumb('number') + str(orderNumb)
-
-            elif areYouSure == False:
-                continue
-
-        except ValueError:
-            print('\ninvalid input...')
-
-def tip(orderNumber):
-    while True:
-        print('\ntip?\n1 for yes | 2 for no')
-        try:
-            tipOption = int(input())
-
-            if tipOption == 1:
-                    print('\nenter tip amount: $#.##')
-                    try:
-                        tipAmount = float(input())
-
-                        areYouSure = utilFunc.areYouSure('$' + str(tipAmount))
-
-                        if areYouSure == True:
-                            utilFunc.writeData("delivery", str(orderNumber) + "Tip.txt", [tipAmount, tipType()])
-                            break
-
-                        elif areYouSure == False:
-                            continue
-
-                    except ValueError:
-                        print('\ninvalid input...')
-
-            elif tipOption == 2:
-                utilFunc.writeData("delivery", str(orderNumber) + "Tip.txt", '"N/A"')
+            if tip_option == 'y':
+                util_func.write_data(path='delivery', file=str(var_path) + '_tip.txt', data=[input_data.input_data(
+                    prompt1='\nenter tip amount: $#.##\n',
+                    input_type1 = float,
+                    prompt2='\nIs this correct? [y/n]\n',
+                    input_type2= str,
+                    option_yes='y',
+                    option_no='n',
+                    symbol='$'), tip_type()])
                 break
-
+            elif tip_option == 'n':
+                util_func.write_data(
+                    path='delivery',
+                    file=str(var_path) + '_tip.txt',
+                    data="'N/A'")
+                break
         except ValueError:
-            print('\ninvalid input...')
+            print('\ninvalid input.')
+        except TypeError:
+            print('\ninvalid input..')
 
-        else:
-            print('\ninvalid input...')
 
-
-def tipType():
+def tip_type():
    while True:
-      print('\ntype of tip:\n1 for card, 2 for cash')
+      print('\nType of tip?\n1 for card, 2 for cash')
       try:
-         tipTypeOption = int(input())
-         if tipTypeOption == 1:
-            return "card"
+         tip_type_option = int(input())
+         if tip_type_option == 1:
+            return 'card'
 
-         elif tipTypeOption == 2:
-            return "cash"
-
+         elif tip_type_option == 2:
+            return 'cash'
       except ValueError:
          print('\ninvalid input...')
-
       else:
          print('\ninvalid input...')
+
+
+
+
+'''class order:
+
+    def __init__(self, orderNumberFirstHalf, orderNumberLastHalf, tip, tipType, milesTraveled, endTime):
+        self.orderNumber = str(orderNumberFirstHalf) + str(orderNumberLastHalf)
+        self.tip = tip
+        self.tipType = tipType
+        self.milesTraveled = milesTraveled
+        self.endTime = endTime
+
+    def getOrderNumber(self):
+        return int(self.orderNumber)
+
+    def getTip(self):
+        return int(self.tip)
+
+    def getMilesTraveled(self):
+        return int(self.milesTraveled)
+
+    def saveOrder(self, folder, subfoler, fileName):
+        with open(os.path.join(folder, subfoler, fileName), 'w') as orderFile:
+            orderFile.write()'''

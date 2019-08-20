@@ -1,155 +1,124 @@
 import os
 
-import utilFunc
+import util_func
 import order
+import input_data
 
 
-def onDelivery(option, startTime):
-    os.mknod(os.path.join('delivery', 'onDelivery'))
+def on_delivery(prompt, start_time):
+    # creating file so code knows while on delivery, and continue
+    with open(os.path.join('delivery', 'on_delivery'), 'w'):
+        pass
+
     while True:
-        print('\n' + option + '\n1 after returning | 2 for extra stop')
+        print('\n' + prompt + '\n1 after returning | 2 for extra stop')
         try:
-            waitForUser = int(input())
-            if waitForUser == 1:
-                os.remove(os.path.join('delivery', 'onDelivery'))
+            wait_for_user = int(input())
+            if wait_for_user == 1:
+                os.remove(os.path.join('delivery', 'on_delivery'))
                 break
-
-            elif waitForUser == 2:
-                extraStop(startTime)
-                os.remove(os.path.join('delivery', 'onDelivery'))
+            elif wait_for_user == 2:
+                extra_stop(start_time=start_time)
                 continue
-
         except ValueError:
             print('\ninvalid input')
         else:
             print('\ninvalid input')
 
 
-def extraStop(startTime):
-    os.mknod(os.path.join('delivery', 'extraStop'))
+def extra_stop(start_time):
+    # creating file so code knows while on extra stop, to be able to continue
+    with open(file=os.path.join('delivery', 'extra_stop'), mode='w'):
+        pass
+
     while True:
-        print('\nmaking extra stop...\n1 to continue')
+        print('\nMaking extra stop...\n1 to continue')
         try:
-            waitForUser = int(input())
-            if waitForUser == 1:
+            wait_for_user = int(input())
+            if wait_for_user == 1:
 
-                while True:
-                    print('\nname of extra stop:')
+                # input extra stop name and save it
+                extra_stop_name = input_data.input_data(
+                    prompt1='\nName of extra stop:\n', input_type1=str,
+                    prompt2='\nIs this correct? [y/n]\n', input_type2=str, option_yes='y', option_no='n')
+                util_func.write_data(path='delivery', file=extra_stop_name + '_extra_stop.txt', data=str(extra_stop_name))
 
-                    try:
-                        extraStopName = input()
+                # input extra stop reason and creating a file with that as contents
+                util_func.write_data(
+                    path='delivery', file=extra_stop_name + '_reason.txt', data=input_data.input_data(
+                        prompt1='\nReason for extra stop?\n', input_type1=str,
+                        prompt2='\nIs this correct? [y/n]\n', input_type2=str, option_yes='y', option_no='n'))
 
-                        if extraStopName.isdigit() == False:
-                            areYouSure = utilFunc.areYouSure(extraStopName + '.')
+                # input and saving miles traveled
+                miles_trav(var_path='extra')
 
-                            if areYouSure == True:
-                                while True:
-                                    print('\nwhat was the reason for the extra stop?')
+                # save the time at the end of the extra stop
+                extra_end_time = util_func.write_data(path='delivery', file=extra_stop_name + '_end_time.txt', data=util_func.now(), back=True)
 
-                                    try:
-                                        extraStopReason = str(input())
-
-                                        if extraStopReason.isdigit() == False:
-                                            areYouSure2 = utilFunc.areYouSure(extraStopReason + '.')
-
-                                            if areYouSure2 == True:
-                                                utilFunc.writeData("delivery", extraStopName + "Reason.txt", extraStopReason)
-                                                utilFunc.writeData("delivery", extraStopName + "MilesTrav.txt", milesTrav('extra'))
-                                                extraEndTime = utilFunc.writeData("delivery", extraStopName + "EndTime.txt", utilFunc.now(), 'back')
-                                                utilFunc.timeTook(startTime, extraEndTime, "extra stop")
-                                                os.remove(os.path.join('delivery', 'extraStop'))
-                                                return
-
-                                            else:
-                                                continue
-
-                                        else:
-                                            print('\ninvalid input...')
-                                            continue
-
-                                    except ValueError:
-                                        print('\ninvalid input')
-
-                        else:
-                            print('\ninvalid input')
-                            continue
-
-                    except ValueError:
-                        print('\ninvalid input')
-
+                util_func.time_took(start_time=start_time, end_time=extra_end_time, var_word='extra stop')
+                os.remove(path=os.path.join('delivery', 'extra_stop'))
+                return
 
         except ValueError:
-            print('\ninvalid input')
+            print('\nInvalid input...')
         else:
-            print('\ninvalid input')
+            print('\nInvalid input...')
 
 
-def milesTrav(varPath, varWord=''):
-    while True:
-        print('\n' + varWord + 'miles traveled:')
-        try:
-            milesTravInput = float(input())
-            utilFunc.writeData("delivery", str(varPath) + 'MilesTrav.txt', milesTravInput)
-            break
-
-        except ValueError:
-            print('\ninvalid input...')
+def miles_trav(var_path, var_word=''):
+    miles_trav_input = input_data.input_data(
+        prompt1='\n' + var_word + 'miles traveled:\n', input_type1=float,
+        prompt2='\nIs this correct? [y/n]\n', input_type2=str, option_yes='y', option_no='n')
+    util_func.write_data(path='delivery', file=str(var_path) + '_miles_trav.txt', data=miles_trav_input)
 
 
-def numbOfOrders():
-    while True:
-        print('\nnumber of orders:')
-        try:
-            numbOfOrders = int(input())
-
-            if numbOfOrders >= 1:
-                utilFunc.writeData('delivery', 'numbOfOrders.txt', numbOfOrders)
-
-                return numbOfOrders
-
-        except ValueError:
-            print('\ninvalid input')
+def numb_of_orders():
+    return util_func.write_data(
+        path='delivery', file='numbOfOrders.txt', data=input_data.input_data(
+            prompt1='\nNumber of orders?\n', input_type1=int,
+            prompt2='\nIs this correct? [y/n]\n', input_type2=str, option_yes='y', option_no='n'),
+        back=True)
 
 
 def delivery():
-    os.mkdir(os.path.join('delivery'))
-    startTime = utilFunc.writeData('delivery', 'deliveryStartTime.txt', utilFunc.now(), 'back')
-    numberOfOrder = int(numbOfOrders())
+    os.mkdir(path=os.path.join(path='delivery'))
+    start_time = util_func.write_data(path='delivery', file='delivery_start_time.txt', data=util_func.now(), back=True)
+    number_of_orders = numb_of_orders()
 
-    if numberOfOrder == 1:
-        onDelivery('driving to address...', startTime)
+    if number_of_orders == 1:
+        on_delivery(prompt='\nDriving to address...', start_time=start_time)
 
-        orderNumb = order.orderNumb()
+        order_number = order.order_number()
 
-        order.tip(orderNumb)
+        order.tip(var_path=order_number)
 
-        milesTrav(orderNumb)
+        miles_trav(var_path=order_number)
 
-        orderEndTime = utilFunc.writeData('delivery', str(orderNumb) + 'EndTime.txt', utilFunc.now(), 'back')
+        order_end_time = util_func.write_data(path='delivery', file=str(order_number) + '_end_time.txt', data=util_func.now(), back=True)
 
-        utilFunc.timeTook(startTime, orderEndTime, 'order')
+        util_func.time_took(start_time=start_time, end_time=order_end_time, var_word='order')
 
 
-    elif numberOfOrder >= 1:
-        for value in range(numberOfOrder):
-            onDelivery('driving to address...', startTime)
+    elif number_of_orders >= 1:
+        for value in range(number_of_orders):
+            on_delivery(prompt='\nDriving to address...', start_time=start_time)
 
-            orderNumb = order.orderNumb()
+            order_number = order.order_number()
 
-            order.tip(orderNumb)
+            order.tip(var_path=order_number)
 
-            milesTrav(orderNumb)
+            miles_trav(var_path=order_number)
 
-            orderEndTime = utilFunc.writeData('delivery', str(orderNumb) + 'EndTime.txt', utilFunc.now(), 'back')
+            order_end_time = util_func.write_data(path='delivery', file=str(order_number) + '_end_time.txt', data=util_func.now(), back=True)
 
-            utilFunc.timeTook(startTime, orderEndTime, 'order')
+            util_func.time_took(start_time=start_time, end_time=order_end_time, var_word='order')
 
-    onDelivery('driving back to store...', startTime)
+    on_delivery(prompt='Driving back to store...', start_time=start_time)
 
-    milesTrav('total', 'total ')
+    miles_trav(var_path='total', var_word='total ')
 
-    delivEndTime = utilFunc.writeData('delivery', 'deliveryEndTime.txt', utilFunc.now(), 'back')
+    delivery_end_time = util_func.write_data(path='delivery', file='delivery_end_time.txt', data=util_func.now(), back=True)
 
-    utilFunc.timeTook(startTime, delivEndTime, 'delivery')
+    util_func.time_took(start_time=start_time, end_time=delivery_end_time, var_word='delivery')
 
-    utilFunc.writeData('shift', 'numbOfDeliveries.txt', int(utilFunc.deliveryNumb('number'))+ 1)
+    util_func.write_data(path='shift', file='number_of_deliveries.txt', data=int(util_func.delivery_number('number')) + 1)
