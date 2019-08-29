@@ -4,34 +4,50 @@ import input_data
 
 def order_number():
     order_number = input_data.input_data(
-        prompt1='\nEnter order number:    ' + util_func.begin_order_number('number') + '###\n' + util_func.begin_order_number('number'),
+        prompt1='\nEnter order number:    '
+                + util_func.begin_order_number('number')
+                + '###\n' + util_func.begin_order_number('number'),
         input_type1=int,
         prompt2='\nIs this correct? [y/n]\n',
         input_type2=str,
         option_yes='y',
-        option_no='n')
+        option_no='n',
+        symbol=util_func.begin_order_number('number')
+    )
     util_func.write_data(
         path='delivery',
-        file=util_func.begin_order_number('number') + str(order_number) + "_order_number.txt",
-        data=util_func.begin_order_number('number') + str(order_number))
+        file=util_func.begin_order_number('number')
+             + str(order_number)
+             + "_order_number.txt",
+        data=util_func.begin_order_number('number')
+             + str(order_number)
+    )
     return order_number
 
 
 def tip(var_path):
     while True:
-        print('\nDid they tip? [y/n]')
         try:
-            tip_option = str(input())
-
+            tip_option = str(input(
+                '\nDid they tip?    [y/n]\n'
+            ))
             if tip_option == 'y':
-                util_func.write_data(path='delivery', file=str(var_path) + '_tip.txt', data=[input_data.input_data(
-                    prompt1='\nenter tip amount: $#.##\n',
-                    input_type1 = float,
-                    prompt2='\nIs this correct? [y/n]\n',
-                    input_type2= str,
-                    option_yes='y',
-                    option_no='n',
-                    symbol='$'), tip_type()])
+                util_func.write_data(
+                    path='delivery',
+                    file=str(var_path) + '_tip.txt',
+                    data=[
+                        input_data.input_data(
+                            prompt1='\nenter tip amount: $#.##\n',
+                            input_type1 = float,
+                            prompt2='\nIs this correct?    [y/n]\n',
+                            input_type2= str,
+                            option_yes='y',
+                            option_no='n',
+                            symbol='$'
+                        ),
+                        tip_type()
+                    ]
+                )
                 break
             elif tip_option == 'n':
                 util_func.write_data(
@@ -47,12 +63,14 @@ def tip(var_path):
 
 def tip_type():
    while True:
-      print('\nType of tip?\n1 for card, 2 for cash')
       try:
-         tip_type_option = int(input())
+         tip_type_option = int(input(
+             '\nType of tip?'
+             '\n1 for card, '
+             '2 for cash\n'
+         ))
          if tip_type_option == 1:
             return 'card'
-
          elif tip_type_option == 2:
             return 'cash'
       except ValueError:
