@@ -1,22 +1,46 @@
 import os
 
-import main
-import utilFunc
-
-def startShift():
-    utilFunc.deliveryNumb('reset')
-    os.mkdir(os.path.join("shift"))
-    utilFunc.writeData("shift", "shiftStartTime.txt", utilFunc.now())
+import util_func
 
 
-def endShift():
-    utilFunc.writeData("shift", "shiftEndTime.txt", utilFunc.now())
-    utilFunc.deliveryNumb('reset')
+def start_shift():
+    util_func.delivery_number(
+        option='reset'
+    )
+    os.mkdir(os.path.join(
+        'shift'
+    ))
+    util_func.write_data(
+        path='shift',
+        file='shift_start_time.txt',
+        data=util_func.now()
+    )
 
 
-def startSplit():
-    utilFunc.writeData("shift", "splitStartTime.txt", utilFunc.now())
+def end_shift():
+    util_func.write_data(
+        path='shift',
+        file='shift_end_time.txt',
+        data=util_func.now()
+    )
+    util_func.delivery_number(
+        option='reset'
+    )
+    exit()
 
 
-def endSplit():
-    utilFunc.writeData("shift", "splitEndTime.txt", utilFunc.now())
+def start_split():
+    util_func.write_data(
+        path='shift',
+        file='split_start_time.txt',
+        data=util_func.now()
+    )
+    exit()
+
+
+def end_split():
+    util_func.write_data(
+        path='shift',
+        file='split_end_time.txt',
+        data=util_func.now()
+    )
