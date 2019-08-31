@@ -1,8 +1,0 @@
--on making extra stop, when entering wrong number to continue
-    it doesn't print invalid input
-
--after asking if they tipped, if entering invalid input it doesnt print invalid input
-
--move prompt for miles_trav so they are completely being passed by the call, fix capitalization
-
--sometimes to get back to start_menu it requires repeating typing 0 and entering, twice

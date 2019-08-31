@@ -23,6 +23,8 @@ def delivery_number(option):
             delivery_number.write('0')
     elif option == 'change':
         while True:
+            print('\nCurrently delivery number is at:    '
+                  + str(util_func.delivery_number('number')))
             user_choice = input_data.get_input(
                 prompt='\nALERT!!!'
                       '\nAre you sure you want to change the delivery number?'
@@ -54,6 +56,8 @@ def begin_order_number(option):
             return first_half.read()
     elif option == 'change':
         while True:
+            print('\nCurrently first 3 numbers of order numbers are set to:    '
+                  + util_func.begin_order_number('number'))
             user_choice = input_data.get_input(
                 prompt='\nALERT!!!\nAre you sure you want to change the order number preset?'
                 '\n[y/n]\n',

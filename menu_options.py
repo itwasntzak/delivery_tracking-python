@@ -40,7 +40,7 @@ def ended_shift():
             user_menu_choice2 = input_data.get_input(
                 prompt='\nWARNING!!!'
                        '\nThis will delete the already existing:'
-                       '\nend_shift_time.txt'
+                       '\nshift_end_time.txt'
                        '\nAre you sure? [y/n]\n',
                 kind=str
             )
@@ -56,6 +56,7 @@ def ended_shift():
                             file='delivery_number.txt',
                             data=file.read()
                         )
+                    break
                 else:
                     pass
             elif user_menu_choice2 == 'n':

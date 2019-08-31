@@ -75,14 +75,8 @@ def setting_menu():
         if user_choice == 1:
             menu_options.overwrite_shift_file()
         elif user_choice == 2:
-            print('\nCurrently delivery number is at:    '
-                  + str(util_func.delivery_number('number'))
-            )
             util_func.delivery_number('change')
         elif user_choice == 3:
-            print('\nCurrently first 3 numbers of order numbers are set to:    '
-                  + util_func.begin_order_number('number')
-            )
             util_func.begin_order_number('change')
         elif user_choice == 0:
             break
