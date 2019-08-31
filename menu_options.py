@@ -51,14 +51,13 @@ def ended_shift():
                 path = os.path.join('shift', 'number_of_deliveries.txt')
                 if os.path.exists(path):
                     with open(path, 'r') as file:
-                        util_func.write_data(
+                        return util_func.write_data(
                             path='',
                             file='delivery_number.txt',
                             data=file.read()
                         )
-                    break
                 else:
-                    pass
+                    break
             elif user_menu_choice2 == 'n':
                 break
             else:

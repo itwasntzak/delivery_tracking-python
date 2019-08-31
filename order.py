@@ -64,20 +64,36 @@ def tip(var_path):
 
 def tip_type():
    while True:
-       tip_type_option = input_data.input_data(
-           prompt1='\nType of tip?'
-                   '\n1 for card '
-                   '| 2 for cash\n',
-           input_type1=int,
-           prompt2='\nIs this correct?    [y/n]\n',
-           input_type2=str,
-           option_yes='y',
-           option_no='n'
+       tip_type_option = input_data.get_input(
+           prompt='\nType of tip?'
+                  '\n1 for card '
+                  '| 2 for cash\n',
+           kind=int
        )
        if tip_type_option == 1:
-           return 'card'
+           print('Card')
+           check_correct = input_data.get_input(
+               prompt='\nIs this correct?    [y/n]\n',
+               kind=str
+           )
+           if check_correct == 'y':
+               return 'card'
+           elif check_correct == 'n':
+               continue
+           else:
+               print('\nInvalid input...')
        elif tip_type_option == 2:
-           return 'cash'
+           print('Cash')
+           check_correct = input_data.get_input(
+               prompt='\nIs this correct?    [y/n]\n',
+               kind=str
+           )
+           if check_correct == 'y':
+               return 'cash'
+           elif check_correct == 'n':
+               continue
+           else:
+               print('\nInvalid input...')
        else:
            print('\nInvalid input...')
 
