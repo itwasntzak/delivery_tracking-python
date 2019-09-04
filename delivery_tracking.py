@@ -10,31 +10,47 @@ def start_menu():
     while True:
         # check if shift has started, if not start a new one
         if not os.path.exists(os.path.join(
-                'shift', 'shift_start_time.txt'
+                'delivery_tracking',
+                'shift',
+                'shift_start_time.txt'
         )):
             menu_options.new_shift()
         # check if shift has ended
         elif os.path.exists(os.path.join(
-                'shift', 'shift_end_time.txt'
+                'delivery_tracking',
+                'shift',
+                'shift_end_time.txt'
         )):
             menu_options.ended_shift()
         # check if a split has or has not been started or ended
         elif os.path.exists(os.path.join(
-                'shift', 'shift_start_time.txt'))\
+                'delivery_tracking',
+                'shift',
+                'shift_start_time.txt'))\
             and not os.path.exists(os.path.join(
-                'shift', 'split_start_time.txt'))\
+                'delivery_tracking',
+                'shift',
+                'split_start_time.txt'))\
             or os.path.exists(os.path.join(
-                'shift', 'split_end_time.txt'
+                'delivery_tracking',
+                'shift',
+                'split_end_time.txt'
         )):
             shift_menu()
             menu_options.continue_shift()
         # check if split has been started
         elif os.path.exists(os.path.join(
-                'shift', 'shift_start_time.txt'))\
+                'delivery_tracking',
+                'shift',
+                'shift_start_time.txt'))\
             and os.path.exists(os.path.join(
-                'shift', 'split_start_time.txt'))\
+                'delivery_tracking',
+                'shift',
+                'split_start_time.txt'))\
             and not os.path.exists(os.path.join(
-                'shift', 'split_end_time.txt'
+                'delivery_trackin',
+                'shift',
+                'split_end_time.txt'
         )):
             menu_options.end_split()
 

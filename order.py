@@ -1,3 +1,5 @@
+import os
+
 import util_func
 import input_data
 
@@ -14,14 +16,16 @@ def order_number():
         option_no='n',
         symbol=util_func.begin_order_number('number')
     )
-    full_order_number = util_func.begin_order_number('number') + str(order_number)
     util_func.write_data(
-        path='delivery',
-        file=full_order_number
-             + "_order_number.txt",
-        data=full_order_number
+        path=os.path.join(
+            'delivery_tracking', 'delivery'),
+        file=util_func.begin_order_number('number')
+             + str(order_number)
+             + '_order_number.txt',
+        data=util_func.begin_order_number('number')
+             + str(order_number)
     )
-    return full_order_number
+    return util_func.begin_order_number('number') + str(order_number)
 
 
 def tip(var_path):
@@ -36,7 +40,8 @@ def tip(var_path):
         )
         if tip_option == 'y':
             util_func.write_data(
-                path='delivery',
+                path=os.path.join(
+                    'delivery_tracking', 'delivery'),
                 file=str(var_path) + '_tip.txt',
                 data=[
                     input_data.input_data(
@@ -54,7 +59,8 @@ def tip(var_path):
             break
         elif tip_option == 'n':
             util_func.write_data(
-                path='delivery',
+                path=os.path.join(
+                    'delivery_tracking', 'delivery'),
                 file=str(var_path) + '_tip.txt',
                 data="'N/A'")
             break
@@ -71,7 +77,7 @@ def tip_type():
            kind=int
        )
        if tip_type_option == 1:
-           print('Card')
+           print('\nCard')
            check_correct = input_data.get_input(
                prompt='\nIs this correct?    [y/n]\n',
                kind=str
@@ -83,7 +89,7 @@ def tip_type():
            else:
                print('\nInvalid input...')
        elif tip_type_option == 2:
-           print('Cash')
+           print('\nCash')
            check_correct = input_data.get_input(
                prompt='\nIs this correct?    [y/n]\n',
                kind=str
