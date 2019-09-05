@@ -46,7 +46,9 @@ def ended_shift():
             )
             if user_menu_choice2 == 'y':
                 os.remove(os.path.join(
-                    'shift', 'shift_end_time.txt'
+                    'delivery_tracking',
+                    'shift',
+                    'shift_end_time.txt'
                 ))
                 path = os.path.join(
                     'delivery_tracking',
