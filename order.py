@@ -5,7 +5,7 @@ import input_data
 
 
 delivery_path = os.path.join(
-    'delivery_tracking', 'delivery'
+    'delivery'
 )
 
 

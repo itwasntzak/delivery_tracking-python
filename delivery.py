@@ -6,16 +6,16 @@ import input_data
 
 
 delivery_path = os.path.join(
-    'delivery_tracking', 'delivery'
+    'delivery'
 )
 shift_path = os.path.join(
-    'delivery_tracking', 'shift'
+    'shift'
 )
 on_delivery_path = os.path.join(
-    'delivery_tracking', 'delivery', 'on_delivery'
+    'delivery', 'on_delivery'
 )
 on_extra_stop_path = os.path.join(
-    'delivery_tracking', 'delivery', 'extra_stop'
+    'delivery', 'extra_stop'
 )
 
 

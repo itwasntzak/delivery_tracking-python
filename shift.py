@@ -2,7 +2,9 @@ import os
 
 import util_func
 
-shift_path= os.path.join('delivery_tracking', 'shift')
+shift_path= os.path.join(
+    'shift'
+)
 
 def start_shift():
     util_func.delivery_number(

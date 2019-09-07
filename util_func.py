@@ -5,12 +5,12 @@ import shutil
 import input_data
 
 
-delivery_tracking_path= 'delivery_tracking'
+delivery_tracking_path= ''
 delivery_number_path = os.path.join(
-    'delivery_tracking', 'delivery_number.txt'
+    'delivery_number.txt'
 )
 begin_order_number_path = os.path.join(
-    'delivery_tracking', 'begin_order_number.txt'
+    'begin_order_number.txt'
 )
 
 

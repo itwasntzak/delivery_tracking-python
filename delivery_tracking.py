@@ -7,16 +7,16 @@ import util_func
 
 
 shift_start_time_path = os.path.join(
-    'delivery_tracking', 'shift', 'shift_start_time.txt'
+    'shift', 'shift_start_time.txt'
 )
 shift_end_time_path = os.path.join(
-    'delivery_tracking', 'shift', 'shift_end_time.txt'
+    'shift', 'shift_end_time.txt'
 )
 split_start_time_path = os.path.join(
-    'delivery_tracking', 'shift', 'split_start_time.txt'
+    'shift', 'split_start_time.txt'
 )
 split_end_time_path = os.path.join(
-    'delivery_tracking', 'shift', 'split_end_time.txt'
+    'shift', 'split_end_time.txt'
 )
 
 

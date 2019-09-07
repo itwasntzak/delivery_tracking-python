@@ -9,19 +9,19 @@ import util_func
 
 delivery_tracking_path = 'delivery_tracking'
 delivery_path = os.path.join(
-    'delivery_tracking', 'delivery'
+    'delivery'
 )
 shift_path = os.path.join(
-            'delivery_tracking', 'shift'
+    'shift'
 )
 shift_delivery_path = os.path.join(
-            'delivery_tracking', 'shift', 'delivery' + util_func.delivery_number('number')
+    'shift', 'delivery' + util_func.delivery_number('number')
 )
 shift_end_time_path = os.path.join(
-    'delivery_tracking', 'shift', 'shift_end_time.txt'
+    'shift', 'shift_end_time.txt'
 )
 number_of_deliveries_path = os.path.join(
-    'delivery_tracking', 'shift', 'number_of_deliveries.txt'
+    'shift', 'number_of_deliveries.txt'
 )
 
 
