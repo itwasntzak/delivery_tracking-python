@@ -4,6 +4,11 @@ import util_func
 import input_data
 
 
+delivery_path = os.path.join(
+    'delivery_tracking', 'delivery'
+)
+
+
 def order_number():
     order_number = input_data.input_data(
         prompt1='\nEnter order number:    '
@@ -17,13 +22,9 @@ def order_number():
         symbol=util_func.begin_order_number('number')
     )
     util_func.write_data(
-        path=os.path.join(
-            'delivery_tracking', 'delivery'),
-        file=util_func.begin_order_number('number')
-             + str(order_number)
-             + '_order_number.txt',
-        data=util_func.begin_order_number('number')
-             + str(order_number)
+        path=delivery_path,
+        file=util_func.begin_order_number('number') + str(order_number) + '_order_number.txt',
+        data=util_func.begin_order_number('number') + str(order_number)
     )
     return util_func.begin_order_number('number') + str(order_number)
 
@@ -40,8 +41,7 @@ def tip(var_path):
         )
         if tip_option == 'y':
             util_func.write_data(
-                path=os.path.join(
-                    'delivery_tracking', 'delivery'),
+                path=delivery_path,
                 file=str(var_path) + '_tip.txt',
                 data=[
                     input_data.input_data(
@@ -59,8 +59,7 @@ def tip(var_path):
             break
         elif tip_option == 'n':
             util_func.write_data(
-                path=os.path.join(
-                    'delivery_tracking', 'delivery'),
+                path=delivery_path,
                 file=str(var_path) + '_tip.txt',
                 data="'N/A'")
             break

@@ -5,27 +5,36 @@ import shutil
 import input_data
 
 
+delivery_tracking_path= 'delivery_tracking'
+delivery_number_path = os.path.join(
+    'delivery_tracking', 'delivery_number.txt'
+)
+begin_order_number_path = os.path.join(
+    'delivery_tracking', 'begin_order_number.txt'
+)
+
+
 def now():
     return datetime.datetime.now()
 
 
 def delivery_number(option):
     if option == 'number':
-        with open(os.path.join('delivery_tracking', 'delivery_number.txt'), 'r') as delivery_number:
+        with open(delivery_number_path, 'r') as delivery_number:
             return delivery_number.read()
     elif option == 'update':
-        with open(os.path.join('delivery_tracking', 'delivery_number.txt'), 'r+') as delivery_number:
+        with open(delivery_number_path, 'r+') as delivery_number:
             previous_delivery_number = int(delivery_number.read())
             delivery_number.seek(0)
             delivery_number.write(str(previous_delivery_number + 1))
     elif option == 'reset':
-        with open(os.path.join('delivery_tracking', 'delivery_number.txt'), 'w') as delivery_number:
+        with open(delivery_number_path, 'w') as delivery_number:
             delivery_number.write('0')
     elif option == 'change':
         while True:
             print('\nCurrently delivery number is at:    '
                   + str(read_data(
-                path='delivery_tracking',
+                path=delivery_tracking_path,
                 file='delivery_number.txt'
             )))
             user_choice = input_data.get_input(
@@ -41,7 +50,7 @@ def delivery_number(option):
                         kind=int
                     )
                     write_data(
-                        path='delivery_tracking',
+                        path=delivery_tracking_path,
                         file='delivery_number.txt',
                         data=new_delivery_number
                     )
@@ -55,13 +64,13 @@ def delivery_number(option):
 
 def begin_order_number(option):
     if option == 'number':
-        with open(os.path.join('delivery_tracking', 'begin_order_number.txt'), 'r') as first_half:
+        with open(begin_order_number_path, 'r') as first_half:
             return first_half.read()
     elif option == 'change':
         while True:
             print('\nCurrently first 3 numbers of order numbers are set to:    '
                   + read_data(
-                path='delivery_tracking',
+                path=delivery_tracking_path,
                 file='begin_order_number.txt'
             ))
             user_choice = input_data.get_input(
@@ -76,7 +85,7 @@ def begin_order_number(option):
                     kind=int
                 )
                 write_data(
-                    path='delivery_tracking',
+                    path=delivery_tracking_path,
                     file='begin_order_number.txt',
                     data=new_first_half
                 )

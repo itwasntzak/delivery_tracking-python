@@ -4,9 +4,24 @@ import util_func
 import order
 import input_data
 
+
+delivery_path = os.path.join(
+    'delivery_tracking', 'delivery'
+)
+shift_path = os.path.join(
+    'delivery_tracking', 'shift'
+)
+on_delivery_path = os.path.join(
+    'delivery_tracking', 'delivery', 'on_delivery'
+)
+on_extra_stop_path = os.path.join(
+    'delivery_tracking', 'delivery', 'extra_stop'
+)
+
+
 def on_delivery(prompt, start_time):
     # creating file so code knows while on delivery, and can continue
-    with open(os.path.join('delivery_tracking', 'delivery', 'on_delivery'), 'w'):
+    with open(on_delivery_path, 'w'):
         pass
 
     while True:
@@ -18,11 +33,7 @@ def on_delivery(prompt, start_time):
         )
         if wait_for_user == 1:
             # remove on_delivery file so code can know a delivery has ended
-            os.remove(os.path.join(
-                'delivery_tracking',
-                'delivery',
-                'on_delivery'
-            ))
+            os.remove(on_delivery_path)
             break
         elif wait_for_user == 2:
             # extra stop option
@@ -34,7 +45,7 @@ def on_delivery(prompt, start_time):
 
 def extra_stop(start_time):
     # creating file so code knows while on extra stop, to be able to continue
-    with open(os.path.join('delivery_tracking','delivery', 'extra_stop'), mode='w'):
+    with open(on_extra_stop_path, mode='w'):
         pass
 
     while True:
@@ -54,13 +65,13 @@ def extra_stop(start_time):
                 option_no='n'
             )
             util_func.write_data(
-                path=os.path.join('delivery_tracking', 'delivery'),
+                path=delivery_path,
                 file=extra_stop_name + '_extra_stop.txt',
                 data=str(extra_stop_name)
             )
         # input extra stop reason and creating a file with that as contents
             util_func.write_data(
-                path=os.path.join('delivery_tracking', 'delivery'),
+                path=delivery_path,
                 file=extra_stop_name + '_reason.txt',
                 data=input_data.input_data(
                     prompt1='\nReason for extra stop?\n',
@@ -75,7 +86,7 @@ def extra_stop(start_time):
                 var_path=extra_stop_name, prompt='Extra miles traveled:    #.#')
         # save the time at the end of the extra stop
             extra_end_time = util_func.write_data(
-                path=os.path.join('delivery_tracking', 'delivery'),
+                path=delivery_path,
                 file=extra_stop_name + '_end_time.txt',
                 data=util_func.now(),
                 back=True
@@ -86,11 +97,7 @@ def extra_stop(start_time):
                 end_time=extra_end_time,
                 var_word='extra stop'
             )
-            os.remove(os.path.join(
-                'delivery_tracking',
-                'delivery',
-                'extra_stop'
-            ))
+            os.remove(on_extra_stop_path)
             break
         else:
             print('\nInvalid input...')
@@ -106,8 +113,7 @@ def miles_trav(var_path, prompt):
         option_no='n'
     )
     util_func.write_data(
-        path=os.path.join(
-            'delivery_tracking', 'delivery'),
+        path=delivery_path,
         file=str(var_path) + '_miles_trav.txt',
         data=miles_trav_input
     )
@@ -115,8 +121,7 @@ def miles_trav(var_path, prompt):
 
 def numb_of_orders():
     return util_func.write_data(
-        path=os.path.join(
-            'delivery_tracking', 'delivery'),
+        path=delivery_path,
         file='number_of_oders.txt',
         data=input_data.input_data(
             prompt1='\nNumber of orders?\n',
@@ -130,10 +135,9 @@ def numb_of_orders():
 
 
 def delivery():
-    os.mkdir(os.path.join(
-        'delivery_tracking', 'delivery'))
+    os.mkdir(delivery_path)
     start_time = util_func.write_data(
-        path=os.path.join('delivery_tracking', 'delivery'),
+        path=delivery_path,
         file='delivery_start_time.txt',
         data=util_func.now(),
         back=True
@@ -148,7 +152,7 @@ def delivery():
         miles_trav(
             var_path=order_number, prompt='Miles traveled:    #.#')
         order_end_time = util_func.write_data(
-            path=os.path.join('delivery_tracking', 'delivery'),
+            path=delivery_path,
             file=str(order_number) + '_end_time.txt',
             data=util_func.now(),
             back=True
@@ -173,7 +177,7 @@ def delivery():
             miles_trav(
                 var_path=order_number, prompt='Miles traveled:    #.#')
             order_end_time = util_func.write_data(
-                path=os.path.join('delivery_tracking', 'delivery'),
+                path=delivery_path,
                 file=str(order_number) + '_end_time.txt',
                 data=util_func.now(),
                 back=True
@@ -188,8 +192,7 @@ def delivery():
     miles_trav(
         var_path='total', prompt='Total miles traveled:    #.#')
     delivery_end_time = util_func.write_data(
-        path=os.path.join(
-            'delivery_tracking', 'delivery'),
+        path=delivery_path,
         file='delivery_end_time.txt',
         data=util_func.now(),
         back=True
@@ -200,7 +203,7 @@ def delivery():
         var_word='delivery'
     )
     util_func.write_data(
-        path=os.path.join('delivery_tracking', 'shift'),
+        path=shift_path,
         file='number_of_deliveries.txt',
         data=int(util_func.delivery_number('number')) + 1
     )
