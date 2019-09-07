@@ -2,16 +2,15 @@ import os
 
 import util_func
 
+shift_path= os.path.join('delivery_tracking', 'shift')
 
 def start_shift():
     util_func.delivery_number(
         option='reset'
     )
-    os.mkdir(os.path.join(
-        'shift'
-    ))
+    os.mkdir(shift_path)
     util_func.write_data(
-        path='shift',
+        path=shift_path,
         file='shift_start_time.txt',
         data=util_func.now()
     )
@@ -19,7 +18,7 @@ def start_shift():
 
 def end_shift():
     util_func.write_data(
-        path='shift',
+        path=shift_path,
         file='shift_end_time.txt',
         data=util_func.now()
     )
@@ -31,7 +30,7 @@ def end_shift():
 
 def start_split():
     util_func.write_data(
-        path='shift',
+        path=shift_path,
         file='split_start_time.txt',
         data=util_func.now()
     )
@@ -40,7 +39,7 @@ def start_split():
 
 def end_split():
     util_func.write_data(
-        path='shift',
+        path=shift_path,
         file='split_end_time.txt',
         data=util_func.now()
     )

@@ -7,6 +7,23 @@ import input_data
 import shift
 import util_func
 
+delivery_tracking_path = 'delivery_tracking'
+delivery_path = os.path.join(
+    'delivery_tracking', 'delivery'
+)
+shift_path = os.path.join(
+            'delivery_tracking', 'shift'
+)
+shift_delivery_path = os.path.join(
+            'delivery_tracking', 'shift', 'delivery' + util_func.delivery_number('number')
+)
+shift_end_time_path = os.path.join(
+    'delivery_tracking', 'shift', 'shift_end_time.txt'
+)
+number_of_deliveries_path = os.path.join(
+    'delivery_tracking', 'shift', 'number_of_deliveries.txt'
+)
+
 
 def new_shift():
     while True:
@@ -45,14 +62,11 @@ def ended_shift():
                 kind=str
             )
             if user_menu_choice2 == 'y':
-                os.remove(os.path.join(
-                    'shift', 'shift_end_time.txt'
-                ))
-                path = os.path.join('shift', 'number_of_deliveries.txt')
-                if os.path.exists(path):
-                    with open(path, 'r') as file:
+                os.remove(shift_end_time_path)
+                if os.path.exists(number_of_deliveries_path):
+                    with open(number_of_deliveries_path, 'r') as file:
                         return util_func.write_data(
-                            path='',
+                            path=delivery_tracking_path,
                             file='delivery_number.txt',
                             data=file.read()
                         )
@@ -109,16 +123,12 @@ def end_split():
 
 def start_delivery():
     delivery.delivery()
-    shutil.move(
-        os.path.join('delivery'),
-        os.path.join('shift',
-                     'delivery' + util_func.delivery_number('number')
-    ))
+    shutil.move(delivery_path, shift_delivery_path)
     util_func.delivery_number('update')
 
 
 def overwrite_shift_file():
-    if os.path.exists(os.path.join('shift')):
+    if os.path.exists(shift_path):
         while True:
             user_choice = input_data.get_input(
                 prompt="\nALERT!!!"
@@ -127,7 +137,7 @@ def overwrite_shift_file():
                 kind=str
             )
             if user_choice == 'y':
-                shutil.rmtree(os.path.join('shift'))
+                shutil.rmtree(shift_path)
                 shift.start_shift()
                 break
             elif user_choice == 'n':

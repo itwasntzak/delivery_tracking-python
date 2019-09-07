@@ -6,36 +6,41 @@ import shift
 import util_func
 
 
+shift_start_time_path = os.path.join(
+    'delivery_tracking', 'shift', 'shift_start_time.txt'
+)
+shift_end_time_path = os.path.join(
+    'delivery_tracking', 'shift', 'shift_end_time.txt'
+)
+split_start_time_path = os.path.join(
+    'delivery_tracking', 'shift', 'split_start_time.txt'
+)
+split_end_time_path = os.path.join(
+    'delivery_tracking', 'shift', 'split_end_time.txt'
+)
+
+
 def start_menu():
     while True:
-        # check if shift has started, if not start a new one
-        if not os.path.exists(os.path.join(
-                'shift', 'shift_start_time.txt'
-        )):
+    # check if shift has started
+        if not os.path.exists(shift_start_time_path):
             menu_options.new_shift()
-        # check if shift has ended
-        elif os.path.exists(os.path.join(
-                'shift', 'shift_end_time.txt'
-        )):
+
+    # check if shift has ended
+        elif os.path.exists(shift_end_time_path):
             menu_options.ended_shift()
-        # check if a split has or has not been started or ended
-        elif os.path.exists(os.path.join(
-                'shift', 'shift_start_time.txt'))\
-            and not os.path.exists(os.path.join(
-                'shift', 'split_start_time.txt'))\
-            or os.path.exists(os.path.join(
-                'shift', 'split_end_time.txt'
-        )):
+
+    # check if a split has or has not been started or ended
+        elif os.path.exists(shift_start_time_path)\
+                and not os.path.exists(split_start_time_path)\
+                or os.path.exists(split_end_time_path):
             shift_menu()
             menu_options.continue_shift()
-        # check if split has been started
-        elif os.path.exists(os.path.join(
-                'shift', 'shift_start_time.txt'))\
-            and os.path.exists(os.path.join(
-                'shift', 'split_start_time.txt'))\
-            and not os.path.exists(os.path.join(
-                'shift', 'split_end_time.txt'
-        )):
+
+    # check if split has been started
+        elif os.path.exists(shift_start_time_path)\
+                and os.path.exists(split_start_time_path)\
+                and not os.path.exists(split_end_time_path):
             menu_options.end_split()
 
 
