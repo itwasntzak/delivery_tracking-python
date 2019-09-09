@@ -101,15 +101,8 @@ def time_took(start_time, end_time, var_word):
     time_dif = end_time - start_time
     minutes = int(time_dif.total_seconds() / 60)
     seconds = str(time_dif.total_seconds() - (minutes * 60))
-    if minutes < 1:
-        print('\nIt took you    '
-              + seconds
-              + '   seconds to complete this ' + var_word)
-
-    elif minutes >= 1:
-        print('\nIt took you    '
-              + str(minutes) + ':' + seconds
-              + '    to complete this ' + var_word)
+    if minutes >= 0 and minutes < 60:
+        print('\nTime took:\t' + str(minutes) + ':' + seconds)
 
     elif minutes >= 60:
         print('\nIt took you more then an hour to complete this order')
