@@ -161,10 +161,10 @@ def delivery():
                 path=delivery_path,
                 file='delivery_start_time.txt'
             )
-            order_end_time = utility_function.read_data(
+            order_end_time = order.get_order_data(
                 path=delivery_path,
                 file=order_number + '.txt'
-            ).split(',')
+            )
             utility_function.time_took(
                 start_time=datetime.datetime.strptime(
                     delivery_start_time, '%Y-%m-%d %H:%M:%S.%f'

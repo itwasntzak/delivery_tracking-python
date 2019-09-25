@@ -110,28 +110,19 @@ def tip_type():
             print('\nInvalid input...')
 
 
+def get_order_data(path, file):
+    order_data = utility_function.read_data(
+        path=path,
+        file=file
+    )
+    return order_data.split(',')
 
 
+class Order:
 
-
-'''class order:
-
-    def __init__(self, orderNumberFirstHalf, orderNumberLastHalf, tip, tipType, milesTraveled, endTime):
-        self.orderNumber = str(orderNumberFirstHalf) + str(orderNumberLastHalf)
+    def __init__(self, order_number, tip, tip_type, miles_traveled, order_end_time):
+        self.order_number = order_number
         self.tip = tip
-        self.tipType = tipType
-        self.milesTraveled = milesTraveled
-        self.endTime = endTime
-
-    def getOrderNumber(self):
-        return int(self.orderNumber)
-
-    def getTip(self):
-        return int(self.tip)
-
-    def getMilesTraveled(self):
-        return int(self.milesTraveled)
-
-    def saveOrder(self, folder, subfoler, fileName):
-        with open(os.path.join(folder, subfoler, fileName), 'w') as orderFile:
-            orderFile.write()'''
+        self.tip_type = tip_type
+        self.miles_traveled = miles_traveled
+        self.order_end_time = order_end_time
