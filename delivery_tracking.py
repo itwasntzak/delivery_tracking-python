@@ -3,7 +3,7 @@ import os
 import menu_options
 import input_data
 import shift
-import util_func
+import utility_function
 
 
 shift_start_time_path = os.path.join(
@@ -19,7 +19,7 @@ split_end_time_path = os.path.join(
     'shift', 'split_end_time.txt'
 )
 
-
+#//TODO: change to start_up function instead
 def start_menu():
     while True:
     # check if shift has started
@@ -80,9 +80,9 @@ def setting_menu():
         if user_choice == 1:
             menu_options.overwrite_shift_file()
         elif user_choice == 2:
-            util_func.delivery_number('change')
+            utility_function.delivery_number('change')
         elif user_choice == 3:
-            util_func.begin_order_number('change')
+            utility_function.begin_order_number('change')
         elif user_choice == 0:
             break
         else:

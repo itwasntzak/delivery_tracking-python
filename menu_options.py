@@ -5,9 +5,9 @@ import delivery
 import delivery_tracking
 import input_data
 import shift
-import util_func
+import utility_function
 
-delivery_tracking_path = 'delivery_tracking'
+delivery_tracking_path = ''
 delivery_path = os.path.join(
     'delivery'
 )
@@ -15,7 +15,7 @@ shift_path = os.path.join(
     'shift'
 )
 shift_delivery_path = os.path.join(
-    'shift', 'delivery' + util_func.delivery_number('number')
+    'shift', 'delivery' + utility_function.delivery_number('number')
 )
 shift_end_time_path = os.path.join(
     'shift', 'shift_end_time.txt'
@@ -62,10 +62,11 @@ def ended_shift():
                 kind=str
             )
             if user_menu_choice2 == 'y':
+                shutil.move(str(utility_function.now().date()), shift_path)
                 os.remove(shift_end_time_path)
                 if os.path.exists(number_of_deliveries_path):
                     with open(number_of_deliveries_path, 'r') as file:
-                        return util_func.write_data(
+                        return utility_function.write_data(
                             path=delivery_tracking_path,
                             file='delivery_number.txt',
                             data=file.read()
@@ -124,7 +125,7 @@ def end_split():
 def start_delivery():
     delivery.delivery()
     shutil.move(delivery_path, shift_delivery_path)
-    util_func.delivery_number('update')
+    utility_function.delivery_number('update')
 
 
 def overwrite_shift_file():

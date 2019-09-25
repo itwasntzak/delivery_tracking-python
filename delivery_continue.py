@@ -1,12 +1,18 @@
-#todo still needs to be refactored
+#//TODO: still needs to be written
+#//TODO: still needs to be refactored
 
 
-import os, shutil, datetime
-import util_func, delivery, order
+import os
+import shutil
+import datetime
+
+import utility_function
+import delivery
+import order
 
 
 def deliveryContinue():
-    if os.path.exists(os.path.join('delivery')) == True:
+    if os.path.exists(os.path.join('delivery')):
         if os.path.exists(os.path.join('delivery', 'deliveryStartTime.txt')) == False:
             shutil.rmtree(os.path.join('delivery'))
 
@@ -23,22 +29,22 @@ def deliveryContinue():
                             extraStopReason = str(input())
 
                             if extraStopReason.isdigit() == False:
-                                areYouSure2 = util_func.areYouSure(extraStopReason + '.')
+                                areYouSure2 = utility_function.areYouSure(extraStopReason + '.')
 
                                 if areYouSure2 == True:
-                                    util_func.writeData("delivery", extraStopName + "Reason.txt", extraStopReason)
-                                    util_func.writeData("delivery", extraStopName + "MilesTrav.txt", milesTrav('extra'))
-                                    extraEndTime = util_func.writeData("delivery", extraStopName + "EndTime.txt", util_func.now(), 'back')
-                                    util_func.timeTook(datetime.datetime.strptime(util_func.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), extraEndTime, "extra stop")
+                                    utility_function.writeData("delivery", extraStopName + "Reason.txt", extraStopReason)
+                                    utility_function.writeData("delivery", extraStopName + "MilesTrav.txt", milesTrav('extra'))
+                                    extraEndTime = utility_function.writeData("delivery", extraStopName + "EndTime.txt", utility_function.now(), 'back')
+                                    utility_function.timeTook(datetime.datetime.strptime(utility_function.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), extraEndTime, "extra stop")
                                     os.remove(os.path.join('delivery', 'extraStop'))
 
                                 else:
 
 
                 elif os.path.exists(os.path.join('delivery', extraStopName + 'Reason.txt')) == True and os.path.exists(os.path.join('delivery', extraStopName + 'MilesTrav.txt')) == False:
-                    util_func.writeData("delivery", extraStopName + "MilesTrav.txt", milesTrav('extra'))
-                    extraEndTime = util_func.writeData("delivery", extraStopName + "EndTime.txt", util_func.now(), 'back')
-                    util_func.timeTook(datetime.datetime.strptime(util_func.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), extraEndTime, "extra stop")
+                    utility_function.writeData("delivery", extraStopName + "MilesTrav.txt", milesTrav('extra'))
+                    extraEndTime = utility_function.writeData("delivery", extraStopName + "EndTime.txt", utility_function.now(), 'back')
+                    utility_function.timeTook(datetime.datetime.strptime(utility_function.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), extraEndTime, "extra stop")
                     os.remove(os.path.join('delivery', 'extraStop'))
 
                 else:
@@ -54,7 +60,7 @@ def deliveryContinue():
                 numberOfOrder = int(file.read())
 
             if numberOfOrder == 1:
-                onDelivery('driving to address...', datetime.datetime.strptime(util_func.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'))
+                onDelivery('driving to address...', datetime.datetime.strptime(utility_function.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'))
 
                 orderNumb = order.orderNumb()
 
@@ -62,13 +68,13 @@ def deliveryContinue():
 
                 milesTrav(orderNumb)
 
-                orderEndTime = util_func.writeData('delivery', str(orderNumb) + 'EndTime.txt', util_func.now(), 'back')
+                orderEndTime = utility_function.writeData('delivery', str(orderNumb) + 'EndTime.txt', utility_function.now(), 'back')
 
-                util_func.timeTook(datetime.datetime.strptime(util_func.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), orderEndTime, 'order')
+                utility_function.timeTook(datetime.datetime.strptime(utility_function.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), orderEndTime, 'order')
 
             elif numberOfOrder >= 1:
                 for value in range(numberOfOrder):
-                    onDelivery('driving to address...', datetime.datetime.strptime(util_func.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'))
+                    onDelivery('driving to address...', datetime.datetime.strptime(utility_function.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'))
 
                     orderNumb = order.orderNumb()
 
@@ -76,19 +82,19 @@ def deliveryContinue():
 
                     milesTrav(orderNumb)
 
-                    orderEndTime = util_func.writeData('delivery', str(orderNumb) + 'EndTime.txt', util_func.now(), 'back')
+                    orderEndTime = utility_function.writeData('delivery', str(orderNumb) + 'EndTime.txt', utility_function.now(), 'back')
 
-                    util_func.timeTook(datetime.datetime.strptime(util_func.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), orderEndTime, 'order')
+                    utility_function.timeTook(datetime.datetime.strptime(utility_function.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), orderEndTime, 'order')
 
-            onDelivery('driving back to store...', datetime.datetime.strptime(util_func.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'))
+            onDelivery('driving back to store...', datetime.datetime.strptime(utility_function.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'))
 
             milesTrav('total', 'total ')
 
-            delivEndTime = util_func.writeData('delivery', 'deliveryEndTime.txt', util_func.now(), 'back')
+            delivEndTime = utility_function.writeData('delivery', 'deliveryEndTime.txt', utility_function.now(), 'back')
 
-            util_func.timeTook(datetime.datetime.strptime(util_func.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), delivEndTime, 'delivery')
+            utility_function.timeTook(datetime.datetime.strptime(utility_function.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), delivEndTime, 'delivery')
 
-            util_func.writeData('shift', 'numbOfDeliveries.txt', int(util_func.deliveryNumb('number')) + 1)
+            utility_function.writeData('shift', 'numbOfDeliveries.txt', int(utility_function.deliveryNumb('number')) + 1)
 
 
 
@@ -96,7 +102,7 @@ def deliveryContinue():
             numberOfOrder = int(numbOfOrders())
 
             if numberOfOrder == 1:
-                onDelivery('driving to address...', datetime.datetime.strptime(util_func.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'))
+                onDelivery('driving to address...', datetime.datetime.strptime(utility_function.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'))
 
                 orderNumb = order.orderNumb()
 
@@ -104,13 +110,13 @@ def deliveryContinue():
 
                 milesTrav(orderNumb)
 
-                orderEndTime = util_func.writeData('delivery', str(orderNumb) + 'EndTime.txt', util_func.now(), 'back')
+                orderEndTime = utility_function.writeData('delivery', str(orderNumb) + 'EndTime.txt', utility_function.now(), 'back')
 
-                util_func.timeTook(datetime.datetime.strptime(util_func.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), orderEndTime, 'order')
+                utility_function.timeTook(datetime.datetime.strptime(utility_function.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), orderEndTime, 'order')
 
             elif numberOfOrder >= 1:
                 for value in range(numberOfOrder):
-                    onDelivery('driving to address...', datetime.datetime.strptime(util_func.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'))
+                    onDelivery('driving to address...', datetime.datetime.strptime(utility_function.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'))
 
                     orderNumb = order.orderNumb()
 
@@ -118,19 +124,19 @@ def deliveryContinue():
 
                     milesTrav(orderNumb)
 
-                    orderEndTime = util_func.writeData('delivery', str(orderNumb) + 'EndTime.txt', util_func.now(), 'back')
+                    orderEndTime = utility_function.writeData('delivery', str(orderNumb) + 'EndTime.txt', utility_function.now(), 'back')
 
-                    util_func.timeTook(datetime.datetime.strptime(util_func.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), orderEndTime, 'order')
+                    utility_function.timeTook(datetime.datetime.strptime(utility_function.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), orderEndTime, 'order')
 
-                onDelivery('driving back to store...', datetime.datetime.strptime(util_func.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'))
+                onDelivery('driving back to store...', datetime.datetime.strptime(utility_function.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'))
 
                 milesTrav('total', 'total ')
 
-                delivEndTime = util_func.writeData('delivery', 'deliveryEndTime.txt', util_func.now(), 'back')
+                delivEndTime = utility_function.writeData('delivery', 'deliveryEndTime.txt', utility_function.now(), 'back')
 
-                util_func.timeTook(datetime.datetime.strptime(util_func.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), delivEndTime, 'delivery')
+                utility_function.timeTook(datetime.datetime.strptime(utility_function.readData('', 'delivery', 'deliveryStartTime.txt'), '%Y-%m-%d %H:%M:%S.%f'), delivEndTime, 'delivery')
 
-                util_func.writeData('shift', 'numbOfDeliveries.txt', int(util_func.deliveryNumb('number')) + 1)
+                utility_function.writeData('shift', 'numbOfDeliveries.txt', int(utility_function.deliveryNumb('number')) + 1)
 
     else:
         pass
