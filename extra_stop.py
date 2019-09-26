@@ -6,23 +6,12 @@ import process_data
 import utility_function
 
 
-delivery_path = os.path.join(
-    'delivery'
-)
-on_extra_stop_path = os.path.join(
-    'delivery', 'extra_stop'
-)
-extra_stop_number_path = os.path.join(
-    'extra_stop_number.txt'
-)
-
-
 def extra_stop_number(option):
     if option == 'number':
-        with open(extra_stop_number_path, 'r') as file:
+        with open('extra_stop_number.txt', 'r') as file:
             return file.read()
     elif option == 'update':
-        with open(extra_stop_number_path, 'r+') as file:
+        with open('extra_stop_number.txt', 'r+') as file:
             extra_stop_number = int(file.read())
             file.seek(0)
             file.write(str(extra_stop_number + 1))
@@ -30,9 +19,11 @@ def extra_stop_number(option):
 
 def extra_stop():
     # creating file so code knows while on extra stop, to be able to continue
-    with open(on_extra_stop_path, 'w'):
-        pass
-
+    utility_function.write_data(
+        path='delivery',
+        file='extra_stop',
+        data=None
+    )
     while True:
         wait_for_user = input_data.get_input(
             prompt='\nMaking extra stop...'
@@ -42,13 +33,13 @@ def extra_stop():
         if wait_for_user == 1:
             # assign a extra stop number
             utility_function.write_data(
-                path=delivery_path,
+                path='delivery',
                 file='extra_stop_number.txt',
                 data=extra_stop_number('number')
             )
         # input extra stop location
             utility_function.write_data(
-                path=delivery_path,
+                path='delivery',
                 file='extra_stop_location.txt',
                 data=input_data.input_data(
                     prompt1='\nExtra stop location:\n',
@@ -61,7 +52,7 @@ def extra_stop():
             )
         # input extra stop reason
             utility_function.write_data(
-                path=delivery_path,
+                path='delivery',
                 file='extra_stop_reason.txt',
                 data=input_data.input_data(
                     prompt1='\nReason for extra stop?\n',
@@ -79,7 +70,7 @@ def extra_stop():
 
         # save the time at the end of the extra stop
             extra_stop_end_time = utility_function.write_data(
-                path=delivery_path,
+                path='delivery',
                 file='extra_stop_end_time.txt',
                 data=utility_function.now()
             )
@@ -87,7 +78,7 @@ def extra_stop():
             process_data.consolidate_extra_stop()
         # display the amount of time since the delivery was started
             beginning_delivery_time = utility_function.read_data(
-                path=delivery_path,
+                path='delivery',
                 file='delivery_start_time.txt'
             )
 
@@ -99,7 +90,9 @@ def extra_stop():
                 var_word='Extra stop'
             )
             extra_stop_number('update')
-            os.remove(on_extra_stop_path)
+            os.remove(os.path.join(
+                'delivery', 'extra_stop')
+            )
             break
         else:
             print('\nInvalid input...')

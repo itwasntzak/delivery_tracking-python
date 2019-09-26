@@ -5,16 +5,11 @@ import shutil
 import utility_function
 
 
-shift_path = os.path.join(
-    'shift'
-)
-
-
 def start_shift():
     utility_function.delivery_number(option='reset')
-    os.mkdir(shift_path)
+    os.mkdir('shift')
     utility_function.write_data(
-        path=shift_path,
+        path='shift',
         file='shift_start_time.txt',
         data=utility_function.now()
     )
@@ -22,18 +17,18 @@ def start_shift():
 
 def end_shift():
     utility_function.write_data(
-        path=shift_path,
+        path='shift',
         file='shift_end_time.txt',
         data=utility_function.now()
     )
     utility_function.delivery_number(option='reset')
-    shutil.move(shift_path, str(utility_function.now().date()))
+    shutil.move('shift', str(utility_function.now().date()))
     exit()
 
 
 def start_split():
     utility_function.write_data(
-        path=shift_path,
+        path='shift',
         file='split_start_time.txt',
         data=utility_function.now()
     )
@@ -42,7 +37,7 @@ def start_split():
 
 def end_split():
     utility_function.write_data(
-        path=shift_path,
+        path='shift',
         file='split_end_time.txt',
         data=utility_function.now()
     )

@@ -4,14 +4,9 @@ import utility_function
 import input_data
 
 
-delivery_path = os.path.join(
-    'delivery'
-)
-
-
 def order_number():
     return utility_function.write_data(
-        path=delivery_path,
+        path='delivery',
         file='order_number.txt',
         data=utility_function.begin_order_number('number')
              + str(input_data.input_data(
@@ -41,7 +36,7 @@ def tip():
         )
         if tip_option == 'y':
             return utility_function.write_data(
-                path=delivery_path,
+                path='delivery',
                 file='tip.txt',
                 data=input_data.input_data(
                     prompt1='\nEnter tip amount:    $#.##\n',
@@ -56,7 +51,7 @@ def tip():
             break
         elif tip_option == 'n':
             return utility_function.write_data(
-                path=delivery_path,
+                path='delivery',
                 file='tip.txt',
                 data='n/a'
             )
@@ -81,7 +76,7 @@ def tip_type():
             )
             if check_correct == 'y':
                 return utility_function.write_data(
-                    path=delivery_path,
+                    path='delivery',
                     file='tip_type.txt',
                     data='card'
                 )
@@ -98,7 +93,7 @@ def tip_type():
             )
             if check_correct == 'y':
                 return utility_function.write_data(
-                    path=delivery_path,
+                    path='delivery',
                     file='tip_type.txt',
                     data='cash'
                 )
@@ -120,7 +115,12 @@ def get_order_data(path, file):
 
 class Order:
 
-    def __init__(self, order_number, tip, tip_type, miles_traveled, order_end_time):
+    def __init__(self,
+                 order_number='n/a',
+                 tip='n/a', tip_type='n/a',
+                 miles_traveled='n/a',
+                 order_end_time='n/a'
+                 ):
         self.order_number = order_number
         self.tip = tip
         self.tip_type = tip_type

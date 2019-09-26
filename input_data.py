@@ -1,4 +1,9 @@
-def input_data(prompt1, input_type1, prompt2, input_type2, option_yes, option_no, symbol=''):
+
+
+def input_data(prompt1, input_type1,
+               prompt2, input_type2,
+               option_yes, option_no,
+               symbol=''):
     while True:
         data = get_input(
             prompt=prompt1, kind=input_type1)
