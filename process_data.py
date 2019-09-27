@@ -112,8 +112,8 @@ def consolidate_delivery():
         file='delivery_info.txt',
         data=data
     )
-    os.remove(os.path.join(delivery_path, 'number_of_orders.txt'))
-    os.remove(os.path.join(delivery_path, 'number_of_extra_stops.txt'))
-    os.remove(os.path.join(delivery_path, 'miles_traveled.txt'))
-    os.remove(os.path.join(delivery_path, 'delivery_start_time.txt'))
-    os.remove(os.path.join(delivery_path, 'delivery_end_time.txt'))
+    os.remove(os.path.join('delivery', 'number_of_orders.txt'))
+    os.remove(os.path.join('delivery', 'number_of_extra_stops.txt'))
+    os.remove(os.path.join('delivery', 'miles_traveled.txt'))
+    os.remove(os.path.join('delivery', 'delivery_start_time.txt'))
+    os.remove(os.path.join('delivery', 'delivery_end_time.txt'))
