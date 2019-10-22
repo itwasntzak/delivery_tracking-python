@@ -2,7 +2,7 @@ import datetime
 import os
 
 import input_data
-import process_data
+import consolidate_data
 import utility_function
 
 
@@ -17,9 +17,22 @@ def extra_stop_number(option):
             file.write(str(extra_stop_number + 1))
 
 
-def number_of_extra_stops():
+def delivery_number_of_extra_stops():
     number_of_extra_stops_file = os.path.join(
         'delivery', 'number_of_extra_stops.txt')
+    if os.path.exists(number_of_extra_stops_file):
+        with open(number_of_extra_stops_file, 'r+') as file:
+            data = int(file.read())
+            file.seek(0)
+            file.write(str(data + 1))
+    else:
+        with open(number_of_extra_stops_file, 'w') as file:
+            file.write(str(1))
+
+
+def shift_number_of_extra_stops():
+    number_of_extra_stops_file = os.path.join(
+        'shift', 'number_of_extra_stops.txt')
     if os.path.exists(number_of_extra_stops_file):
         with open(number_of_extra_stops_file, 'r+') as file:
             data = int(file.read())
@@ -33,15 +46,16 @@ def number_of_extra_stops():
 def extra_stop_numbers():
     if os.path.exists(os.path.join('delivery', 'extra_stop_numbers.txt')):
         utility_function.append_data(
-            path='delivery', file='extra_stop_numbers.txt',
+            file='extra_stop_numbers.txt',
             data=',' + utility_function.read_data(
-                path='delivery', file='extra_stop_number.txt')
+                file='extra_stop_number.txt', path='delivery'),
+            path='delivery'
         )
     else:
         utility_function.write_data(
             path='delivery', file='extra_stop_numbers.txt',
             data=utility_function.read_data(
-                path='delivery', file='extra_stop_number.txt')
+                file='extra_stop_number.txt', path='delivery')
         )
 
 
@@ -60,7 +74,7 @@ def extra_stop():
                 path='delivery', file='extra_stop_number.txt',
                 data=extra_stop_number('number')
             )
-        # input extra stop location
+            # input extra stop location
             utility_function.write_data(
                 path='delivery', file='extra_stop_location.txt',
                 data=input_data.input_data(
@@ -69,7 +83,7 @@ def extra_stop():
                     option_yes='y', option_no='n'
                 )
             )
-        # input extra stop reason
+            # input extra stop reason
             utility_function.write_data(
                 path='delivery', file='extra_stop_reason.txt',
                 data=input_data.input_data(
@@ -78,22 +92,22 @@ def extra_stop():
                     option_yes='y', option_no='n'
                 )
             )
-        # input extra stop miles traveled
+            # input extra stop miles traveled
             utility_function.miles_traveled(
-                prompt='Extra miles traveled:    #.#', var_path='extra_stop_'
-            )
+                prompt='Extra miles traveled:    #.#',
+                variable_path='delivery')
 
-        # save the time at the end of the extra stop
+            # save the time at the end of the extra stop
             extra_stop_end_time = utility_function.write_data(
                 path='delivery', file='extra_stop_end_time.txt',
                 data=utility_function.now()
             )
             extra_stop_numbers()
-        # consolidate extra stop data into one file
-            process_data.consolidate_extra_stop()
-        # display the amount of time since the delivery was started
+            # consolidate extra stop data into one file
+            consolidate_data.consolidate_extra_stop()
+            # display the amount of time since the delivery was started
             beginning_delivery_time = utility_function.read_data(
-                path='delivery', file='delivery_start_time.txt'
+                file='delivery_start_time.txt', path='delivery'
             )
 
             utility_function.time_took(
@@ -103,7 +117,8 @@ def extra_stop():
                 end_time=extra_stop_end_time,
                 var_word='Extra stop'
             )
-            number_of_extra_stops()
+            delivery_number_of_extra_stops()
+            shift_number_of_extra_stops()
             os.remove(os.path.join('delivery', 'extra_stop'))
             extra_stop_number('update')
             break

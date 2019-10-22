@@ -19,7 +19,7 @@ split_end_time_path = os.path.join(
     'shift', 'split_end_time.txt'
 )
 
-#//TODO: change to start_up function instead
+# //TODO: change to start_up function instead
 def start_menu():
 #    os.chdir('delivery_tracking')
     while True:

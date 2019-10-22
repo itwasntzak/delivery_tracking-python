@@ -107,8 +107,8 @@ def tip_type():
 
 def get_order_data(path, file):
     order_data = utility_function.read_data(
-        path=path,
-        file=file
+        file=file,
+        path=path
     )
     return order_data.split(',')
 

@@ -30,34 +30,26 @@ def new_shift():
 def ended_shift():
     while True:
         user_menu_choice = input_data.get_input(
-            prompt="\nALERT:"
-                   "\nToday's shift has already been ended\n"
+            prompt="\nALERT:\nToday's shift has already been ended\n"
                    "\nWhat would you like to do?"
                    "\n1 to continue shift | 0 for settings\n",
             kind=int
         )
         if user_menu_choice == 1:
             user_menu_choice2 = input_data.get_input(
-                prompt='\nWARNING!!!'
-                       '\nThis will delete the already existing:'
-                       '\nshift_end_time.txt'
-                       '\nAre you sure? [y/n]\n',
+                prompt='\nWARNING!!!\nThis will delete the already existing:'
+                       '\nshift_end_time.txt\nAre you sure? [y/n]\n',
                 kind=str
             )
             if user_menu_choice2 == 'y':
                 shutil.move(str(utility_function.now().date()), 'shift')
-                os.remove(os.path.join(
-                    'shift', 'shift_end_time.txt'
-                    )
-                )
+                os.remove(os.path.join('shift', 'shift_end_time.txt'))
                 number_of_deliveries_path = os.path.join(
-                    'shift', 'number_of_deliveries.txt'
-                )
+                    'shift', 'number_of_deliveries.txt')
                 if os.path.exists(number_of_deliveries_path):
                     with open(number_of_deliveries_path, 'r') as file:
                         return utility_function.write_data(
-                            path='',
-                            file='delivery_number.txt',
+                            path='', file='delivery_number.txt',
                             data=file.read()
                         )
                 else:
@@ -76,8 +68,7 @@ def continue_shift():
     while True:
         user_menu_choice = input_data.get_input(
             prompt='\nWhat would you like to do?'
-                   '\n1 to continue shift '
-                   '| 0 for settings\n',
+                   '\n1 to continue shift | 0 for settings\n',
             kind=int
         )
 
@@ -96,8 +87,7 @@ def end_split():
     while True:
         user_menu_choice = input_data.get_input(
             prompt='\nwhat would you like to do?'
-                   '\n1 to end split '
-                   '| 0 for settings\n',
+                   '\n1 to end split | 0 for settings\n',
             kind=int
         )
         if user_menu_choice == 1:
@@ -113,12 +103,9 @@ def end_split():
 
 def start_delivery():
     delivery.delivery()
-    shutil.move(
-        'delivery',
-        os.path.join('shift', 'delivery'
-                     + utility_function.delivery_number('number')
-                     )
-        )
+    shutil.move('delivery', os.path.join(
+        'shift', 'delivery' + utility_function.delivery_number('number'))
+    )
     utility_function.delivery_number('update')
 
 
