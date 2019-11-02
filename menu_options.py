@@ -106,7 +106,13 @@ def start_delivery():
     delivery.delivery()
     shutil.move('delivery', os.path.join(
         'shift', 'delivery' + str(utility_function.get_delivery_number())))
-    exit()
+    while True:
+        wait_for_user = input_data.get_input(
+            prompt='\nPress enter to continue.', kind=str)
+        if wait_for_user == '':
+            exit()
+        else:
+            continue
 
 
 def overwrite_shift_file():
