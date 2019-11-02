@@ -19,9 +19,10 @@ split_end_time_path = os.path.join(
     'shift', 'split_end_time.txt'
 )
 
+
 # //TODO: change to start_up function instead
 def start_menu():
-#    os.chdir('delivery_tracking')
+    os.chdir('delivery_tracking')
     while True:
         # check if shift has started
         if not os.path.exists(shift_start_time_path):
