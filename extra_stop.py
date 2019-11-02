@@ -26,11 +26,13 @@ def delivery_number_of_extra_stops():
             file.seek(0)
             file.write(str(data + 1))
     else:
-        with open(number_of_extra_stops_file, 'w') as file:
-            file.write(str(1))
+        utility_function.write_data(
+            path='', file=number_of_extra_stops_file,
+            data=str(1))
 
 
-def shift_number_of_extra_stops():
+# //TODO: i thought this was something else and probably broke it
+def shift_extra_stop():
     number_of_extra_stops_file = os.path.join(
         'shift', 'number_of_extra_stops.txt')
     if os.path.exists(number_of_extra_stops_file):
@@ -49,14 +51,12 @@ def extra_stop_numbers():
             file='extra_stop_numbers.txt',
             data=',' + utility_function.read_data(
                 file='extra_stop_number.txt', path='delivery'),
-            path='delivery'
-        )
+            path='delivery')
     else:
         utility_function.write_data(
             path='delivery', file='extra_stop_numbers.txt',
             data=utility_function.read_data(
-                file='extra_stop_number.txt', path='delivery')
-        )
+                file='extra_stop_number.txt', path='delivery'))
 
 
 def extra_stop():
@@ -93,9 +93,10 @@ def extra_stop():
                 )
             )
             # input extra stop miles traveled
-            utility_function.miles_traveled(
-                prompt='Extra miles traveled:    #.#',
-                variable_path='delivery')
+            utility_function.write_data(
+                path='delivery', file='extra_stop_miles_traveled.txt',
+                data=utility_function.miles_traveled(
+                    prompt='Extra stop miles traveled:    #.#'))
 
             # save the time at the end of the extra stop
             extra_stop_end_time = utility_function.write_data(
@@ -110,15 +111,13 @@ def extra_stop():
                 file='delivery_start_time.txt', path='delivery'
             )
 
-            utility_function.time_took(
+            utility_function.time_taken(
                 start_time=datetime.datetime.strptime(
                     beginning_delivery_time, '%Y-%m-%d %H:%M:%S.%f'
                 ),
                 end_time=extra_stop_end_time,
                 var_word='Extra stop'
             )
-            delivery_number_of_extra_stops()
-            shift_number_of_extra_stops()
             os.remove(os.path.join('delivery', 'extra_stop'))
             extra_stop_number('update')
             break

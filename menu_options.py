@@ -44,6 +44,7 @@ def ended_shift():
             if user_menu_choice2 == 'y':
                 shutil.move(str(utility_function.now().date()), 'shift')
                 os.remove(os.path.join('shift', 'shift_end_time.txt'))
+# //TODO: need to rewrite to fix this
                 number_of_deliveries_path = os.path.join(
                     'shift', 'number_of_deliveries.txt')
                 if os.path.exists(number_of_deliveries_path):
@@ -104,9 +105,8 @@ def end_split():
 def start_delivery():
     delivery.delivery()
     shutil.move('delivery', os.path.join(
-        'shift', 'delivery' + utility_function.delivery_number('number'))
-    )
-    utility_function.delivery_number('update')
+        'shift', 'delivery' + str(utility_function.get_delivery_number())))
+    exit()
 
 
 def overwrite_shift_file():

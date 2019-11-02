@@ -7,7 +7,7 @@ def consolidate_order():
     order_number_path = os.path.join('delivery', 'order_number.txt')
     tip_path = os.path.join('delivery', 'tip.txt')
     tip_type_path = os.path.join('delivery', 'tip_type.txt')
-    miles_traveled_path = os.path.join('delivery', 'miles_traveled.txt')
+    miles_traveled_path = os.path.join('delivery', 'order_miles_traveled.txt')
     order_end_time_path = os.path.join('delivery', 'order_end_time.txt')
 
     order_number = utility_function.read_data(file=order_number_path)
@@ -25,7 +25,6 @@ def consolidate_order():
     os.remove(tip_type_path)
     os.remove(miles_traveled_path)
     os.remove(order_end_time_path)
-    return order_number
 
 
 def consolidate_extra_stop():
@@ -41,7 +40,8 @@ def consolidate_extra_stop():
     extra_stop_number = utility_function.read_data(extra_stop_number_path)
     location = utility_function.read_data(extra_stop_location_path)
     reason = utility_function.read_data(extra_stop_reason_path)
-    extra_stop_miles_traveled = utility_function.read_data(extra_stop_miles_traveled_path)
+    extra_stop_miles_traveled = utility_function.read_data(
+        extra_stop_miles_traveled_path)
     end_time = utility_function.read_data(extra_stop_end_time_path)
 
     utility_function.write_data(
@@ -60,7 +60,8 @@ def consolidate_delivery():
     number_of_orders_path = os.path.join('delivery', 'number_of_orders.txt')
     number_of_extra_stops_path = os.path.join(
         'delivery', 'number_of_extra_stops.txt')
-    miles_traveled_path = os.path.join('delivery', 'miles_traveled.txt')
+    miles_traveled_path = os.path.join(
+        'delivery', 'delivery_miles_traveled.txt')
     delivery_start_time_path = os.path.join(
         'delivery', 'delivery_start_time.txt')
     delivery_end_time_path = os.path.join('delivery', 'delivery_end_time.txt')
@@ -89,7 +90,8 @@ def consolidate_delivery():
 
 
 def consolidate_split():
-    split_miles_traveled_path = os.path.join('shift', 'miles_traveled.txt')
+    split_miles_traveled_path = os.path.join(
+        'shift', 'split_miles_traveled.txt')
     split_start_time_path = os.path.join('shift', 'split_start_time.txt')
     split_end_time_path = os.path.join('shift', 'split_end_time.txt')
 
