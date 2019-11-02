@@ -1,5 +1,5 @@
-#//TODO: still needs to be written
-#//TODO: still needs to be refactored
+# //TODO: still needs to be written
+# //TODO: still needs to be refactored
 
 
 import os
@@ -64,7 +64,7 @@ def deliveryContinue():
 
                 orderNumb = order.orderNumb()
 
-                order.tip(orderNumb)
+                order.input_tip(orderNumb)
 
                 milesTrav(orderNumb)
 
@@ -78,7 +78,7 @@ def deliveryContinue():
 
                     orderNumb = order.orderNumb()
 
-                    order.tip(orderNumb)
+                    order.input_tip(orderNumb)
 
                     milesTrav(orderNumb)
 
@@ -106,7 +106,7 @@ def deliveryContinue():
 
                 orderNumb = order.orderNumb()
 
-                order.tip(orderNumb)
+                order.input_tip(orderNumb)
 
                 milesTrav(orderNumb)
 
@@ -120,7 +120,7 @@ def deliveryContinue():
 
                     orderNumb = order.orderNumb()
 
-                    order.tip(orderNumb)
+                    order.input_tip(orderNumb)
 
                     milesTrav(orderNumb)
 

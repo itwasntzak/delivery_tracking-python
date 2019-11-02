@@ -8,86 +8,50 @@ def now():
     return datetime.datetime.now()
 
 
-def delivery_number(option):
-    if option == 'number':
-        with open('delivery_number.txt', 'r') as delivery_number:
-            return delivery_number.read()
-    elif option == 'update':
-        with open('delivery_number.txt', 'r+') as delivery_number:
-            previous_delivery_number = int(delivery_number.read())
-            delivery_number.seek(0)
-            delivery_number.write(str(previous_delivery_number + 1))
-    elif option == 'reset':
-        with open('delivery_number.txt', 'w') as delivery_number:
-            delivery_number.write('0')
-    elif option == 'change':
-        while True:
-            print(
-                '\nCurrently delivery number is at:    '
-                + str(read_data(
-                    path=delivery_tracking_path,
-                    file='delivery_number.txt'
-                ))
-            )
-            user_choice = input_data.get_input(
-                prompt='\nALERT!!!'
-                       '\nAre you sure you want to change the delivery number?'
-                       '\n[y/n]\n',
-                kind=str
-            )
-
-            if user_choice == 'y':
-                write_data(
-                    path=delivery_tracking_path,
-                    file='delivery_number.txt',
-                    data=input_data.get_input(
-                        prompt='\nWhat is the new current delivery number:\n',
-                        kind=int
-                    )
-                )
-                break
-            elif user_choice == 'n':
-                break
-            else:
-                print('\nInvalid input...')
+def delivery_number():
+    file_path = os.path.join('shift', 'number_of_deliveries.txt')
+    if os.path.exists(file_path):
+        delivery_number = get_delivery_number()
+        write_data(path='', file=file_path, data=delivery_number + 1)
+    else:
+        write_data(path='', file=file_path, data=0)
 
 
-def begin_order_number(option):
-    if option == 'number':
-        with open('begin_order_number.txt', 'r') as first_half:
-            return first_half.read()
-    elif option == 'change':
-        while True:
-            print(
-                '\nCurrently first 3 numbers of order numbers are set to:    '
-                + read_data(
-                    path=delivery_tracking_path,
-                    file='begin_order_number.txt'
-                )
-            )
-            user_choice = input_data.get_input(
-                prompt='\nALERT!!!'
-                       '\nAre you sure you want to change the order number preset?'
-                       '\n[y/n]\n',
-                kind=str
-            )
-            if user_choice == 'y':
+def get_delivery_number():
+    file_path = os.path.join('shift', 'number_of_deliveries.txt')
+    if os.path.exists(file_path):
+        return int(read_data(file=file_path))
+    else:
+        return print('No deliveries have been completed yet.')
 
-                new_first_half = input_data.get_input(
-                    prompt='\nWhat are the new 3 numbers for order number preset:  ###\n',
-                    kind=int
-                )
-                write_data(
-                    path=delivery_tracking_path,
-                    file='begin_order_number.txt',
-                    data=new_first_half
-                )
-                break
-            elif user_choice == 'n':
-                break
-            else:
-                print('\nInvalid input...')
-                continue
+
+# //TODO: need to work on this to change number of deliveries
+# def change_delivery_number():
+#    file_path = os.path.join('shift', 'number_of_deliveries.txt')
+#    while True:
+#        print(
+#            '\nCurrently delivery number is at:    '
+#            + str(read_data(
+#                path='',
+#                file=file_path)))
+#        user_choice = input_data.get_input(
+#            prompt='\nALERT!!!'
+#                   '\nAre you sure you want to change the delivery number?'
+#                   '\n[y/n]\n',
+#            kind=str)
+
+#        if user_choice == 'y':
+#            write_data(
+#                path=delivery_tracking_path,
+#                file='delivery_number.txt',
+#                data=input_data.get_input(
+#                   prompt='\nWhat is the new current delivery number:\n',
+#                    kind=int))
+#            break
+#        elif user_choice == 'n':
+#            break
+#        else:
+#            print('\nInvalid input...')
 
 
 def miles_traveled(prompt, variable_path=''):
@@ -105,7 +69,7 @@ def miles_traveled(prompt, variable_path=''):
     )
 
 
-def time_took(start_time, end_time, var_word):
+def time_taken(start_time, end_time, var_word):
     time_difference = end_time - start_time
     print('\n' + var_word + ' completed in:\t' + str(time_difference) + '\n')
 
