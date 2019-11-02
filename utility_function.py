@@ -55,18 +55,13 @@ def get_delivery_number():
 
 
 def miles_traveled(prompt, variable_path=''):
-    return write_data(
-        path=variable_path,
-        file='miles_traveled.txt',
-        data=input_data.input_data(
-            prompt1='\n' + prompt + '\n',
-            input_type1=float,
-            prompt2='\nIs this correct? [y/n]\n',
-            input_type2=str,
-            option_yes='y',
-            option_no='n'
-        )
-    )
+    return input_data.input_data(
+        prompt1='\n' + prompt + '\n',
+        input_type1=float,
+        prompt2='\nIs this correct? [y/n]\n',
+        input_type2=str,
+        option_yes='y',
+        option_no='n')
 
 
 def time_taken(start_time, end_time, var_word):
