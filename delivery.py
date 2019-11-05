@@ -22,7 +22,14 @@ def driving(prompt):
             break
         elif wait_for_user == 2:
             # extra stop option
-            extra_stop.extra_stop()
+            extra_stop_end_time = extra_stop.extra_stop()
+            # display the amount of time since the delivery was started
+            beginning_delivery_time = utility_function.read_data(
+                file='delivery_start_time.txt', path='delivery')
+            utility_function.time_taken(
+                start_time=datetime.datetime.strptime(
+                    beginning_delivery_time, '%Y-%m-%d %H:%M:%S.%f'),
+                end_time=extra_stop_end_time, var_word='Extra stop')
             extra_stop.delivery_number_of_extra_stops()
             continue
         else:
@@ -31,8 +38,7 @@ def driving(prompt):
 
 def input_number_of_orders():
     return utility_function.write_data(
-        path='delivery',
-        file='number_of_orders.txt',
+        path='delivery', file='number_of_orders.txt',
         data=input_data.input_data(
             prompt1='\nNumber of orders?\n', input_type1=int,
             prompt2='\nIs this correct? [y/n]\n', input_type2=str,
@@ -55,15 +61,15 @@ def delivery():
     # make folder to store data
     os.mkdir('delivery')
     # set veriable to a delivery class object
-    delivery = Delivery()
+    delivery_object = Delivery()
     # save the start time of the delivery and add it to the delivery object
-    delivery.start_time = utility_function.write_data(
+    delivery_object.start_time = utility_function.write_data(
         path='delivery', file='delivery_start_time.txt',
         data=utility_function.now())
     # save the number of order for the delivery and it to the delivedy object
-    delivery.number_of_orders = input_number_of_orders()
+    delivery_object.number_of_orders = input_number_of_orders()
 
-    for value in range(delivery.get_number_of_orders()):
+    for value in range(delivery_object.get_number_of_orders()):
         # wait for user input after completing order or take extra stop
         driving(prompt='\nDriving to address...')
         # enter data for orders
@@ -72,23 +78,23 @@ def delivery():
         order_numbers_file(order_object.get_order_number())
         # display amount of time to complete the order
         utility_function.time_taken(
-            start_time=delivery.get_start_time(),
+            start_time=delivery_object.get_start_time(),
             end_time=order_object.get_end_time(), var_word='Order')
     # driving back to work
     driving(prompt='Driving back to store...')
     # input/save total number of miles traveled and set it to delivery object
-    delivery.miles_traveled = utility_function.write_data(
+    delivery_object.miles_traveled = utility_function.write_data(
         path='delivery', file='delivery_miles_traveled.txt',
         data=utility_function.miles_traveled(
             prompt='Delivery miles traveled:    #.#'))
     # save end of delivery time and set it to the delivery object
-    delivery.end_time = utility_function.write_data(
+    delivery_object.end_time = utility_function.write_data(
         path='delivery', file='delivery_end_time.txt',
         data=utility_function.now())
     # display the total time taken on delivery
     utility_function.time_taken(
-        start_time=delivery.get_start_time(),
-        end_time=delivery.get_end_time(), var_word='Delivery')
+        start_time=delivery_object.get_start_time(),
+        end_time=delivery_object.get_end_time(), var_word='Delivery')
     utility_function.delivery_number()
     consolidate_data.consolidate_delivery()
 

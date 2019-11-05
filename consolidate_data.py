@@ -46,8 +46,10 @@ def consolidate_extra_stop():
 
     utility_function.write_data(
         path='delivery', file=extra_stop_number + '.txt',
-        data=location + ',' + reason + ','
-             + extra_stop_miles_traveled + ',' + end_time)
+        data=location + ','
+             + reason + ','
+             + extra_stop_miles_traveled + ','
+             + end_time)
     os.remove(extra_stop_number_path)
     os.remove(extra_stop_location_path)
     os.remove(extra_stop_reason_path)

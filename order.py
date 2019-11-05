@@ -5,16 +5,6 @@ import utility_function
 import input_data
 
 
-def input_order_number():
-    return utility_function.write_data(
-        path='delivery',
-        file='order_number.txt',
-        data=input_data.input_data(
-            prompt1='\nEnter order number:    #-####\n', input_type1=int,
-            prompt2='\nIs this correct? [y/n]\n', input_type2=str,
-            option_yes='y', option_no='n'))
-
-
 def input_tip():
     while True:
         tip_option = input_data.input_data(
@@ -69,6 +59,7 @@ def input_tip_type():
 
 
 def order():
+    utility_function.write_data(path='delivery', file='order', data=None)
     order = Order()
     order.order_number = input_order_number()
     order.tip = input_tip()
@@ -86,6 +77,7 @@ def order():
         path='delivery', file='order_end_time.txt',
         data=utility_function.now())
     consolidate_data.consolidate_order()
+    os.remove(os.path.join('delivery', 'order'))
     return order
 
 
