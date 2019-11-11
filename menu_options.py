@@ -104,8 +104,6 @@ def end_split():
 
 def start_delivery():
     delivery.delivery()
-    shutil.move('delivery', os.path.join(
-        'shift', 'delivery' + str(utility_function.get_delivery_number())))
     while True:
         wait_for_user = input('Press enter to continue.\n')
         if wait_for_user == '':

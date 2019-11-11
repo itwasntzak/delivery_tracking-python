@@ -7,9 +7,10 @@ import consolidate_data
 import utility_function
 
 
-def extra_stops_quantity(var_path):
+# //TODO: update to be able to work for delivery or shift extra stops
+def extra_stop_quantity():
     extra_stops_quantity_file = os.path.join(
-        var_path, 'number_of_extra_stops.txt')
+        'delivery', 'extra_stop_quantity.txt')
     if os.path.exists(extra_stops_quantity_file):
         with open(extra_stops_quantity_file, 'r+') as file:
             data = int(file.read())
@@ -25,17 +26,16 @@ def extra_stop_numbers(extra_stop_object):
     if os.path.exists(os.path.join('delivery', 'extra_stop_numbers.txt')):
         utility_function.append_data(
             file='extra_stop_numbers.txt',
-            data=',' + utility_function.read_data(
-                file='extra_stop_number.txt', path='delivery'),
+            data=',' + str(extra_stop_object.get_id_number()),
             path='delivery')
     else:
         utility_function.write_data(
             path='delivery', file='extra_stop_numbers.txt',
-            data=utility_function.read_data(
-                file='extra_stop_number.txt', path='delivery'))
+            data=extra_stop_object.get_id_number())
 
 
-def extra_stop():
+# //TODO: fix so it writes extra stops quantity file
+def extra_stop(delivery_object):
     # creating file so program knows while on extra stop, to be able to continue
     utility_function.write_data(
         path='delivery', file='extra_stop', data=None)
@@ -45,7 +45,7 @@ def extra_stop():
         if wait_for_user == 1:
             extra_stop_object = Extra_Stop()
             # assign a extra stop number
-            extra_stop_object.extra_stop_number = utility_function.write_data(
+            extra_stop_object.id_number = utility_function.write_data(
                 path='delivery', file='extra_stop_number.txt',
                 data=id_number.assign_id_number(extra_stop_object))
             # input extra stop location
@@ -71,18 +71,25 @@ def extra_stop():
             extra_stop_object.end_time = utility_function.write_data(
                 path='delivery', file='extra_stop_end_time.txt',
                 data=utility_function.now())
-            extra_stop_numbers()
+            extra_stop_numbers(extra_stop_object)
             # consolidate extra stop data into one file
             consolidate_data.consolidate_extra_stop()
+            # display the amount of time since the delivery was started
+            utility_function.time_taken(
+                start_time=delivery_object.get_start_time(),
+                end_time=extra_stop_object.get_end_time(),
+                var_word='Extra stop')
+            # remove file telling program that on extra stop
             os.remove(os.path.join('delivery', 'extra_stop'))
-            return extra_stop_end_time
+            extra_stop_quantity()
+            return extra_stop_object
         else:
             print('\nInvalid input...')
 
 
 class Extra_Stop():
-    def get_extra_stop_number(self):
-        return self.extra_stop_number
+    def get_id_number(self):
+        return self.id_number
 
     def get_extra_stop_location(self):
         return self.location
@@ -93,5 +100,5 @@ class Extra_Stop():
     def get_extra_stop_miles(self):
         return self.miles_traveled
 
-    def get_extra_stop_end_time(self):
+    def get_end_time(self):
         return self.end_time

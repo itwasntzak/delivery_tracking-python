@@ -1,3 +1,6 @@
+# //TODO: create function to be able to take extra stop sepeate from deliveries
+# //TODO: make way to be able take multipule deliveries on one trip
+
 import os
 
 import menu_options

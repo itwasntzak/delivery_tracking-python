@@ -23,17 +23,17 @@ def time_taken(start_time, end_time, var_word):
     print('\n' + var_word + ' completed in:\t' + str(time_difference) + '\n')
 
 
-def write_data(file, data, path=None):
+def write_data(file, data, path=''):
     with open(os.path.join(path, file), 'w') as file_object:
         file_object.write(str(data))
         return data
 
 
-def append_data(file, data, path=None):
+def append_data(file, data, path=''):
     with open(os.path.join(path, file), 'a') as file_object:
         return file_object.write(str(data))
 
 
-def read_data(file, path=None):
+def read_data(file, path=''):
     with open(os.path.join(path, file), 'r') as file_object:
         return file_object.read()

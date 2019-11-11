@@ -59,9 +59,9 @@ def consolidate_extra_stop():
 
 
 def consolidate_delivery():
-    number_of_orders_path = os.path.join('delivery', 'number_of_orders.txt')
+    number_of_orders_path = os.path.join('delivery', 'order_quantity.txt')
     number_of_extra_stops_path = os.path.join(
-        'delivery', 'number_of_extra_stops.txt')
+        'delivery', 'extra_stop_quantity.txt')
     miles_traveled_path = os.path.join(
         'delivery', 'delivery_miles_traveled.txt')
     delivery_start_time_path = os.path.join(

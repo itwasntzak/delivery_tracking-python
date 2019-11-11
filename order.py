@@ -2,9 +2,12 @@ import os
 
 import consolidate_data
 import utility_function
+import id_number
 import input_data
 
 
+# //TODO: instead of asking if tipped, enter 0.0 for no tip.
+# //TODO: write to file 0 instead of n/a
 def input_tip():
     while True:
         tip_option = input_data.input_data(
@@ -27,6 +30,7 @@ def input_tip():
             print('\nInvalid input...')
 
 
+# //TODO: change to write 1 for card, 2 for cash, 0 in the case of none
 def input_tip_type():
     while True:
         tip_type_option = input_data.get_input(
@@ -59,26 +63,27 @@ def input_tip_type():
 
 
 def order():
-    utility_function.write_data(path='delivery', file='order', data=None)
-    order = Order()
-    order.order_number = input_order_number()
-    order.tip = input_tip()
-    if order.get_tip() == 'n/a':
-        order.tip_type = utility_function.write_data(
+    utility_function.write_data(file='order', data=None, path='delivery')
+    order_object = Order()
+    order_object.order_number = id_number.assign_id_number(order_object)
+    order_object.tip = input_tip()
+# //TODO: have this evaluation take place in its own function
+    if order_object.get_tip() == 'n/a':
+        order_object.tip_type = utility_function.write_data(
             path='delivery', file='tip_type.txt', data='n/a')
     else:
-        order.tip_type = input_tip_type()
-    order.miles_traveled = utility_function.write_data(
+        order_object.tip_type = input_tip_type()
+    order_object.miles_traveled = utility_function.write_data(
         path='delivery', file='order_miles_traveled.txt',
         data=utility_function.miles_traveled(
             prompt='Order miles traveled:    #.#'))
 # save current time for end of order
-    order.end_time = utility_function.write_data(
+    order_object.end_time = utility_function.write_data(
         path='delivery', file='order_end_time.txt',
         data=utility_function.now())
     consolidate_data.consolidate_order()
     os.remove(os.path.join('delivery', 'order'))
-    return order
+    return order_object
 
 
 def get_order_data(path, file):
