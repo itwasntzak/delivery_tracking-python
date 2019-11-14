@@ -34,7 +34,6 @@ def extra_stop_numbers(extra_stop_object):
             data=extra_stop_object.get_id_number())
 
 
-# //TODO: fix so it writes extra stops quantity file
 def extra_stop(delivery_object):
     # creating file so program knows while on extra stop, to be able to continue
     utility_function.write_data(

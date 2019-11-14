@@ -29,15 +29,18 @@ def consolidate_order():
     os.remove(order_end_time_path)
 
 
+# //TODO: after fixing extra stop to make shift extra stops, update this
 def consolidate_extra_stop():
-    extra_stop_number_path = os.path.join('delivery', 'extra_stop_number.txt')
+    extra_stop_number_path = os.path.join(
+                'delivery', 'extra_stop_number.txt')
     extra_stop_location_path = os.path.join(
-        'delivery', 'extra_stop_location.txt')
-    extra_stop_reason_path = os.path.join('delivery', 'extra_stop_reason.txt')
+                'delivery', 'extra_stop_location.txt')
+    extra_stop_reason_path = os.path.join(
+                'delivery', 'extra_stop_reason.txt')
     extra_stop_miles_traveled_path = os.path.join(
-        'delivery', 'extra_stop_miles_traveled.txt')
+                'delivery', 'extra_stop_miles_traveled.txt')
     extra_stop_end_time_path = os.path.join(
-        'delivery', 'extra_stop_end_time.txt')
+                'delivery', 'extra_stop_end_time.txt')
 
     extra_stop_number = utility_function.read_data(extra_stop_number_path)
     location = utility_function.read_data(extra_stop_location_path)
@@ -61,14 +64,16 @@ def consolidate_extra_stop():
 
 
 def consolidate_delivery():
-    number_of_orders_path = os.path.join('delivery', 'order_quantity.txt')
+    number_of_orders_path = os.path.join(
+                'delivery', 'order_quantity.txt')
     number_of_extra_stops_path = os.path.join(
-        'delivery', 'extra_stop_quantity.txt')
+                'delivery', 'extra_stop_quantity.txt')
     miles_traveled_path = os.path.join(
-        'delivery', 'delivery_miles_traveled.txt')
+                'delivery', 'delivery_miles_traveled.txt')
     delivery_start_time_path = os.path.join(
-        'delivery', 'delivery_start_time.txt')
-    delivery_end_time_path = os.path.join('delivery', 'delivery_end_time.txt')
+                'delivery', 'delivery_start_time.txt')
+    delivery_end_time_path = os.path.join(
+                'delivery', 'delivery_end_time.txt')
 
     if not os.path.exists(number_of_extra_stops_path):
         utility_function.write_data(
@@ -95,9 +100,11 @@ def consolidate_delivery():
 
 def consolidate_split():
     split_miles_traveled_path = os.path.join(
-        'shift', 'split_miles_traveled.txt')
-    split_start_time_path = os.path.join('shift', 'split_start_time.txt')
-    split_end_time_path = os.path.join('shift', 'split_end_time.txt')
+                'shift', 'split_miles_traveled.txt')
+    split_start_time_path = os.path.join(
+                'shift', 'split_start_time.txt')
+    split_end_time_path = os.path.join(
+                'shift', 'split_end_time.txt')
 
     split_miles_traveled = utility_function.read_data(
         split_miles_traveled_path)
@@ -112,25 +119,28 @@ def consolidate_split():
     os.remove(split_end_time_path)
 
 
+# //TODO: after adding total miles for shift at end_shift, update this
 def consolidate_shift():
-    number_of_deliveries_path = os.path.join(
-        'shift', 'number_of_deliveries.txt')
-    number_of_extra_stops_path = os.path.join(
-        'shift', 'number_of_extra_stops.txt')
-    shift_start_time_path = os.path.join('shift', 'shift_start_time.txt')
-    shift_end_time_path = os.path.join('shift', 'shift_end_time.txt')
+    delivery_quantity_path = os.path.join(
+                'shift', 'delivery_quantity.txt')
+    extra_stop_quantity_path = os.path.join(
+                'shift', 'number_of_extra_stops.txt')
+    shift_start_time_path = os.path.join(
+                'shift', 'shift_start_time.txt')
+    shift_end_time_path = os.path.join(
+                'shift', 'shift_end_time.txt')
 
-    if not os.path.exists(number_of_deliveries_path):
+    if not os.path.exists(delivery_quantity_path):
         utility_function.write_data(
-            path='', file=number_of_deliveries_path, data=0)
-    if not os.path.exists(number_of_extra_stops_path):
+            path='', file=delivery_quantity_path, data=0)
+    if not os.path.exists(extra_stop_quantity_path):
         utility_function.write_data(
-            path='', file=number_of_extra_stops_path, data=0)
+            path='', file=extra_stop_quantity_path, data=0)
 
     number_of_deliveries = utility_function.read_data(
-        number_of_deliveries_path)
+        delivery_quantity_path)
     number_of_extra_stops = utility_function.read_data(
-        number_of_extra_stops_path)
+        extra_stop_quantity_path)
     shift_start_time = utility_function.read_data(shift_start_time_path)
     shift_end_time = utility_function.read_data(shift_end_time_path)
 
@@ -139,7 +149,8 @@ def consolidate_shift():
     utility_function.write_data(
         path='shift', file='shift_info.txt', data=data)
 
-    os.remove(number_of_deliveries_path)
-    os.remove(number_of_extra_stops_path)
+    os.remove(delivery_quantity_path)
+    os.remove(extra_stop_quantity_path)
     os.remove(shift_start_time_path)
     os.remove(shift_end_time_path)
+    os.remove(os.path.join('shift', 'extra_stop_number.txt'))

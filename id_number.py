@@ -1,3 +1,6 @@
+# //TODO: need to work on function to change id number after already assigning
+# //TODO: write a function to write id_number_files
+
 import os
 
 import delivery
@@ -5,9 +8,6 @@ import extra_stop
 import input_data
 import order
 import utility_function
-
-
-# //TODO: need to work on function to change id number after already assigning
 
 
 def assign_id_number(object):
@@ -36,6 +36,3 @@ def assign_id_number(object):
                 data=int(utility_function.read_data(file_path)) + 1)
         else:
             return utility_function.write_data(file_path, 0)
-
-
-# TODO: write a function to write id_number_files

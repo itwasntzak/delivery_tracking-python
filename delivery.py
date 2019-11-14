@@ -12,7 +12,7 @@ import utility_function
 
 def driving(delivery_object, prompt):
     # creating file so code knows while on delivery, and can continue
-    utility_function.write_data(path='delivery', file='delivery', data=None)
+    utility_function.write_data(file='driving', data=None, path='delivery')
 
     while True:
         wait_for_user = input_data.get_input(
@@ -20,7 +20,7 @@ def driving(delivery_object, prompt):
             kind=int)
         if wait_for_user == 1:
             # remove on_delivery file so code can know a delivery has ended
-            os.remove(os.path.join('delivery', 'delivery'))
+            os.remove(os.path.join('delivery', 'driving'))
             break
         elif wait_for_user == 2:
             # extra stop option
@@ -30,7 +30,7 @@ def driving(delivery_object, prompt):
             print('\nInvalid input...')
 
 
-def input_number_of_orders():
+def input_order_quantity():
     return utility_function.write_data(
         path='delivery', file='order_quantity.txt',
         data=input_data.input_data(
@@ -61,7 +61,7 @@ def delivery():
         path='delivery', file='delivery_start_time.txt',
         data=utility_function.now())
     # save the number of order for the delivery and it to the delivedy object
-    delivery_object.number_of_orders = input_number_of_orders()
+    delivery_object.number_of_orders = input_order_quantity()
 
     for value in range(delivery_object.get_number_of_orders()):
         # wait for user input after completing order or take extra stop
