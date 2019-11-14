@@ -25,9 +25,8 @@ def get_input(prompt, kind):
         try:
             data = input(prompt)
             if kind == str and (data.isalpha()
-                or ' ' in data or ',' in data
-                or '&' in data or '_' in data
-            ):
+                                or ' ' in data or ',' in data
+                                or '&' in data or '_' in data):
                 return str(data)
             elif kind == int and data.isdecimal():
                 return int(data)

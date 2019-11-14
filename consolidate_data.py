@@ -1,4 +1,5 @@
 # //TODO: change these function to work with the classes
+# //TODO: consider moving consol/read data functions into each class
 
 import os
 
@@ -6,11 +7,16 @@ import utility_function
 
 
 def consolidate_order():
-    order_number_path = os.path.join('delivery', 'order_number.txt')
-    tip_path = os.path.join('delivery', 'tip.txt')
-    tip_type_path = os.path.join('delivery', 'tip_type.txt')
-    miles_traveled_path = os.path.join('delivery', 'order_miles_traveled.txt')
-    order_end_time_path = os.path.join('delivery', 'order_end_time.txt')
+    order_number_path = os.path.join(
+                'delivery', 'order_number.txt')
+    tip_path = os.path.join(
+                'delivery', 'tip.txt')
+    tip_type_path = os.path.join(
+                'delivery', 'tip_type.txt')
+    miles_traveled_path = os.path.join(
+                'delivery', 'order_miles_traveled.txt')
+    order_end_time_path = os.path.join(
+                'delivery', 'order_end_time.txt')
 
     order_number = utility_function.read_data(file=order_number_path)
     tip = utility_function.read_data(file=tip_path)

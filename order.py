@@ -6,91 +6,88 @@ import id_number
 import input_data
 
 
-# //TODO: instead of asking if tipped, enter 0.0 for no tip.
-# //TODO: write to file 0 instead of n/a
 def input_tip():
+    file_path = os.path.join('delivery', 'tip.txt')
     while True:
-        tip_option = input_data.input_data(
-            prompt1='\nDid they tip?    [y/n]\n', input_type1=str,
-            prompt2='\nIs this correct?    [y/n]\n', input_type2=str,
-            option_yes='y', option_no='n')
-        if tip_option == 'y':
-            flt = float
-            return utility_function.write_data(
-                path='delivery', file='tip.txt', data=input_data.input_data(
-                    prompt1='\nEnter tip amount:    $#.##\n', input_type1=flt,
-                    prompt2='\nIs this correct?    [y/n]\n', input_type2=str,
-                    option_yes='y', option_no='n', symbol='$'))
-            break
-        elif tip_option == 'n':
-            return utility_function.write_data(
-                path='delivery', file='tip.txt', data='n/a')
-            break
-        else:
-            print('\nInvalid input...')
-
-
-# //TODO: change to write 1 for card, 2 for cash, 0 in the case of none
-def input_tip_type():
-    while True:
-        tip_type_option = input_data.get_input(
-           prompt='\nType of tip?\n1 for card | 2 for cash\n', kind=int)
-        if tip_type_option == 1:
-            print('\nCard')
-            check_correct = input_data.get_input(
-               prompt='\nIs this correct?    [y/n]\n', kind=str)
-            if check_correct == 'y':
-                return utility_function.write_data(
-                    path='delivery', file='tip_type.txt', data='cr')
-            elif check_correct == 'n':
+        tip_amount = input_data.get_input(
+            '\nEnter tip amount:    $#.##\n(if no tip, enter 0)\n$', float)
+        if tip_amount == 0.0:
+            user_confirm = input_data.get_input(
+                '\nNo tip\nIs this correct?    [y/n]\n', str)
+            if user_confirm == 'y':
+                return utility_function.write_data(file_path, 0.0)
+            elif user_confirm == 'n':
                 continue
             else:
-                print('\nInvalid input...')
-
-        elif tip_type_option == 2:
-            print('\nCash')
-            check_correct = input_data.get_input(
-               prompt='\nIs this correct?    [y/n]\n', kind=str)
-            if check_correct == 'y':
-                return utility_function.write_data(
-                    path='delivery', file='tip_type.txt', data='cs')
-            elif check_correct == 'n':
+                print('Invalid input...')
+        else:
+            user_confirm = input_data.get_input(
+                '\n$' + str(tip_amount) + '\nIs this correct?    [y/n]\n', str)
+            if user_confirm == 'y':
+                return utility_function.write_data(file_path, tip_amount)
+            elif user_confirm == 'n':
                 continue
             else:
+                print('Invalid input...')
+
+
+def input_tip_type(order_object):
+    file_path = os.path.join('delivery', 'tip_type.txt')
+    if order_object.get_tip() == 0.0:
+        return utility_function.write_data(file_path, 0)
+    else:
+        while True:
+            user_option = input_data.get_input(
+                '\nType of tip?\n1 for card | 2 for cash\n', int)
+            if user_option == 1:
+                check_correct = input_data.get_input(
+                   '\nCard\nIs this correct?    [y/n]\n', str)
+                if check_correct == 'y':
+                    return utility_function.write_data(file_path, 1)
+                elif check_correct == 'n':
+                    continue
+                else:
+                    print('\nInvalid input...')
+            elif user_option == 2:
+                check_correct = input_data.get_input(
+                    '\nCash\nIs this correct?    [y/n]\n', str)
+                if check_correct == 'y':
+                    return utility_function.write_data(file_path, 2)
+                elif check_correct == 'n':
+                    continue
+                else:
+                    print('\nInvalid input...')
+            else:
                 print('\nInvalid input...')
-        else:
-            print('\nInvalid input...')
 
 
 def order():
+    # create file, program knows order was started
     utility_function.write_data(file='order', data=None, path='delivery')
+    # create variable assigned to an order class
     order_object = Order()
+    # input the order number as a form of id
     order_object.order_number = id_number.assign_id_number(order_object)
+    # input the tip amount, or if tipped at all
     order_object.tip = input_tip()
-# //TODO: have this evaluation take place in its own function
-    if order_object.get_tip() == 'n/a':
-        order_object.tip_type = utility_function.write_data(
-            path='delivery', file='tip_type.txt', data='n/a')
-    else:
-        order_object.tip_type = input_tip_type()
+    # input the tip type. if no tip, automaticly inputs
+    order_object.tip_type = input_tip_type(order_object)
+    # input the miles since prev destination
     order_object.miles_traveled = utility_function.write_data(
-        path='delivery', file='order_miles_traveled.txt',
-        data=utility_function.miles_traveled(
-            prompt='Order miles traveled:    #.#'))
-# save current time for end of order
+        'delivery', 'order_miles_traveled.txt',
+        utility_function.miles_traveled('Order miles traveled:    #.#'))
+    # save/assign current time for end of order
     order_object.end_time = utility_function.write_data(
-        path='delivery', file='order_end_time.txt',
-        data=utility_function.now())
+        'delivery', 'order_end_time.txt', utility_function.now())
+    # consolidate order files into one file
     consolidate_data.consolidate_order()
+    # remove file telling program order has ended
     os.remove(os.path.join('delivery', 'order'))
+    # return order class object to the function that called this one
     return order_object
 
 
-def get_order_data(path, file):
-    order_data = utility_function.read_data(file=file, path=path)
-    return order_data.split(',')
-
-
+# //TODO: change order_number to id_number
 class Order:
     def get_order_number(self):
         return self.order_number
