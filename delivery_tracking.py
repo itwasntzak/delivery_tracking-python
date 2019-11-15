@@ -52,7 +52,7 @@ def shift_menu():
     while True:
         user_choice = input_data.get_input(
             prompt='\nWhat would you like to do?'
-                   '\n1 to start deliverye '
+                   '\n1 to start delivery '
                    '| 2 to end shift '
                    '| 3 to start split '
                    '| 0 for start menu\n',

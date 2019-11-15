@@ -9,17 +9,15 @@ import utility_function
 
 # //TODO: update to be able to work for delivery or shift extra stops
 def extra_stop_quantity():
-    extra_stops_quantity_file = os.path.join(
+    extra_stop_quantity_path = os.path.join(
         'delivery', 'extra_stop_quantity.txt')
-    if os.path.exists(extra_stops_quantity_file):
-        with open(extra_stops_quantity_file, 'r+') as file:
-            data = int(file.read())
-            file.seek(0)
-            file.write(str(data + 1))
+
+    if os.path.exists(extra_stop_quantity_path):
+        utility_function.write_data(extra_stop_quantity_path,
+                                     int(utility_function.read_data(
+                                        extra_stop_quantity_path)) + 1)
     else:
-        utility_function.write_data(
-            path='', file=extra_stops_quantity_file,
-            data=str(1))
+        utility_function.write_data(extra_stop_quantity_path, str(1))
 
 
 def extra_stop_numbers(extra_stop_object):
@@ -35,15 +33,14 @@ def extra_stop_numbers(extra_stop_object):
 
 
 def extra_stop(delivery_object):
-    # creating file so program knows while on extra stop, to be able to continue
-    utility_function.write_data(
-        path='delivery', file='extra_stop', data=None)
+    # indicator to program when extra stop has been started
+    utility_function.write_data(os.path.join('delivery', 'extra_stop'), None)
     while True:
         wait_for_user = input_data.get_input(
             prompt='\nMaking extra stop...\n1 to continue\n', kind=int)
         if wait_for_user == 1:
             extra_stop_object = Extra_Stop()
-            # assign a extra stop number
+            # assign a extra stop id number
             extra_stop_object.id_number = utility_function.write_data(
                 path='delivery', file='extra_stop_number.txt',
                 data=id_number.assign_id_number(extra_stop_object))

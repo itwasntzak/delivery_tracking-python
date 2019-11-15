@@ -1,3 +1,5 @@
+# //TODO: want to rename this file to just utility. need to update all docs
+
 import datetime
 import os
 
@@ -12,7 +14,7 @@ def miles_traveled(prompt, variable_path=''):
     return input_data.input_data(
         prompt1='\n' + prompt + '\n',
         input_type1=float,
-        prompt2='\nIs this correct? [y/n]\n',
+        prompt2=' miles\nIs this correct? [y/n]\n',
         input_type2=str,
         option_yes='y',
         option_no='n')

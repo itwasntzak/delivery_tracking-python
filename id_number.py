@@ -11,6 +11,7 @@ import utility_function
 
 
 def assign_id_number(object):
+    # //TODO: change to write file as delivery_id_number.txt
     if isinstance(object, type(delivery.Delivery())):
         file_path = os.path.join('shift', 'delivery_quantity.txt')
         if os.path.exists(file_path):
@@ -27,7 +28,7 @@ def assign_id_number(object):
                 prompt1='\nEnter order number:    #-####\n', input_type1=int,
                 prompt2='\nIs this correct? [y/n]\n', input_type2=str,
                 option_yes='y', option_no='n'))
-
+    # //TODO: change to write file as extra_stop_id_number.txt
     elif isinstance(object, type(extra_stop.Extra_Stop())):
         file_path = os.path.join('shift', 'extra_stop_number.txt')
         if os.path.exists(file_path):
