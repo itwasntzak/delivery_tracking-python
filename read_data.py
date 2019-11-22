@@ -3,7 +3,7 @@ import os
 
 import delivery
 import order
-import utility_function
+import utility
 
 
 # //TODO: all read_data functions should return classes
@@ -12,7 +12,7 @@ import utility_function
 def read_current_order(order_number):
     order_path = os.path.join('delivery', order_number + '.txt')
     if os.path.exists(order_path):
-        order_data = utility_function.read_data(file=order_path).split(',')
+        order_data = utility.read_data(file=order_path).split(',')
         order_class = order.Order()
         order_class.tip = float(order_data[0])
         order_class.tip_type = str(order_data[1])
@@ -25,7 +25,7 @@ def read_current_order(order_number):
 def read_today_order(delivery_number, order_number):
     order_path = os.path.join('shift', delivery_number, order_number + '.txt')
     if os.path.exists(order_path):
-        order_data = utility_function.read_data(file=order_path).split(',')
+        order_data = utility.read_data(file=order_path).split(',')
         order_class = order.Order()
         order_class.tip = float(order_data[0])
         order_class.tip_type = str(order_data[1])
@@ -39,7 +39,7 @@ def read_past_order(past_date, delivery_number, order_number):
     order_path = os.path.join(
         'past_shifts', past_date, delivery_number, order_number + '.txt')
     if os.path.exists(order_path):
-        order_data = utility_function.read_data(file=order_path).split(',')
+        order_data = utility.read_data(file=order_path).split(',')
         order_class = order.Order()
         order_class.tip = float(order_data[0])
         order_class.tip_type = str(order_data[1])
@@ -67,26 +67,26 @@ def read_current_delivery():
         'delivery', 'extra_stop_numbers.txt')
 
     delivery_start_time = datetime.datetime.strptime(
-        utility_function.read_data(delivery_start_time_path),
+        utility.read_data(delivery_start_time_path),
         '%Y-%m-%d %H:%M:%S.%f')
     if os.path.exists(number_of_orders_path):
-        number_of_orders = int(utility_function.read_data(
+        number_of_orders = int(utility.read_data(
             number_of_orders_path))
     else:
         number_of_orders = 0
 
     if os.path.exists(number_of_extra_stops_path):
-        number_of_extra_stops = int(utility_function.read_data(
+        number_of_extra_stops = int(utility.read_data(
             number_of_extra_stops_path))
     else:
         number_of_extra_stops = 0
 
     if os.path.exists(order_numbers_path):
         if number_of_orders == 1:
-            order_numbers = int(utility_function.read_data(
+            order_numbers = int(utility.read_data(
                 order_numbers_path))
         elif number_of_orders > 1:
-            order_numbers = utility_function.read_data(
+            order_numbers = utility.read_data(
                 order_numbers_path).split(',')
         else:
             pass
@@ -95,10 +95,10 @@ def read_current_delivery():
 
     if os.path.exists(extra_stop_numbers_path):
         if number_of_extra_stops == 1:
-            extra_stop_numbers = int(utility_function.read_data(
+            extra_stop_numbers = int(utility.read_data(
                 extra_stop_numbers_path))
         elif number_of_extra_stops > 1:
-            extra_stop_numbers = utility_function.read_data(
+            extra_stop_numbers = utility.read_data(
                 extra_stop_numbers_path).split(',')
         else:
             pass
@@ -133,10 +133,10 @@ def read_split():
     split_info_path = os.path.join('shift', 'split_info.txt')
 
     if os.path.exists(split_start_time_path):
-        return datetime.datetime.strptime(utility_function.read_data(
+        return datetime.datetime.strptime(utility.read_data(
             split_start_time_path), '%Y-%m-%d %H:%M:%S.%f')
     elif os.path.exists(split_info_path):
-        return utility_function.read_data(split_info_path).split(',')
+        return utility.read_data(split_info_path).split(',')
     else:
         return None
 
@@ -145,7 +145,7 @@ def read_split():
 def read_shift():
     shift_path = os.path.join('shift')
     todays_date_path = os.path.join(
-        'shift_storage', str(utility_function.now().today()))
+        'shift_storage', str(utility.now().today()))
 
     if os.path.exists(shift_path):
         number_of_deliveries_path = os.path.join(
@@ -155,13 +155,13 @@ def read_shift():
         shift_start_time_path = os.path.join('shift', 'shift_start_time.txt')
 
         shift_start_time = datetime.datetime.strptime(
-            utility_function.read_data(shift_start_time_path),
+            utility.read_data(shift_start_time_path),
             '%Y-%m-%d %H:%M:%S.%f')
         if os.path.exists(number_of_deliveries_path):
-            number_of_deliveries = int(utility_function.read_data(
+            number_of_deliveries = int(utility.read_data(
                 number_of_deliveries_path))
         if os.path.exists(number_of_extra_stops_path):
-            number_of_extra_stops = int(utility_function.read_data(
+            number_of_extra_stops = int(utility.read_data(
                 number_of_extra_stops_path))
 
         if number_of_deliveries and number_of_extra_stops:
@@ -175,7 +175,7 @@ def read_shift():
             return shift_start_time
     elif os.path.exists(todays_date_path):
         shift_info_path = os.path.join(todays_date_path, 'shift_info.txt')
-        return utility_function.read_data(shift_info_path).split(',')
+        return utility.read_data(shift_info_path).split(',')
     else:
         return None
 
@@ -185,6 +185,6 @@ def read_past_shift(date):
     shift_path = os.path.join('shift_storage', date)
     if os.path.exists(shift_path):
         shift_info_path = os.path.join(shift_path, 'shift_info.txt')
-        return utility_function.read_data(shift_info_path).split(',')
+        return utility.read_data(shift_info_path).split(',')
     else:
         return None
