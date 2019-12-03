@@ -40,6 +40,7 @@ def input_order_quantity():
             option_yes='y', option_no='n'))
 
 
+# //TODO: remove quantity files, and instead use len() to check amount in list
 def delivery():
     # make folder to store data
     mkdir('delivery')

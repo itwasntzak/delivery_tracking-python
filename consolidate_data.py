@@ -101,7 +101,7 @@ def consolidate_split():
 # //TODO: after adding total miles for shift at end_shift, update this
 def consolidate_shift():
     delivery_id_number_path = path.join('shift', 'delivery_id_number.txt')
-    extra_stop_quantity_path = path.join('shift', 'number_of_extra_stops.txt')
+    extra_stop_quantity_path = path.join('shift', 'extra_stop_quantity.txt')
     shift_start_time_path = path.join('shift', 'shift_start_time.txt')
     shift_end_time_path = path.join('shift', 'shift_end_time.txt')
 
@@ -116,8 +116,7 @@ def consolidate_shift():
         extra_stop_quantity = str(utility.write_data(
             extra_stop_quantity_path, 0))
     else:
-        extra_stop_quantity = str(int(utility.read_data(
-            extra_stop_quantity_path)) + 1)
+        extra_stop_quantity = utility.read_data(extra_stop_quantity_path)
 
     shift_start_time = utility.read_data(shift_start_time_path)
     shift_end_time = utility.read_data(shift_end_time_path)

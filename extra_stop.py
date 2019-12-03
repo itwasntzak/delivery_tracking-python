@@ -19,7 +19,6 @@ def extra_stop_quantity(directory):
         utility.write_data(extra_stop_quantity_path, str(1))
 
 
-# //TODO: remove quantity files, and instead use len() to check amount in list
 def extra_stop(object):
     if isinstance(object, type(delivery.Delivery())):
         # set variable path for files to be written

@@ -17,7 +17,7 @@ def start_shift():
 def end_shift():
     shift_object = Shift()
     # input total miles traveled for shift
-#    utility_function.write_data(path.join())
+#    utility.write_data(path.join())
     # input fuel economy
 
     # input mileage paid

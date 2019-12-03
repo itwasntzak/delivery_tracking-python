@@ -1,4 +1,4 @@
-# //TODO: create function to be able to take extra stop sepeate from deliveries
+# //TODO: write functions to load data
 # //TODO: make way to be able take multipule deliveries on one trip
 # //TODO: add option to be able to start a second shift for the day (dif store)
 # //TODO: consider tracking ave. speed for each delivery
@@ -19,7 +19,7 @@ split_start_time_path = path.join('shift', 'split_start_time.txt')
 split_end_time_path = path.join('shift', 'split_end_time.txt')
 
 
-# //TODO: need to take into consideration split_info.txt
+# //TODO: need to add logic for split_info.txt
 def start():
 #    chdir('delivery_tracking')
     while True:
