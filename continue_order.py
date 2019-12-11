@@ -17,30 +17,6 @@ def continue_order():
     order_object = order.Order()
     if path.exists(id_number_path):
         order_object.id_number = int(utility.read_data(id_number_path))
-    else:
-        while True:
-            completed_order_check = input_data.get_input(
-                'Have you completed any orders yet?\n[y/n]\n', str)
-            if completed_order_check == 'y':
-                # input the order number as a form of id
-                order_object.id_number = id_number.assign_id_number(
-                    order_object)
-# //TODO: figure out how to do this differently, currently very confusing
-                order_file_path = path.join('delivery',
-                                            str(order_object.get_id_number())
-                                            + '.txt')
-                remove(path.join('delivery', 'order_number.txt'))
-                order_file = utility.read_data(order_file_path).split(',')
-                order_object.tip = float(order_file[0])
-                order_object.tip_type = int(order_file[1])
-                order_object.miles_traveled = float(order_file[2])
-                order_object.end_time = utility.to_datetime(order_file[3])
-                break
-            elif completed_order_check == 'n':
-                order_file_path = ''
-                break
-            else:
-                print('\nInvalid input...')
     if path.exists(tip_path):
         order_object.tip = float(utility.read_data(tip_path))
     if path.exists(tip_type_path):
