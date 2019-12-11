@@ -50,9 +50,9 @@ def delivery():
     delivery_object.start_time = utility.write_data(
         path.join('delivery', 'delivery_start_time.txt'), utility.now())
     # save the number of order for the delivery and it to the delivedy object
-    delivery_object.number_of_orders = input_order_quantity()
+    delivery_object.order_quantity = input_order_quantity()
 
-    for value in range(delivery_object.get_number_of_orders()):
+    for value in range(delivery_object.get_order_quantity()):
         # wait for user input after completing order or take extra stop
         driving(delivery_object, '\nDriving to address...')
         # enter data for orders
@@ -91,8 +91,8 @@ class Delivery:
     def get_start_time(self):
         return self.start_time
 
-    def get_number_of_orders(self):
-        return self.number_of_orders
+    def get_order_quantity(self):
+        return self.order_quantity
 
     def get_miles_traveled(self):
         return self.miles_traveled

@@ -8,6 +8,10 @@ def now():
     return datetime.datetime.now()
 
 
+def to_datetime(string):
+    return datetime.datetime.strptime(string, '%Y-%m-%d %H:%M:%S.%f')
+
+
 def miles_traveled(prompt, variable_path=''):
     return input_data.input_data(
         prompt1='\n' + prompt + '\n',

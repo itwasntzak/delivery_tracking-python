@@ -26,10 +26,10 @@ def extra_stop(object):
     elif isinstance(object, type(shift.Shift())):
         # set variable path for files to be written
         directory = 'shift'
-    # indicator to program when extra stop has been started
-    utility.write_data(path.join(directory, 'extra_stop'), None)
     # incrament quintity file by 1
     extra_stop_quantity(directory)
+    # indicator to program when extra stop has been started
+    utility.write_data(path.join(directory, 'extra_stop'), None)
     # create varibale with a extra stop class object
     extra_stop_object = Extra_Stop()
     extra_stop_object.directory = directory
