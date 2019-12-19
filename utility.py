@@ -1,5 +1,3 @@
-# //TODO: want to rename this file to just utility. need to update all docs
-
 import datetime
 import os
 
@@ -8,6 +6,10 @@ import input_data
 
 def now():
     return datetime.datetime.now()
+
+
+def to_datetime(string):
+    return datetime.datetime.strptime(string, '%Y-%m-%d %H:%M:%S.%f')
 
 
 def miles_traveled(prompt, variable_path=''):
@@ -25,17 +27,17 @@ def time_taken(start_time, end_time, var_word):
     print('\n' + var_word + ' completed in:\t' + str(time_difference) + '\n')
 
 
-def write_data(file, data, path=''):
-    with open(os.path.join(path, file), 'w') as file_object:
+def write_data(file, data):
+    with open(file, 'w') as file_object:
         file_object.write(str(data))
         return data
 
 
-def append_data(file, data, path=''):
-    with open(os.path.join(path, file), 'a') as file_object:
+def append_data(file, data):
+    with open(file, 'a') as file_object:
         return file_object.write(str(data))
 
 
-def read_data(file, path=''):
-    with open(os.path.join(path, file), 'r') as file_object:
+def read_data(file):
+    with open(file, 'r') as file_object:
         return file_object.read()

@@ -5,7 +5,7 @@ import delivery
 import delivery_tracking
 import input_data
 import shift
-import utility_function
+import utility
 
 
 def new_shift():
@@ -42,14 +42,14 @@ def ended_shift():
                 kind=str
             )
             if user_menu_choice2 == 'y':
-                shutil.move(str(utility_function.now().date()), 'shift')
+                shutil.move(str(utility.now().date()), 'shift')
                 os.remove(os.path.join('shift', 'shift_end_time.txt'))
 # //TODO: need to rewrite to fix this
                 number_of_deliveries_path = os.path.join(
                     'shift', 'number_of_deliveries.txt')
                 if os.path.exists(number_of_deliveries_path):
                     with open(number_of_deliveries_path, 'r') as file:
-                        return utility_function.write_data(
+                        return utility.write_data(
                             path='', file='delivery_number.txt',
                             data=file.read()
                         )

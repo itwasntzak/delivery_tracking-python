@@ -1,165 +1,133 @@
 # //TODO: change these function to work with the classes
 # //TODO: consider moving consol/read data functions into each class
 
-import os
+from os import path, remove
 
-import utility_function
+import utility
 
 
 def consolidate_order():
-    order_number_path = os.path.join(
-                'delivery', 'order_number.txt')
-    tip_path = os.path.join(
-                'delivery', 'tip.txt')
-    tip_type_path = os.path.join(
-                'delivery', 'tip_type.txt')
-    miles_traveled_path = os.path.join(
-                'delivery', 'order_miles_traveled.txt')
-    order_end_time_path = os.path.join(
-                'delivery', 'order_end_time.txt')
+    order_id_path = path.join('delivery', 'order_number.txt')
+    tip_path = path.join('delivery', 'tip.txt')
+    tip_type_path = path.join('delivery', 'tip_type.txt')
+    miles_traveled_path = path.join('delivery', 'order_miles_traveled.txt')
+    order_end_time_path = path.join('delivery', 'order_end_time.txt')
 
-    order_number = utility_function.read_data(file=order_number_path)
-    tip = utility_function.read_data(file=tip_path)
-    tip_type = utility_function.read_data(file=tip_type_path)
-    miles_traveled = utility_function.read_data(file=miles_traveled_path)
-    order_end_time = utility_function.read_data(file=order_end_time_path)
+    order_id = utility.read_data(order_id_path)
+    tip = utility.read_data(tip_path)
+    tip_type = utility.read_data(tip_type_path)
+    miles_traveled = utility.read_data(miles_traveled_path)
+    order_end_time = utility.read_data(order_end_time_path)
 
+    file_path = path.join('delivery', order_id + '.txt')
     data = tip + ',' + tip_type + ',' + miles_traveled + ',' + order_end_time
-    utility_function.write_data(
-        path='delivery', file=order_number + '.txt', data=data)
+    utility.write_data(file_path, data)
 
-    os.remove(order_number_path)
-    os.remove(tip_path)
-    os.remove(tip_type_path)
-    os.remove(miles_traveled_path)
-    os.remove(order_end_time_path)
+    remove(order_id_path)
+    remove(tip_path)
+    remove(tip_type_path)
+    remove(miles_traveled_path)
+    remove(order_end_time_path)
 
 
-# //TODO: after fixing extra stop to make shift extra stops, update this
-def consolidate_extra_stop():
-    extra_stop_number_path = os.path.join(
-                'delivery', 'extra_stop_number.txt')
-    extra_stop_location_path = os.path.join(
-                'delivery', 'extra_stop_location.txt')
-    extra_stop_reason_path = os.path.join(
-                'delivery', 'extra_stop_reason.txt')
-    extra_stop_miles_traveled_path = os.path.join(
-                'delivery', 'extra_stop_miles_traveled.txt')
-    extra_stop_end_time_path = os.path.join(
-                'delivery', 'extra_stop_end_time.txt')
+def consolidate_extra_stop(extra_stop_object):
+    directory = extra_stop_object.get_directory()
+    extra_stop_id_path = path.join(directory, 'extra_stop_number.txt')
+    extra_stop_location_path = path.join(directory, 'extra_stop_location.txt')
+    extra_stop_reason_path = path.join(directory, 'extra_stop_reason.txt')
+    extra_stop_miles_path = path.join(directory, 'extra_stop_miles.txt')
+    extra_stop_end_time_path = path.join(directory, 'extra_stop_end_time.txt')
 
-    extra_stop_number = utility_function.read_data(extra_stop_number_path)
-    location = utility_function.read_data(extra_stop_location_path)
-    reason = utility_function.read_data(extra_stop_reason_path)
-    extra_stop_miles_traveled = utility_function.read_data(
-        extra_stop_miles_traveled_path)
-    end_time = utility_function.read_data(extra_stop_end_time_path)
+    extra_stop_id = str(extra_stop_object.get_id_number())
+    location = str(extra_stop_object.get_location())
+    reason = str(extra_stop_object.get_reason())
+    extra_stop_miles = str(extra_stop_object.get_miles())
+    end_time = str(extra_stop_object.get_end_time())
 
-    utility_function.write_data(
-        path='delivery', file=extra_stop_number + '.txt',
-        data=location + ','
-             + reason + ','
-             + extra_stop_miles_traveled + ','
-             + end_time)
-    os.remove(extra_stop_number_path)
-    os.remove(extra_stop_location_path)
-    os.remove(extra_stop_reason_path)
-    os.remove(extra_stop_miles_traveled_path)
-    os.remove(extra_stop_end_time_path)
-    return extra_stop_number
+    utility.write_data(
+        path.join(directory, extra_stop_id + '.txt'),
+        location + ',' + reason + ',' + extra_stop_miles + ',' + end_time)
+    remove(extra_stop_id_path)
+    remove(extra_stop_location_path)
+    remove(extra_stop_reason_path)
+    remove(extra_stop_miles_path)
+    remove(extra_stop_end_time_path)
 
 
 def consolidate_delivery():
-    number_of_orders_path = os.path.join(
-                'delivery', 'order_quantity.txt')
-    number_of_extra_stops_path = os.path.join(
-                'delivery', 'extra_stop_quantity.txt')
-    miles_traveled_path = os.path.join(
-                'delivery', 'delivery_miles_traveled.txt')
-    delivery_start_time_path = os.path.join(
-                'delivery', 'delivery_start_time.txt')
-    delivery_end_time_path = os.path.join(
-                'delivery', 'delivery_end_time.txt')
+    order_quantity_path = path.join('delivery', 'order_quantity.txt')
+    extra_stop_quantity_path = path.join('delivery', 'extra_stop_quantity.txt')
+    miles_traveled_path = path.join('delivery', 'delivery_miles_traveled.txt')
+    delivery_start_time_path = path.join('delivery', 'delivery_start_time.txt')
+    delivery_end_time_path = path.join('delivery', 'delivery_end_time.txt')
 
-    if not os.path.exists(number_of_extra_stops_path):
-        utility_function.write_data(number_of_extra_stops_path, 0)
+    if not path.exists(extra_stop_quantity_path):
+        utility.write_data(extra_stop_quantity_path, 0)
 
-    number_of_orders = utility_function.read_data(number_of_orders_path)
-    number_of_extra_stops = utility_function.read_data(
-        number_of_extra_stops_path)
-    miles_traveled = utility_function.read_data(miles_traveled_path)
-    delivery_start_time = utility_function.read_data(delivery_start_time_path)
-    delivery_end_time = utility_function.read_data(delivery_end_time_path)
+    order_quantity = utility.read_data(order_quantity_path)
+    extra_stop_quantity = utility.read_data(extra_stop_quantity_path)
+    miles_traveled = utility.read_data(miles_traveled_path)
+    delivery_start_time = utility.read_data(delivery_start_time_path)
+    delivery_end_time = utility.read_data(delivery_end_time_path)
 
-    data = number_of_orders + ',' + number_of_extra_stops + ','\
+    data = order_quantity + ',' + extra_stop_quantity + ','\
         + miles_traveled + ',' + delivery_start_time + ',' + delivery_end_time
-    utility_function.write_data(
-        path='delivery', file='delivery_info.txt', data=data)
+    utility.write_data(path.join('delivery', 'delivery_info.txt'), data)
 
-    os.remove(number_of_orders_path)
-    os.remove(number_of_extra_stops_path)
-    os.remove(miles_traveled_path)
-    os.remove(delivery_start_time_path)
-    os.remove(delivery_end_time_path)
+    remove(order_quantity_path)
+    remove(extra_stop_quantity_path)
+    remove(miles_traveled_path)
+    remove(delivery_start_time_path)
+    remove(delivery_end_time_path)
 
 
 def consolidate_split():
-    split_miles_traveled_path = os.path.join(
-                'shift', 'split_miles_traveled.txt')
-    split_start_time_path = os.path.join(
-                'shift', 'split_start_time.txt')
-    split_end_time_path = os.path.join(
-                'shift', 'split_end_time.txt')
+    split_miles_path = path.join('shift', 'split_miles_traveled.txt')
+    split_start_time_path = path.join('shift', 'split_start_time.txt')
+    split_end_time_path = path.join('shift', 'split_end_time.txt')
 
-    split_miles_traveled = utility_function.read_data(
-        split_miles_traveled_path)
-    split_start_time = utility_function.read_data(split_start_time_path)
-    split_end_time = utility_function.read_data(split_end_time_path)
+    split_miles = utility.read_data(split_miles_path)
+    split_start_time = utility.read_data(split_start_time_path)
+    split_end_time = utility.read_data(split_end_time_path)
 
-    data = split_miles_traveled + ',' + split_start_time + ',' + split_end_time
-    utility_function.write_data(path='shift', file='split_info.txt', data=data)
+    data = split_miles + ',' + split_start_time + ',' + split_end_time
+    utility.write_data(path.join('shift', 'split_info.txt'), data)
 
-    os.remove(split_miles_traveled_path)
-    os.remove(split_start_time_path)
-    os.remove(split_end_time_path)
+    remove(split_miles_path)
+    remove(split_start_time_path)
+    remove(split_end_time_path)
 
 
 # //TODO: after adding total miles for shift at end_shift, update this
-# //TODO: after changing id number assignment, update this function
 def consolidate_shift():
-    delivery_quantity_path = os.path.join(
-                'shift', 'delivery_quantity.txt')
-    extra_stop_quantity_path = os.path.join(
-                'shift', 'number_of_extra_stops.txt')
-    shift_start_time_path = os.path.join(
-                'shift', 'shift_start_time.txt')
-    shift_end_time_path = os.path.join(
-                'shift', 'shift_end_time.txt')
+    delivery_id_number_path = path.join('shift', 'delivery_id_number.txt')
+    extra_stop_quantity_path = path.join('shift', 'extra_stop_quantity.txt')
+    shift_start_time_path = path.join('shift', 'shift_start_time.txt')
+    shift_end_time_path = path.join('shift', 'shift_end_time.txt')
 
-    if not os.path.exists(delivery_quantity_path):
-        number_of_deliveries = str(utility_function.write_data(
-            delivery_quantity_path, 0))
+    if not path.exists(delivery_id_number_path):
+        delivery_quantity = str(utility.write_data(
+            delivery_id_number_path, 0))
     else:
-        number_of_deliveries = str(int(utility_function.read_data(
-            delivery_quantity_path)) + 1)
+        delivery_quantity = str(int(utility.read_data(
+            delivery_id_number_path)) + 1)
 
-    if not os.path.exists(extra_stop_quantity_path):
-        number_of_extra_stops = str(utility_function.write_data(
+    if not path.exists(extra_stop_quantity_path):
+        extra_stop_quantity = str(utility.write_data(
             extra_stop_quantity_path, 0))
     else:
-        number_of_extra_stops = str(int(utility_function.read_data(
-            extra_stop_quantity_path)) + 1)
+        extra_stop_quantity = utility.read_data(extra_stop_quantity_path)
 
-    shift_start_time = utility_function.read_data(shift_start_time_path)
-    shift_end_time = utility_function.read_data(shift_end_time_path)
+    shift_start_time = utility.read_data(shift_start_time_path)
+    shift_end_time = utility.read_data(shift_end_time_path)
 
-    shift_info_path = os.path.join('shift', 'shift_info.txt')
-    data = number_of_deliveries + ',' + number_of_extra_stops + ','\
+    shift_info_path = path.join('shift', 'shift_info.txt')
+    data = delivery_quantity + ',' + extra_stop_quantity + ','\
         + shift_start_time + ',' + shift_end_time
-    utility_function.write_data(shift_info_path, data)
+    utility.write_data(shift_info_path, data)
 
-    os.remove(delivery_quantity_path)
-    os.remove(extra_stop_quantity_path)
-    os.remove(shift_start_time_path)
-    os.remove(shift_end_time_path)
-    os.remove(os.path.join('shift', 'extra_stop_number.txt'))
+    remove(delivery_id_number_path)
+    remove(extra_stop_quantity_path)
+    remove(shift_start_time_path)
+    remove(shift_end_time_path)
+    remove(path.join('shift', 'extra_stop_id_number.txt'))

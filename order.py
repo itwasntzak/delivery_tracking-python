@@ -1,11 +1,12 @@
 import os
 
 import consolidate_data
-import utility_function
 import id_number
 import input_data
+import utility
 
 
+# //TODO: add the ability to add a split tip amount/type
 def input_tip():
     file_path = os.path.join('delivery', 'tip.txt')
     while True:
@@ -15,7 +16,7 @@ def input_tip():
             user_confirm = input_data.get_input(
                 '\nNo tip\nIs this correct?    [y/n]\n', str)
             if user_confirm == 'y':
-                return utility_function.write_data(file_path, 0.0)
+                return utility.write_data(file_path, 0.0)
             elif user_confirm == 'n':
                 continue
             else:
@@ -24,7 +25,7 @@ def input_tip():
             user_confirm = input_data.get_input(
                 '\n$' + str(tip_amount) + '\nIs this correct?    [y/n]\n', str)
             if user_confirm == 'y':
-                return utility_function.write_data(file_path, tip_amount)
+                return utility.write_data(file_path, tip_amount)
             elif user_confirm == 'n':
                 continue
             else:
@@ -34,7 +35,7 @@ def input_tip():
 def input_tip_type(order_object):
     file_path = os.path.join('delivery', 'tip_type.txt')
     if order_object.get_tip() == 0.0:
-        return utility_function.write_data(file_path, 0)
+        return utility.write_data(file_path, 0)
     else:
         while True:
             user_option = input_data.get_input(
@@ -43,7 +44,7 @@ def input_tip_type(order_object):
                 check_correct = input_data.get_input(
                    '\nCard\nIs this correct?    [y/n]\n', str)
                 if check_correct == 'y':
-                    return utility_function.write_data(file_path, 1)
+                    return utility.write_data(file_path, 1)
                 elif check_correct == 'n':
                     continue
                 else:
@@ -52,7 +53,7 @@ def input_tip_type(order_object):
                 check_correct = input_data.get_input(
                     '\nCash\nIs this correct?    [y/n]\n', str)
                 if check_correct == 'y':
-                    return utility_function.write_data(file_path, 2)
+                    return utility.write_data(file_path, 2)
                 elif check_correct == 'n':
                     continue
                 else:
@@ -63,22 +64,24 @@ def input_tip_type(order_object):
 
 def order():
     # create file, program knows order was started
-    utility_function.write_data(file='order', data=None, path='delivery')
+    utility.write_data(os.path.join('delivery', 'order'), None)
     # create variable assigned to an order class
     order_object = Order()
     # input the order number as a form of id
-    order_object.order_number = id_number.assign_id_number(order_object)
+    order_object.id_number = id_number.assign_id_number(order_object)
     # input the tip amount, or if tipped at all
     order_object.tip = input_tip()
     # input the tip type. if no tip, automaticly inputs
     order_object.tip_type = input_tip_type(order_object)
     # input the miles since prev destination
-    order_object.miles_traveled = utility_function.write_data(
+    order_object.miles_traveled = utility.write_data(
         os.path.join('delivery', 'order_miles_traveled.txt'),
-        utility_function.miles_traveled('Order miles traveled:    #.#'))
+        utility.miles_traveled('Order miles traveled:    #.#'))
     # save/assign current time for end of order
-    order_object.end_time = utility_function.write_data(
-        os.path.join('delivery', 'order_end_time.txt'), utility_function.now())
+    order_object.end_time = utility.write_data(
+        os.path.join('delivery', 'order_end_time.txt'), utility.now())
+    # update/create order_numbers.txt
+    id_number.id_number_file(order_object)
     # consolidate order files into one file
     consolidate_data.consolidate_order()
     # remove file telling program order has ended
@@ -87,10 +90,9 @@ def order():
     return order_object
 
 
-# //TODO: change order_number to id_number
 class Order:
-    def get_order_number(self):
-        return self.order_number
+    def get_id_number(self):
+        return self.id_number
 
     def get_tip(self):
         return self.tip
@@ -98,7 +100,7 @@ class Order:
     def get_tip_type(self):
         return self.tip_type
 
-    def get_miles_traveled(self):
+    def get_miles(self):
         return self.miles_traveled
 
     def get_end_time(self):
