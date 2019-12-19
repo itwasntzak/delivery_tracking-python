@@ -6,6 +6,7 @@
 from datetime import datetime
 from os import path, chdir
 
+from continuation import continuation
 import extra_stop
 import menu_options
 import input_data
@@ -22,6 +23,7 @@ split_end_time_path = path.join('shift', 'split_end_time.txt')
 # //TODO: need to add logic for split_info.txt
 def start():
 #    chdir('delivery_tracking')
+    continuation()
     while True:
         # check if shift has started
         if not path.exists(shift_start_time_path):
@@ -64,6 +66,9 @@ def shift_menu():
         elif user_choice == 3:
             shift.start_split()
         elif user_choice == 4:
+            extra_stop_start_time_path = path.join(
+                'shift', 'extra_stop_start_time.txt')
+            utility.write_data(extra_stop_start_time_path, utility.now())
             # //TODO: write a menu option function for extra_stop, enter to cont
             extra_stop.extra_stop(shift_object)
         elif user_choice == 0:

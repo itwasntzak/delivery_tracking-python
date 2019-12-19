@@ -10,20 +10,20 @@ import consolidate_data
 import utility
 
 
-def driving(delivery_object, prompt):
+def driving(delivery_object, prompt, destination):
     while True:
         # create file so code knows while driving, and can continue from there
-        utility.write_data(path.join('delivery', 'driving'), None)
+        utility.write_data(path.join('delivery', 'driving-' + destination), None)
         wait_for_user = input_data.get_input(
             prompt=prompt + '\n1 after returning | 2 for extra stop\n',
             kind=int)
         if wait_for_user == 1:
             # remove driving file so code can knows driving has ended
-            remove(path.join('delivery', 'driving'))
+            remove(path.join('delivery', 'driving-' + destination))
             break
         elif wait_for_user == 2:
             # remove driving file so code can knows driving has ended
-            remove(path.join('delivery', 'driving'))
+            remove(path.join('delivery', 'driving-' + destination))
             # extra stop option
             extra_stop.extra_stop(delivery_object)
             continue
@@ -54,17 +54,15 @@ def delivery():
 
     for value in range(delivery_object.get_order_quantity()):
         # wait for user input after completing order or take extra stop
-        driving(delivery_object, '\nDriving to address...')
+        driving(delivery_object, '\nDriving to address...', 'address')
         # enter data for orders
         order_object = order.order()
-        # update/create order_numbers.txt
-        id_number.id_number_file(order_object.get_id_number())
         # display amount of time to complete the order
         utility.time_taken(
             start_time=delivery_object.get_start_time(),
             end_time=order_object.get_end_time(), var_word='Order')
     # driving back to work
-    driving(delivery_object, 'Driving back to store...')
+    driving(delivery_object, 'Driving back to store...', 'store')
     # input/save total number of miles traveled and set it to delivery object
     delivery_object.miles_traveled = utility.write_data(
         path.join('delivery', 'delivery_miles_traveled.txt'),
