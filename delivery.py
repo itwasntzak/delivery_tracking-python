@@ -76,7 +76,7 @@ def delivery():
         end_time=delivery_object.get_end_time(),
         var_word='Delivery')
     delivery_object.id_number = id_number.assign_id_number(delivery_object)
-    consolidate_data.consolidate_delivery()
+    consolidate_data.consolidate_delivery(delivery_object)
     shutil.move('delivery', path.join(
         'shift', str(delivery_object.get_id_number())))
     return delivery_object

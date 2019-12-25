@@ -83,7 +83,7 @@ def order():
     # update/create order_numbers.txt
     id_number.id_number_file(order_object)
     # consolidate order files into one file
-    consolidate_data.consolidate_order()
+    consolidate_data.consolidate_order(order_object)
     # remove file telling program order has ended
     os.remove(os.path.join('delivery', 'order'))
     # return order class object to the function that called this one

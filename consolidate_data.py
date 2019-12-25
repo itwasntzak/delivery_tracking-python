@@ -6,18 +6,18 @@ from os import path, remove
 import utility
 
 
-def consolidate_order():
+def consolidate_order(order_object):
     order_id_path = path.join('delivery', 'order_number.txt')
     tip_path = path.join('delivery', 'tip.txt')
     tip_type_path = path.join('delivery', 'tip_type.txt')
     miles_traveled_path = path.join('delivery', 'order_miles_traveled.txt')
     order_end_time_path = path.join('delivery', 'order_end_time.txt')
 
-    order_id = utility.read_data(order_id_path)
-    tip = utility.read_data(tip_path)
-    tip_type = utility.read_data(tip_type_path)
-    miles_traveled = utility.read_data(miles_traveled_path)
-    order_end_time = utility.read_data(order_end_time_path)
+    order_id = str(order_object.get_id_number())
+    tip = str(order_object.get_tip())
+    tip_type = str(order_object.get_tip_type())
+    miles_traveled = str(order_object.get_miles())
+    order_end_time = str(order_object.get_end_time())
 
     file_path = path.join('delivery', order_id + '.txt')
     data = tip + ',' + tip_type + ',' + miles_traveled + ',' + order_end_time
@@ -98,12 +98,16 @@ def consolidate_split():
     remove(split_end_time_path)
 
 
-# //TODO: after adding total miles for shift at end_shift, update this
 def consolidate_shift():
     delivery_id_number_path = path.join('shift', 'delivery_id_number.txt')
     extra_stop_quantity_path = path.join('shift', 'extra_stop_quantity.txt')
     shift_start_time_path = path.join('shift', 'shift_start_time.txt')
     shift_end_time_path = path.join('shift', 'shift_end_time.txt')
+    total_miles_path = path.join('shift', 'total_miles_traveled.txt')
+    fuel_economy_path = path.join('shift', 'fuel_economy.txt')
+    mileage_paid_path = path.join('shift', 'mileage_paid.txt')
+    extra_tips_claimed_path = path.join('shift', 'extra_tips_claimed.txt')
+    total_hours_path = path.join('shift', 'total_hours.txt')
 
     if not path.exists(delivery_id_number_path):
         delivery_quantity = str(utility.write_data(
@@ -120,9 +124,16 @@ def consolidate_shift():
 
     shift_start_time = utility.read_data(shift_start_time_path)
     shift_end_time = utility.read_data(shift_end_time_path)
+    total_miles = utility.read_data(total_miles_path)
+    fuel_economy = utility.read_data(fuel_economy_path)
+    mileage_paid = utility.read_data(mileage_paid_path)
+    extra_tips_claimed = utility.read_data(extra_tips_claimed_path)
+    total_hours = utility.read_data(total_hours_path)
 
     shift_info_path = path.join('shift', 'shift_info.txt')
     data = delivery_quantity + ',' + extra_stop_quantity + ','\
+        + total_miles + ',' + fuel_economy + ',' + mileage_paid + ','\
+        + extra_tips_claimed + ',' + total_hours + ','\
         + shift_start_time + ',' + shift_end_time
     utility.write_data(shift_info_path, data)
 
@@ -130,4 +141,9 @@ def consolidate_shift():
     remove(extra_stop_quantity_path)
     remove(shift_start_time_path)
     remove(shift_end_time_path)
+    remove(total_miles_path)
+    remove(fuel_economy_path)
+    remove(mileage_paid_path)
+    remove(extra_tips_claimed_path)
+    remove(total_hours_path)
     remove(path.join('shift', 'extra_stop_id_number.txt'))
