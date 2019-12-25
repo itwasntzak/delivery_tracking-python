@@ -92,6 +92,12 @@ class Delivery:
     def get_order_quantity(self):
         return self.order_quantity
 
+    def get_extra_stop_quantity(self):
+        if self.extra_stop_quantity:
+            return self.extra_stop_quantity
+        else:
+            return None
+
     def get_miles_traveled(self):
         return self.miles_traveled
 

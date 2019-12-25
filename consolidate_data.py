@@ -54,7 +54,7 @@ def consolidate_extra_stop(extra_stop_object):
     remove(extra_stop_end_time_path)
 
 
-def consolidate_delivery():
+def consolidate_delivery(delivery_object):
     order_quantity_path = path.join('delivery', 'order_quantity.txt')
     extra_stop_quantity_path = path.join('delivery', 'extra_stop_quantity.txt')
     miles_traveled_path = path.join('delivery', 'delivery_miles_traveled.txt')
@@ -64,8 +64,8 @@ def consolidate_delivery():
     if not path.exists(extra_stop_quantity_path):
         utility.write_data(extra_stop_quantity_path, 0)
 
-    order_quantity = utility.read_data(order_quantity_path)
-    extra_stop_quantity = utility.read_data(extra_stop_quantity_path)
+    order_quantity = str(delivery_object.get_order_quantity())
+    extra_stop_quantity = str(delivery_object.get)
     miles_traveled = utility.read_data(miles_traveled_path)
     delivery_start_time = utility.read_data(delivery_start_time_path)
     delivery_end_time = utility.read_data(delivery_end_time_path)
