@@ -2,16 +2,18 @@ import datetime
 import os
 
 import delivery
+import extra_stop
 import order
 import utility
 
 
-# //TODO: all read_data functions should return classes
+# //TODO: all load_data functions should return classes
 
-def load_order(path):
+def load_order(path, id_number):
     if os.path.exists(path):
         order_data = utility.read_data(path).split(',')
         order_class = order.Order()
+        order_class.id_number = int(id_number)
         order_class.tip = float(order_data[0])
         order_class.tip_type = str(order_data[1])
         order_class.miles_traveled = float(order_data[2])
@@ -19,15 +21,17 @@ def load_order(path):
         return order_class
 
 
-def load_extras_stop(path):
+def load_extras_stop(path, id_number):
     if os.path.exists(path):
         extra_stop_data = utility.read_data(path).split(',')
         extra_stop_class = extra_stop.Extra_stop()
+        extra_stop_class.id_number = int(id_number)
         extra_stop_class.location = extra_stop_data[0]
         extra_stop_class.reason = extra_stop_data[1]
         extra_stop_class.miles_traveled = extra_stop_data[2]
-        extra_stop_class.end_time =  extra_stop_data[3]
+        extra_stop_class.end_time = utility.to_datetime(extra_stop_data[3])
         return extra_stop_class
+
 
 def load_delivery():
     delivery_start_time_path = os.path.join(
