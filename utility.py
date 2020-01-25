@@ -49,6 +49,7 @@ def time_taken(start_time, end_time, variable_word):
     print('\n' + variable_word + ' completed in:\t' + str(time_difference) + '\n')
 
 
+# //TODO: add the ability to check current amount of time on delivery
 def driving(object, prompt, destination):
     if path.exists(path.join('delivery', 'driving-' + destination)):
         pass

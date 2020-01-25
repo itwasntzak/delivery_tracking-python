@@ -2,10 +2,10 @@ import datetime
 from os import mkdir, path, remove
 import shutil
 
-import extra_stop
+from extra_stop import Extra_stop
 import id_number
 import input_data
-import order
+from  order import Order
 import utility
 
 
@@ -56,59 +56,7 @@ class Delivery:
         # mv temp folder to perma folder named the delivery's id number
         shutil.move('delivery', path.join('shift', str(self.id_number)))
 
-    def delivery(self, shift_object):
-        # make folder to store data
-        mkdir('delivery')
-        order_quantity_path =\
-            path.join('delivery', 'order_quantity.txt')
-        miles_traveled_path =\
-            path.join('delivery', 'delivery_miles_traveled.txt')
-        average_speed_path =\
-            path.join('delivery', 'delivery_average_speed.txt')
-        start_time_path =\
-            path.join('delivery', 'delivery_start_time.txt')
-        end_time_path =\
-            path.join('delivery', 'delivery_end_time.txt')
-        # save the start time of the delivery and add it to the delivery object
-        self.start_time = utility.write_data(start_time_path, utility.now())
-        # assign delivery an id number
-        self.id_number = len(shift_object.delivery_numbers)
-        # save number of order per delivery, add it to the delivedy object
-        self.order_quantity = utility.write_data(
-            order_quantity_path, input_data.input_data(
-                '\nNumber of orders?\n', int,
-                '\nIs this correct? [y/n]\n', str, 'y', 'n'))
-        self.order_numbers = []
-        for value in range(self.order_quantity):
-            # wait for user input after completing order or taking extra stop
-            utility.driving(self, '\nDriving to address...', 'address')
-            order_object = order.Order().order()
-            # enter data for orders
-            self.order_numbers.append(order_object)
-            # display amount of time to complete the order
-            utility.time_taken(self.start_time, order_object.end_time, 'Order')
-        # driving back to store
-        utility.driving(self, 'Driving back to store...', 'store')
-        # input/save/set total miles traveled to delivery object
-        self.miles_traveled = utility.write_data(
-            miles_traveled_path,
-            utility.miles_traveled('Delivery miles traveled:    #.#'))
-        # input/save/set average speed to delivery object
-        self.average_speed = utility.write_data(
-            average_speed_path, input_data.input_data(
-                '\nEnter the average speed for this delivery:\n', int,
-                '\nIs this correct? [y/n]\n', str, 'y', 'n'))
-        # save/set current time for end time of delivery object
-        self.end_time = utility.write_data(end_time_path, utility.now())
-        # consolidate files relating to delivery into one file
-        self.consolidate()
-        # display the total time taken on delivery
-        utility.time_taken(self.start_time, self.end_time, 'Delivery')
-        # allow user time to view time taken
-        utility.enter_to_continue()
-        exit()
-
-    def load(self, shift_object):
+    def load(self, shift):
         # set all possible paths to varibles
         order_quantity_path =\
             path.join('delivery', 'order_quantity.txt')
@@ -126,7 +74,7 @@ class Delivery:
             path.join('delivery', 'extra_stop_numbers.txt')
 
         # assign delivery an id number
-        self.id_number = len(shift_object.delivery_numbers)
+        self.id_number = len(shift.delivery_numbers)
         # create a varieable contaning a delivery start time
         if path.exists(start_time_path):
             self.start_time = utility.to_datetime(
@@ -185,11 +133,11 @@ class Delivery:
                 # user input after completing order or take extra stop
                 utility.driving(self, '\nDriving to address...', 'address')
                 # enter data for orders
-                order_object = order.Order().order()
-                self.order_numbers.append(order_object)
+                order = Order().start()
+                self.order_numbers.append(order)
                 # display amount of time to complete the order
                 utility.time_taken(
-                    self.start_time, order_object.end_time, 'Order')
+                    self.start_time, order.end_time, 'Order')
             break
         # driving back to store
         utility.driving(self, 'Driving back to store...', 'store')
@@ -218,9 +166,57 @@ class Delivery:
         utility.time_taken(
             self.start_time, self.end_time, 'Delivery')
         # allow user time to view time taken
-        while True:
-            wait_for_user = input('Press enter to continue.\n')
-            if wait_for_user == '':
-                exit()
-            else:
-                continue
+        utility.enter_to_continue()
+        exit()
+
+    def start(self, shift):
+        # make folder to store data
+        mkdir('delivery')
+        order_quantity_path =\
+            path.join('delivery', 'order_quantity.txt')
+        miles_traveled_path =\
+            path.join('delivery', 'delivery_miles_traveled.txt')
+        average_speed_path =\
+            path.join('delivery', 'delivery_average_speed.txt')
+        start_time_path =\
+            path.join('delivery', 'delivery_start_time.txt')
+        end_time_path =\
+            path.join('delivery', 'delivery_end_time.txt')
+        # save the start time of the delivery and add it to the delivery object
+        self.start_time = utility.write_data(start_time_path, utility.now())
+        # assign delivery an id number
+        self.id_number = len(shift.delivery_numbers)
+        # save number of order per delivery, add it to the delivedy object
+        self.order_quantity = utility.write_data(
+            order_quantity_path, input_data.input_data(
+                '\nNumber of orders?\n', int,
+                '\nIs this correct? [y/n]\n', str, 'y', 'n'))
+        self.order_numbers = []
+        for value in range(self.order_quantity):
+            # wait for user input after completing order or taking extra stop
+            utility.driving(self, '\nDriving to address...', 'address')
+            order = Order().start()
+            # enter data for orders
+            self.order_numbers.append(order)
+            # display amount of time to complete the order
+            utility.time_taken(self.start_time, order.end_time, 'Order')
+        # driving back to store
+        utility.driving(self, 'Driving back to store...', 'store')
+        # input/save/set total miles traveled to delivery object
+        self.miles_traveled = utility.write_data(
+            miles_traveled_path,
+            utility.miles_traveled('Delivery miles traveled:    #.#'))
+        # input/save/set average speed to delivery object
+        self.average_speed = utility.write_data(
+            average_speed_path, input_data.input_data(
+                '\nEnter the average speed for this delivery:\n', int,
+                '\nIs this correct? [y/n]\n', str, 'y', 'n'))
+        # save/set current time for end time of delivery object
+        self.end_time = utility.write_data(end_time_path, utility.now())
+        # consolidate files relating to delivery into one file
+        self.consolidate()
+        # display the total time taken on delivery
+        utility.time_taken(self.start_time, self.end_time, 'Delivery')
+        # allow user time to view time taken
+        utility.enter_to_continue()
+        exit()

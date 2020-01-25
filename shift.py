@@ -2,15 +2,15 @@ from os import path, mkdir, remove
 import shutil
 from time import sleep
 
-import delivery
-import extra_stop
+from delivery import Delivery
+from extra_stop import Extra_Stop
 import id_number
 from input_data import input_data, get_input
-import split
+from split import Split
 import utility
 
 
-def shift_menu(shift_object):
+def shift_menu(shift):
     while True:
         user_choice = get_input(
             prompt='\nWhat would you like to do?'
@@ -20,14 +20,13 @@ def shift_menu(shift_object):
                    '\nE to start an extra stop\n',
             kind=str)
         if user_choice in ('d', 'D'):
-            delivery_object = delivery.Delivery()
-            delivery_object.delivery(shift_object)
+            delivery = Delivery().start(shift)
         elif user_choice in ('x', 'X'):
-            shift_object.end_shift()
+            shift.end_shift()
         elif user_choice in ('s', 'S'):
-            split.start_split()
+            split = Split().start()
         elif user_choice in ('e', 'E'):
-            extra_stop.Extra_Stop().extra_stop(shift_object)
+            extra_stop = Extra_Stop().extra_stop(shift)
             exit()
         else:
             print('\nInvalid input...')
@@ -168,7 +167,7 @@ class Shift:
                 utility.to_datetime(utility.read_data(end_time_path))
         return self
 
-    def resume_end_shift(self):
+    def resume_end(self):
         # set all possible paths to varibles
         miles_traveled_path = path.join('shift', 'total_miles_traveled.txt')
         fuel_economy_path = path.join('shift', 'fuel_economy.txt')
@@ -216,7 +215,7 @@ class Shift:
                 break
         remove(path.join('shift', 'end_shift'))
         self.consolidate()
-        print('Shift has been end!')
+        print('Shift has been end!\n')
         utility.enter_to_continue()
         exit()
 

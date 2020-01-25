@@ -31,9 +31,9 @@ def input_tip():
                 print('Invalid input...')
 
 
-def input_tip_type(order_object):
+def input_tip_type(order):
     file_path = path.join('delivery', 'tip_type.txt')
-    if order_object.tip == 0.0:
+    if order.tip == 0.0:
         return utility.write_data(file_path, 0)
     else:
         while True:
@@ -112,29 +112,6 @@ class Order:
                 utility.read_data(end_time_path))
         return self
 
-    def order(self):
-        miles_path = path.join('delivery', 'order_miles_traveled.txt')
-        end_time_path = path.join('delivery', 'order_end_time.txt')
-        # create file, program knows order was started
-        utility.write_data(path.join('delivery', 'order'), None)
-        # input the order number as a form of id
-        self.id_number = id_number.assign_id_number(self)
-        # input the tip amount, or if tipped at all
-        self.tip = input_tip()
-        # input the tip type. if no tip, automaticly inputs
-        self.tip_type = input_tip_type(self)
-        # input the miles since prev destination
-        self.miles_traveled = utility.write_data(
-            miles_path, utility.miles_traveled('Order miles traveled:    #.#'))
-        # save/assign current time for end of order
-        self.end_time = utility.write_data(end_time_path, utility.now())
-        # consolidate order files into one file
-        self.consolidate()
-        # remove file telling program order in progress
-        remove(path.join('delivery', 'order'))
-        # return order class object to the function that called it
-        return self
-
     def resume(self):
         id_number_path = path.join('delivery', 'order_number.txt')
         tip_path = path.join('delivery', 'tip.txt')
@@ -163,6 +140,29 @@ class Order:
                     utility.write_data(end_time_path, utility.now())
             else:
                 break
+        # consolidate order files into one file
+        self.consolidate()
+        # remove file telling program order in progress
+        remove(path.join('delivery', 'order'))
+        # return order class object to the function that called it
+        return self
+
+    def start(self):
+        miles_path = path.join('delivery', 'order_miles_traveled.txt')
+        end_time_path = path.join('delivery', 'order_end_time.txt')
+        # create file, program knows order was started
+        utility.write_data(path.join('delivery', 'order'), None)
+        # input the order number as a form of id
+        self.id_number = id_number.assign_id_number(self)
+        # input the tip amount, or if tipped at all
+        self.tip = input_tip()
+        # input the tip type. if no tip, automaticly inputs
+        self.tip_type = input_tip_type(self)
+        # input the miles since prev destination
+        self.miles_traveled = utility.write_data(
+            miles_path, utility.miles_traveled('Order miles traveled:    #.#'))
+        # save/assign current time for end of order
+        self.end_time = utility.write_data(end_time_path, utility.now())
         # consolidate order files into one file
         self.consolidate()
         # remove file telling program order in progress
