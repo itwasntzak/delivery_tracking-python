@@ -2,18 +2,18 @@ import datetime
 import os
 
 import delivery
+import extra_stop
 import order
 import utility
 
 
-# //TODO: all read_data functions should return classes
+# //TODO: all load_data functions should return classes
 
-# //TODO: tip needs to be changed to check if n/a, or changed to write 0.00
-def read_current_order(order_number):
-    order_path = os.path.join('delivery', order_number + '.txt')
-    if os.path.exists(order_path):
-        order_data = utility.read_data(file=order_path).split(',')
+def load_order(path, id_number):
+    if os.path.exists(path):
+        order_data = utility.read_data(path).split(',')
         order_class = order.Order()
+        order_class.id_number = int(id_number)
         order_class.tip = float(order_data[0])
         order_class.tip_type = str(order_data[1])
         order_class.miles_traveled = float(order_data[2])
@@ -21,39 +21,19 @@ def read_current_order(order_number):
         return order_class
 
 
-def read_today_order(delivery_number, order_number):
-    order_path = os.path.join('shift', delivery_number, order_number + '.txt')
-    if os.path.exists(order_path):
-        order_data = utility.read_data(file=order_path).split(',')
-        order_class = order.Order()
-        order_class.tip = float(order_data[0])
-        order_class.tip_type = str(order_data[1])
-        order_class.miles_traveled = float(order_data[2])
-        order_class.end_time = utility.to_datetime(order_data[3])
-        return order_class
+def load_extras_stop(path, id_number):
+    if os.path.exists(path):
+        extra_stop_data = utility.read_data(path).split(',')
+        extra_stop_class = extra_stop.Extra_stop()
+        extra_stop_class.id_number = int(id_number)
+        extra_stop_class.location = extra_stop_data[0]
+        extra_stop_class.reason = extra_stop_data[1]
+        extra_stop_class.miles_traveled = extra_stop_data[2]
+        extra_stop_class.end_time = utility.to_datetime(extra_stop_data[3])
+        return extra_stop_class
 
 
-def read_past_order(past_date, delivery_number, order_number):
-    order_path = os.path.join(
-        'past_shifts', past_date, delivery_number, order_number + '.txt')
-    if os.path.exists(order_path):
-        order_data = utility.read_data(order_path).split(',')
-        order_class = order.Order()
-        order_class.tip = float(order_data[0])
-        order_class.tip_type = str(order_data[1])
-        order_class.miles_traveled = float(order_data[2])
-        order_class.end_time = utility.to_datetime(order_data[3])
-        return order_class
-
-
-# //TODO: read extra stops function still needs to be writen
-def read_extras_stop():
-    on_extra_stop_path = os.path.join('delivery', 'extra_stop')
-    if os.path.exists(on_extra_stop_path):
-        pass
-
-
-def read_current_delivery():
+def load_delivery():
     delivery_start_time_path = os.path.join(
         'delivery', 'delivery_start_time.txt')
     number_of_orders_path = os.path.join('delivery', 'number_of_orders.txt')
@@ -111,33 +91,19 @@ def read_current_delivery():
         delivery_class.extra_stop_numbers = extra_stop_numbers
     return delivery_class
 
-# //TODO: need to write read today delivery
-def read_today_delivery(delivery_number):
-    delivery_path = os.path.join('shift', delivery_number)
-    if os.path.exists(delivery_path):
-        pass
 
-
-# //TODO: need to write read past delivery
-def read_past_delivery(past_date, delivery_number):
-    pass
-
-
-# //TODO: need to rewrite read split, chaned it to today and past
-def read_split():
-    split_start_time_path = os.path.join('shift', 'split_start_time.txt')
-    split_info_path = os.path.join('shift', 'split_info.txt')
-
-    if os.path.exists(split_start_time_path):
-        return utility.to_datetime(utility.read_data(split_start_time_path))
-    elif os.path.exists(split_info_path):
-        return utility.read_data(split_info_path).split(',')
-    else:
-        return None
+# //TODO: write a split file with a split class
+def load_split(path):
+    if os.path.exists(path):
+        split_data = utility.read_data(path).split(',')
+        split_class = split.Split()
+        split_class.miles_traveled = float(split_class[0])
+        split_class.start_time = utility.to_datetime(split_class[1])
+        split_class.end_time = utility.to_datetime(split_class[2])
 
 
 # //TODO: rewrite shift to return a class
-def read_shift():
+def load_shift():
     shift_path = os.path.join('shift')
     todays_date_path = os.path.join(
         'shift_storage', str(utility.now().today()))
@@ -169,16 +135,6 @@ def read_shift():
             return shift_start_time
     elif os.path.exists(todays_date_path):
         shift_info_path = os.path.join(todays_date_path, 'shift_info.txt')
-        return utility.read_data(shift_info_path).split(',')
-    else:
-        return None
-
-
-# //TODO: rewrite to return a class of the shift
-def read_past_shift(date):
-    shift_path = os.path.join('shift_storage', date)
-    if os.path.exists(shift_path):
-        shift_info_path = os.path.join(shift_path, 'shift_info.txt')
         return utility.read_data(shift_info_path).split(',')
     else:
         return None

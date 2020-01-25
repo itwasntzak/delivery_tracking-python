@@ -41,8 +41,8 @@ def get_input(prompt, kind):
 
 
 
-## would like if depending on the intended input type
-##     it will return 'needs to be string' or 'need to be a number'
+# would like if depending on the intended input type
+#     it will return 'needs to be string' or 'need to be a number'
 
-## if possible to not have a newline before prompt1 the first pass of the function
-##     only having a newline before the prompt1 if its coming from an invalid input
+# if possible to not have a newline before prompt1 the first pass of the function
+#     only having a newline before the prompt1 if its coming from an invalid input

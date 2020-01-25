@@ -14,14 +14,6 @@ def assign_id_number(object):
     if isinstance(object, type(shift.Shift())):
         return str(utility.now().date())
 
-    elif isinstance(object, type(delivery.Delivery())):
-        file_path = path.join('shift', 'delivery_id_number.txt')
-        if path.exists(file_path):
-            return utility.write_data(
-                file_path, int(utility.read_data(file_path)) + 1)
-        else:
-            return utility.write_data(file_path, 0)
-
     elif isinstance(object, type(order.Order())):
         return utility.write_data(
             path.join('delivery', 'order_number.txt'),
@@ -34,8 +26,7 @@ def assign_id_number(object):
         file_path = path.join('shift', 'extra_stop_id_number.txt')
         if path.exists(file_path):
             return utility.write_data(
-                file_path,
-                int(utility.read_data(file_path)) + 1)
+                file_path, int(utility.read_data(file_path)) + 1)
         else:
             return utility.write_data(file_path, 0)
 
@@ -45,16 +36,24 @@ def id_number_file(object):
     if isinstance(object, type(shift.Shift())):
         pass
 
+    elif isinstance(object, type(delivery.Delivery())):
+        file_path = path.join('shift', 'delivery_numbers.txt')
+        if path.exists(file_path):
+            return utility.append_data(
+                file_path, ',' + str(object.id_number))
+        else:
+            return utility.write_data(file_path, object.id_number)
+
     elif isinstance(object, type(order.Order())):
         file_path = path.join('delivery', 'order_numbers.txt')
         if path.exists(file_path):
-            utility.append_data(file_path, ',' + str(object.get_id_number()))
+            utility.append_data(file_path, ',' + str(object.id_number))
         else:
-            utility.write_data(file_path, object.get_id_number())
+            utility.write_data(file_path, object.id_number)
 
     elif isinstance(object, type(extra_stop.Extra_Stop())):
-        file_path = path.join(object.get_directory(), 'extra_stop_numbers.txt')
+        file_path = path.join(object.directory, 'extra_stop_numbers.txt')
         if path.exists(file_path):
-            utility.append_data(file_path, ',' + str(object.get_id_number()))
+            utility.append_data(file_path, ',' + str(object.id_number))
         else:
-            utility.write_data(file_path, object.get_id_number())
+            utility.write_data(file_path, object.id_number)
