@@ -57,7 +57,8 @@ def driving(object, prompt, destination):
         write_data(path.join('delivery', 'driving-' + destination), None)
     while True:
         wait_for_user = input_data.get_input(
-            prompt + '\nC after completing | E for extra stop\n', str)
+            prompt + '\nC after completing\n'
+                     'E for extra stop\n', str)
         if wait_for_user in ('c', 'C'):
             # remove driving file so code can knows driving has ended
             remove(path.join('delivery', 'driving-' + destination))

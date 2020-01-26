@@ -38,7 +38,9 @@ def input_tip_type(order_object):
     else:
         while True:
             user_option = input_data.get_input(
-                '\nType of tip?\n1 for card | 2 for cash\n', int)
+                '\nType of tip?'
+                '\n1 for card'
+                '\n2 for cash\n', int)
             if user_option == 1:
                 check_correct = input_data.get_input(
                    '\nCard\nIs this correct?    [y/n]\n', str)
