@@ -16,3 +16,4 @@ __pycache__/shift.cpython-37.pyc
 __pycache__/utility.cpython-37.pyc
 __pycache__/utility_function.cpython-37.pyc
 td.bat
+*.pyc

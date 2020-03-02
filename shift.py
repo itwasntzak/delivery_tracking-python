@@ -1,228 +1,279 @@
 from os import path, mkdir, remove
-import shutil
-from time import sleep
 
 from delivery import Delivery
-from extra_stop import Extra_Stop
-import id_number
+from extra_stop import check_id_number, Extra_Stop
 from input_data import input_data, get_input
 from split import Split
-import utility
+from utility import append_data, enter_to_continue, miles_traveled, now,\
+    read_data, to_datetime, write_data
 
 
 def shift_menu(shift):
     while True:
         user_choice = get_input(
             prompt='\nWhat would you like to do?'
-                   '\nD to start delivery'
-                   '\nX to end shift'
-                   '\nS to start split'
-                   '\nE to start an extra stop\n',
+                   '\nD: Start delivery'
+                   '\nE: Start an extra stop'
+                   '\nS: Start split'
+                   '\nX: End shift'
+                   '\nQ: Quit program\n\n',
             kind=str)
         if user_choice in ('d', 'D'):
-            delivery = Delivery().start(shift)
-        elif user_choice in ('x', 'X'):
-            shift.end_shift()
-        elif user_choice in ('s', 'S'):
-            split = Split().start()
+            delivery_path = path.join(shift.path, 'delivery')
+            delivery = Delivery(shift, delivery_path).start()
+            shift.delivery_numbers.append(delivery.id)
+            shift.deliveries.append(delivery)
         elif user_choice in ('e', 'E'):
-            extra_stop = Extra_Stop().extra_stop(shift)
-            exit()
+            # todo: fix to update extra stop lists to parent object
+            extra_stop = Extra_Stop(shift, shift.extra_stop_id).start()
+            shift.extra_stop_numbers.append(extra_stop.id)
+            shift.extra_stops.append(extra_stop)
+        elif user_choice in ('s', 'S'):
+            Split(shift).start()
+        elif user_choice in ('x', 'X'):
+            shift.end()
+        elif user_choice in ('q', 'Q'):
+            quit()
         else:
             print('\nInvalid input...')
 
 
 class Shift:
-    def consolidate(self):
+    def __init__(self, id_number):
+        self.id = id_number
+        self.path = path.join('shifts', str(id_number))
+        self.delivery_numbers = []
+        self.deliveries = []
+        self.extra_stop_numbers = []
+        self.extra_stops = []
         # list of all paths
-        # pre consolidation paths
-        extra_stop_id_number_path =\
-            path.join('shift', 'extra_stop_id_number.txt')
-        total_miles_path = path.join('shift', 'total_miles_traveled.txt')
-        fuel_economy_path = path.join('shift', 'fuel_economy.txt')
-        mileage_paid_path = path.join('shift', 'mileage_paid.txt')
-        extra_tips_claimed_path = path.join('shift', 'extra_tips_claimed.txt')
-        total_hours_path = path.join('shift', 'total_hours.txt')
-        shift_start_time_path = path.join('shift', 'shift_start_time.txt')
-        shift_end_time_path = path.join('shift', 'shift_end_time.txt')
-        # pre & post consolidation paths
-        delivery_numbers_path = path.join('shift', 'delivery_numbers.txt')
-        extra_stop_numbers_path = path.join('shift', 'extra_stop_numbers.txt')
-        # post consolidation paths
-        shift_info_path = path.join('shift', 'shift_info.txt')
+        self.total_miles_path =\
+            path.join(self.path, 'total_miles_traveled.txt')
+        self.fuel_economy_path = path.join(self.path, 'fuel_economy.txt')
+        self.mileage_paid_path = path.join(self.path, 'mileage_paid.txt')
+        self.extra_tips_claimed_path =\
+            path.join(self.path, 'extra_tips_claimed.txt')
+        self.total_hours_path = path.join(self.path, 'total_hours.txt')
+        self.start_time_path = path.join(self.path, 'shift_start_time.txt')
+        self.end_time_path = path.join(self.path, 'shift_end_time.txt')
+        self.delivery_numbers_path =\
+            path.join(self.path, 'delivery_numbers.txt')
+        self.extra_stop_id_path =\
+            path.join(self.path, 'extra_stop_id_number.txt')
+        self.extra_stop_numbers_path =\
+            path.join(self.path, 'extra_stop_numbers.txt')
+        self.shift_info_path = path.join(self.path, 'shift_info.txt')
+        self.split_info_path = path.join(self.path, 'split_info.txt')
+        self.shift_numbers_path = path.join('shift_numbers.txt')
 
-        # assign data to variables
-        delivery_quantity = str(len(self.delivery_numbers))
-        extra_stop_quantity = str(len(self.extra_stop_numbers))
-        miles_traveled = str(self.miles_traveled)
-        fuel_economy = str(self.fuel_economy)
-        mileage_paid = str(self.mileage_paid)
-        extra_tips_claimed = str(self.extra_tips_claimed)
-        total_hours = str(self.total_hours)
-        shift_start_time = str(self.start_time)
-        shift_end_time = str(self.end_time)
-
-        data = delivery_quantity + ',' + extra_stop_quantity + ','\
-            + miles_traveled + ',' + fuel_economy + ',' + mileage_paid + ','\
-            + extra_tips_claimed + ',' + total_hours + ','\
-            + shift_start_time + ',' + shift_end_time
-        utility.write_data(shift_info_path, data)
+    def consolidate(self):
+        data = str(self.miles_traveled) + ','\
+            + str(self.fuel_economy) + ','\
+            + str(self.mileage_paid) + ','\
+            + str(self.extra_tips_claimed) + ','\
+            + str(self.total_hours) + ','\
+            + str(self.start_time) + ','\
+            + str(self.end_time)
+        write_data(self.shift_info_path, data)
         # remove files that are no longer needed
-        remove(total_miles_path)
-        remove(fuel_economy_path)
-        remove(mileage_paid_path)
-        remove(extra_tips_claimed_path)
-        remove(total_hours_path)
-        remove(shift_start_time_path)
-        remove(shift_end_time_path)
-        if path.exists(extra_stop_id_number_path):
-            remove(extra_stop_id_number_path)
-        shutil.move('shift', id_number.assign_id_number(self))
+        remove(self.total_miles_path)
+        remove(self.fuel_economy_path)
+        remove(self.mileage_paid_path)
+        remove(self.extra_tips_claimed_path)
+        remove(self.total_hours_path)
+        remove(self.start_time_path)
+        remove(self.end_time_path)
+        self.update_id_file()
 
-    def end_shift(self):
-        miles_traveled_path = path.join('shift', 'total_miles_traveled.txt')
-        fuel_economy_path = path.join('shift', 'fuel_economy.txt')
-        mileage_paid_path = path.join('shift', 'mileage_paid.txt')
-        total_hours_path = path.join('shift', 'total_hours.txt')
-        extra_tips_path = path.join('shift', 'extra_tips_claimed.txt')
-        end_time_path = path.join('shift', 'shift_end_time.txt')
+    # todo: add user confermation before ending shift
+    def end(self):
+        # cnsd: adding a total money in hand input for data
         # create file so program knows if end shift has been started
-        utility.write_data(path.join('shift', 'end_shift'), None)
+        write_data(path.join(self.path, 'end_shift'), None)
         # input total miles traveled for shift
-        self.miles_traveled = utility.write_data(
-            miles_traveled_path, utility.miles_traveled(
+        self.miles_traveled = write_data(
+            self.total_miles_path,  miles_traveled(
                 'Total miles traveled for this shift:    #.#'))
         # input fuel economy
-        self.fuel_economy = utility.write_data(
-            fuel_economy_path, input_data(
-                '\nEnter fuel economy:    ##.#\n', float,
-                '\nIs this correct? [y/n]\n', str, 'y', 'n'))
+        self.fuel_economy = write_data(self.fuel_economy_path, input_data(
+            '\nEnter fuel economy:    ##.#\n', float,
+            '\nIs this correct? [y/n]\n', str, 'y', 'n'))
         # input mileage paid
-        self.mileage_paid = utility.write_data(
-            mileage_paid_path, input_data(
-                '\nAmount of mileage paid:    $#.##\n$', float,
-                '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
+        self.mileage_paid = write_data(self.mileage_paid_path, input_data(
+            '\nAmount of mileage paid:    $#.##\n$', float,
+            '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
         # input total hours worked
-        self.total_hours = utility.write_data(
-            total_hours_path, input_data(
-                '\nEnter total hours worked:    #.##\n', float,
-                '\nIs this correct? [y/n]\n', str, 'y', 'n'))
+        self.total_hours = write_data(self.total_hours_path, input_data(
+            '\nEnter total hours worked:    #.##\n', float,
+            '\nIs this correct? [y/n]\n', str, 'y', 'n'))
         # input extra claimed/reported tips
-        self.extra_tips_claimed = utility.write_data(
-            extra_tips_path, input_data(
-                '\nExtra tips claimed for shift:    $#.##\n$', float,
-                '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
+        self.extra_tips_claimed = write_data(self.extra_tips_path, input_data(
+            '\nExtra tips claimed for shift:    $#.##\n$', float,
+            '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
         # save time for end of shift
-        self.end_time = utility.write_data(end_time_path, utility.now())
-        remove(path.join('shift', 'end_shift'))
+        self.end_time = write_data(self.end_time_path, now())
+        remove(path.join(self.path, 'end_shift'))
         self.consolidate()
         print('Shift has been end!')
-        utility.enter_to_continue()
+        enter_to_continue()
         exit()
 
     def load(self):
-        delivery_numbers_path = path.join('shift', 'delivery_numbers.txt')
-        extra_stop_numbers_path = path.join('shift', 'extra_stop_numbers.txt')
-        miles_traveled_path = path.join('shift', 'total_miles_traveled.txt')
-        fuel_economy_path = path.join('shift', 'fuel_economy.txt')
-        mileage_paid_path = path.join('shift', 'mileage_paid.txt')
-        total_hours_path = path.join('shift', 'total_hours.txt')
-        extra_tips_claimed_path = path.join('shift', 'extra_tips_claimed.txt')
-        start_time_path = path.join('shift', 'shift_start_time.txt')
-        end_time_path = path.join('shift', 'shift_end_time.txt')
-
-        if path.exists(start_time_path):
-            self.start_time =\
-                utility.to_datetime(utility.read_data(start_time_path))
-        else:
-            self.start_time =\
-                utility.write_data(start_time_path, utility.now())
-        if path.exists(delivery_numbers_path):
-            self.delivery_numbers =\
-                utility.read_data(delivery_numbers_path).split(',')
-        else:
-            self.delivery_numbers = []
-        if path.exists(extra_stop_numbers_path):
+        shift_data = read_data(self.shift_info_path).split(',')
+        self.miles_traveled = shift_data[0]
+        self.fuel_economy = shift_data[1]
+        self.mileage_paid = shift_data[2]
+        self.extra_tips_claimed = shift_data[3]
+        self.total_hours = shift_data[4]
+        self.start_time = shift_data[5]
+        self.end_time = shift_data[6]
+        if path.exists(self.delivery_numbers_path):
+            delivery_numbers =\
+                read_data(self.delivery_numbers_path).split(',')
+            self.delivery_numbers = [int(item) for item in delivery_numbers]
+            for value in range(len(self.delivery_numbers)):
+                delivery_path = path.join(
+                    self.path,
+                    str(self.delivery_numbers[len(self.deliveries)]))
+                self.deliveries.append(Delivery(self, delivery_path).load())
+        if path.exists(self.extra_stop_numbers_path):
+            extra_stop_numbers =\
+                read_data(self.extra_stop_numbers_path).split(',')
             self.extra_stop_numbers =\
-                utility.read_data(extra_stop_numbers_path).split(',')
-        else:
-            self.extra_stop_numbers = []
-        if path.exists(miles_traveled_path):
-            self.miles_traveled =\
-                float(utility.read_data(miles_traveled_path))
-        if path.exists(fuel_economy_path):
-            self.fuel_economy =\
-                float(utility.read_data(fuel_economy_path))
-        if path.exists(mileage_paid_path):
-            self.mileage_paid =\
-                float(utility.read_data(mileage_paid_path))
-        if path.exists(total_hours_path):
-            self.total_hours =\
-                float(utility.read_data(total_hours_path))
-        if path.exists(extra_tips_claimed_path):
-            self.extra_tips_claimed =\
-                float(utility.read_data(extra_tips_claimed_path))
-        if path.exists(end_time_path):
-            self.end_time =\
-                utility.to_datetime(utility.read_data(end_time_path))
+                [int(item) for item in extra_stop_numbers]
+            for value in range(len(self.extra_stop_numbers)):
+                extra_stop_id = self.extra_stop_numbers[len(self.extra_stops)]
+                self.extra_stops.append(Extra_Stop(self, extra_stop_id).load())
+        if path.exists(self.split_info_path):
+            self.split = Split(self).load()
         return self
 
-    def resume_end(self):
-        # set all possible paths to varibles
-        miles_traveled_path = path.join('shift', 'total_miles_traveled.txt')
-        fuel_economy_path = path.join('shift', 'fuel_economy.txt')
-        mileage_paid_path = path.join('shift', 'mileage_paid.txt')
-        total_hours_path = path.join('shift', 'total_hours.txt')
-        extra_tips_claimed_path = path.join('shift', 'extra_tips_claimed.txt')
-        end_time_path = path.join('shift', 'shift_end_time.txt')
-
+    def load_current(self):
+        if path.exists(self.start_time_path):
+            self.start_time = to_datetime(read_data(self.start_time_path))
+        else:
+            self.start_time = write_data(self.start_time_path, now())
+        if path.exists(self.delivery_numbers_path):
+            delivery_numbers = read_data(self.delivery_numbers_path).split(',')
+            self.delivery_numbers = [int(item) for item in delivery_numbers]
+            for value in range(len(self.delivery_numbers)):
+                delivery_path = path.join(
+                    self.path,
+                    str(self.delivery_numbers[len(self.deliveries)]))
+                self.deliveries.append(Delivery(self, delivery_path).load())
+        if path.exists(self.extra_stop_id_path):
+            self.extra_stop_id = int(read_data(self.extra_stop_id_path))
+        else:
+            self.extra_stop_id = 0
+        if path.exists(self.extra_stop_numbers_path):
+            extra_stop_numbers =\
+                read_data(self.extra_stop_numbers_path).split(',')
+            self.extra_stop_numbers =\
+                [int(item) for item in extra_stop_numbers]
+            for value in range(len(self.extra_stop_numbers)):
+                extra_stop_id = self.extra_stop_numbers[len(self.extra_stops)]
+                self.extra_stops.append(Extra_Stop(self, extra_stop_id).load())
+        if path.exists(self.split_info_path):
+            self.split = Split(self).load()
         while True:
-            if not path.exists(miles_traveled_path):
+            # check if an extra stop has been started
+            if path.exists(path.join(self.path, 'extra_stop')):
+                extra_stop_id = check_id_number(self)
+                extra_stop = Extra_Stop(self, extra_stop_id).load_current()
+                self.extra_stop_numbers.append(extra_stop.id)
+                self.extra_stops.append(extra_stop)
+            # check if delivery directory exist, if so complete it
+            elif path.exists(path.join(self.path, 'delivery')):
+                delivery_path = path.join(self.path, 'delivery')
+                delivery = Delivery(self, delivery_path).load_current()
+                self.delivery_numbers.append(delivery.id)
+                self.deliveries.append(delivery)
+            # check if end shift has been started
+            elif path.exists(path.join(self.path, 'end_shift')):
+                self.resume_end()
+            else:
+                return self
+
+    def resume_end(self):
+        if path.exists(self.total_miles_path):
+            self.miles_traveled = float(read_data(self.total_miles_path))
+        if path.exists(self.fuel_economy_path):
+            self.fuel_economy = float(read_data(self.fuel_economy_path))
+        if path.exists(self.mileage_paid_path):
+            self.mileage_paid = float(read_data(self.mileage_paid_path))
+        if path.exists(self.total_hours_path):
+            self.total_hours = float(read_data(self.total_hours_path))
+        if path.exists(self.extra_tips_claimed_path):
+            self.extra_tips_claimed =\
+                float(read_data(self.extra_tips_claimed_path))
+        if path.exists(self.end_time_path):
+            self.end_time = to_datetime(read_data(self.end_time_path))
+        while True:
+            if not path.exists(self.total_miles_path):
                 # input total miles traveled for shift
-                self.miles_traveled = utility.write_data(
-                    path.join('shift', 'total_miles_traveled.txt'),
-                    utility.miles_traveled(
+                self.miles_traveled = write_data(
+                    self.total_miles_path, miles_traveled(
                         'Total miles traveled for this shift:    #.#'))
-            elif not path.exists(fuel_economy_path):
+            elif not path.exists(self.fuel_economy_path):
                 # input fuel economy
-                self.fuel_economy = utility.write_data(
-                    fuel_economy_path, input_data(
+                self.fuel_economy = write_data(
+                    self.fuel_economy_path, input_data(
                         '\nEnter fuel economy:    ##.#\n', float,
                         '\nIs this correct? [y/n]\n', str, 'y', 'n'))
-            elif not path.exists(mileage_paid_path):
+            elif not path.exists(self.mileage_paid_path):
                 # input mileage paid
-                self.mileage_paid = utility.write_data(
-                    mileage_paid_path, input_data(
+                self.mileage_paid = write_data(
+                    self.mileage_paid_path, input_data(
                         '\nAmount of mileage paid:    $#.##\n$', float,
                         '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
-            elif not path.exists(total_hours_path):
+            elif not path.exists(self.total_hours_path):
                 # input total hours worked
-                self.total_hours = utility.write_data(
-                    total_hours_path, input_data(
+                self.total_hours = write_data(
+                    self.total_hours_path, input_data(
                         '\nEnter total hours worked:    #.##\n', float,
                         '\nIs this correct? [y/n]\n', str, 'y', 'n'))
-            elif not path.exists(extra_tips_claimed_path):
+            elif not path.exists(self.extra_tips_claimed_path):
                 # input extra claimed/reported tips
-                self.extra_tips_claimed = utility.write_data(
-                    extra_tips_claimed_path, input_data(
+                self.extra_tips_claimed = write_data(
+                    self.extra_tips_claimed_path, input_data(
                         '\nExtra tips claimed for shift:    $#.##\n$', float,
                         '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
-            elif not path.exists(end_time_path):
+            elif not path.exists(self.end_time_path):
                 # save time for end of shift
-                self.end_time =\
-                    utility.write_data(end_time_path, utility.now())
+                self.end_time = write_data(self.end_time_path, now())
             else:
                 break
-        remove(path.join('shift', 'end_shift'))
+        remove(path.join(self.path, 'end_shift'))
         self.consolidate()
         print('Shift has been end!\n')
-        utility.enter_to_continue()
+        enter_to_continue()
         exit()
 
+    def resume_shift(self):
+        while True:
+            user_check = get_input(
+                'Are you sure you want to resume the completed shift?\n'
+                'Y: yes\n N: no', str)
+            if user_check in ('y', 'Y'):
+                shift_data = read_data(self.shift_info_path).split(',')
+                self.start_time = write_data(
+                    self.start_time_path, to_datetime(shift_data[5]))
+                remove(self.shift_info_path)
+                break
+            elif user_check in ('n', 'N'):
+                break
+            else:
+                print('\nInvalid input...')
+
     def start(self):
-        start_time_path = path.join('shift', 'shift_start_time.txt')
-        mkdir('shift')
-        utility.write_data(start_time_path, utility.now())
+        mkdir(self.path)
+        write_data(self.start_time_path, now())
         print('\nShift has been started!\n')
-        utility.enter_to_continue()
+        enter_to_continue()
         exit()
+
+    def update_id_file(self):
+        if path.exists(self.shift_numbers_path):
+            append_data(self.shift_numbers_path, ',' + str(self.id))
+        else:
+            write_data(self.shift_numbers_path, self.id)
