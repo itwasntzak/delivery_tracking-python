@@ -3,12 +3,13 @@
 # todo: write functions for data anyalisis
 
 from input_data import get_input
-from os import path
+from os import path, mkdir
 from shift import shift_menu, Shift
 from split import Split
 from utility import now
 
-
+if not path.exists('shifts'):
+    mkdir('shifts')
 while True:
     shift = Shift(now().date())
     # check if shift has been completed
@@ -22,8 +23,7 @@ while True:
         if user_choice in ('r', 'R'):
             shift.resume_shift()
         elif user_choice in ('o', 'O'):
-            # todo: write function to overwrite entier shift
-            pass
+            shift.overwrite()
         elif user_choice in ('q', 'Q'):
             quit()
         else:

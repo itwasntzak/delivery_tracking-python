@@ -85,38 +85,50 @@ class Shift:
         remove(self.end_time_path)
         self.update_id_file()
 
-    # todo: add user confermation before ending shift
     def end(self):
         # cnsd: adding a total money in hand input for data
-        # create file so program knows if end shift has been started
-        write_data(path.join(self.path, 'end_shift'), None)
-        # input total miles traveled for shift
-        self.miles_traveled = write_data(
-            self.total_miles_path,  miles_traveled(
-                'Total miles traveled for this shift:    #.#'))
-        # input fuel economy
-        self.fuel_economy = write_data(self.fuel_economy_path, input_data(
-            '\nEnter fuel economy:    ##.#\n', float,
-            '\nIs this correct? [y/n]\n', str, 'y', 'n'))
-        # input mileage paid
-        self.mileage_paid = write_data(self.mileage_paid_path, input_data(
-            '\nAmount of mileage paid:    $#.##\n$', float,
-            '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
-        # input total hours worked
-        self.total_hours = write_data(self.total_hours_path, input_data(
-            '\nEnter total hours worked:    #.##\n', float,
-            '\nIs this correct? [y/n]\n', str, 'y', 'n'))
-        # input extra claimed/reported tips
-        self.extra_tips_claimed = write_data(self.extra_tips_path, input_data(
-            '\nExtra tips claimed for shift:    $#.##\n$', float,
-            '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
-        # save time for end of shift
-        self.end_time = write_data(self.end_time_path, now())
-        remove(path.join(self.path, 'end_shift'))
-        self.consolidate()
-        print('Shift has been end!')
-        enter_to_continue()
-        exit()
+        while True:
+            user_check = get_input(
+                'Are you sure you want to complete today\'s shift?\n'
+                'Y: yes\n N: no', str)
+            if user_check in ('y', 'Y'):
+                # create file so program knows if end shift has been started
+                write_data(path.join(self.path, 'end_shift'), None)
+                # input total miles traveled for shift
+                self.miles_traveled = write_data(
+                    self.total_miles_path,  miles_traveled(
+                        'Total miles traveled for this shift:    #.#'))
+                # input fuel economy
+                self.fuel_economy = write_data(
+                    self.fuel_economy_path, input_data(
+                        '\nEnter fuel economy:    ##.#\n', float,
+                        '\nIs this correct? [y/n]\n', str, 'y', 'n'))
+                # input mileage paid
+                self.mileage_paid = write_data(
+                    self.mileage_paid_path, input_data(
+                        '\nAmount of mileage paid:    $#.##\n$', float,
+                        '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
+                # input total hours worked
+                self.total_hours = write_data(
+                    self.total_hours_path, input_data(
+                        '\nEnter total hours worked:    #.##\n', float,
+                        '\nIs this correct? [y/n]\n', str, 'y', 'n'))
+                # input extra claimed/reported tips
+                self.extra_tips_claimed = write_data(
+                    self.extra_tips_path, input_data(
+                        '\nExtra tips claimed for shift:    $#.##\n$', float,
+                        '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
+                # save time for end of shift
+                self.end_time = write_data(self.end_time_path, now())
+                remove(path.join(self.path, 'end_shift'))
+                self.consolidate()
+                print('Shift has been end!')
+                enter_to_continue()
+                exit()
+            elif user_check in ('n', 'N'):
+                break
+            else:
+                print('\nInvalid input...')
 
     def load(self):
         shift_data = read_data(self.shift_info_path).split(',')
@@ -193,6 +205,23 @@ class Shift:
                 self.resume_end()
             else:
                 return self
+
+    def overwrite(self):
+        while True:
+            user_check = get_input(
+                'Are you sure you want to resume the completed shift?\n'
+                'Y: yes\n N: no', str)
+            if user_check in ('y', 'Y'):
+                remove(self.path)
+                mkdir(self.path)
+                write_data(self.start_time_path, now())
+                print('\nShift has been overwriten!\n')
+                enter_to_continue()
+                exit()
+            elif user_check in ('n', 'N'):
+                break
+            else:
+                print('\nInvalid input...')
 
     def resume_end(self):
         if path.exists(self.total_miles_path):
