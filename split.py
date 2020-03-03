@@ -32,6 +32,7 @@ class Split:
                 'Are you sure you want to start a split?\n'
                 'Y: yes\n N: no', str)
             if user_check in ('y', 'Y'):
+                self.start_time = to_datetime(read_data(self.start_time_path))
                 if path.exists(self.miles_traveled_path):
                     self.miles_traveled =\
                         float(read_data(self.miles_traveled_path))

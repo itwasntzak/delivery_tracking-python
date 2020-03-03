@@ -70,12 +70,19 @@ def driving(object, prompt, destination):
         elif wait_for_user in ('e', 'E'):
             # remove driving file so code can knows driving has ended
             remove(path.join(object.path, 'driving-' + destination))
-            # todo: fix to update extra stop lists to parent object
+    # todo: still need to work how to update shift extra stop id & parent lists
             if isinstance(object, type(shift.Shift(00-00-00))):
-                Extra_Stop(object, object.extra_stop_id).start()
+                extra_stop = Extra_Stop(object, object.extra_stop_id).start()
+                object.extra_stop_numbers.append(extra_stop.id)
+                object.extra_stops.append(extra_stop)
+                return object
+    # todo: still need to work how to update shift extra stop id & parent lists
             elif isinstance(object, type(delivery.Delivery(
                     shift.Shift(00-00-00), ''))):
-                Extra_Stop(object, object.parent.extra_stop_id).start()
+                extra_stop = Extra_Stop(object, object.extra_stop_id).start()
+                object.parent.extra_stop_numbers.append(extra_stop.id)
+                object.parent.extra_stops.append(extra_stop)
+                return object
         elif wait_for_user in ('t', 'T'):
             time_taken(object.start_time, now(), 'Current time is:\t')
         else:

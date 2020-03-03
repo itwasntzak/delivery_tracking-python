@@ -170,10 +170,16 @@ class Extra_Stop:
         self.consolidate()
         # display the amount of time since the delivery was started
         if isinstance(self.parent, type(shift.Shift(00-00-00))):
+            # todo: still need to work how to update shift id & parent lists
+            object.extra_stop_numbers.append(self.id)
+            object.extra_stops.append(self)
             time_taken(self.start_time, self.end_time,
                        'Extra stop completed in:\t')
         elif isinstance(self.parent, type(delivery.Delivery(
                 shift.Shift(00-00-00), ''))):
+            # todo: still need to work how to update shift id & parent lists
+            self.parent.parent.extra_stop_numbers.append(self.id)
+            self.parent.parent.extra_stops.append(self)
             time_taken(self.parent.start_time, self.end_time,
                        'Extra stop completed in:\t')
         # return extra stop object to the function that called it

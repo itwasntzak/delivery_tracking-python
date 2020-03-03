@@ -117,6 +117,7 @@ class Delivery:
                 self.extra_stops.append(Extra_Stop(self, extra_stop_id).load())
         while True:
             # check if extra stop has been started while on delivery
+            # todo: still need to work how to update shift extra stop id & parent lists
             if path.exists(path.join(self.path, 'extra_stop')):
                 # assign a extra stop id number
                 extra_stop_id = extra_stop_id_check(self)

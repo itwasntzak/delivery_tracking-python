@@ -16,6 +16,7 @@ def shift_menu(shift):
                    '\nE: Start an extra stop'
                    '\nS: Start split'
                    '\nX: End shift'
+                   '\nI: Information on statistics of shift'
                    '\nQ: Quit program\n\n',
             kind=str)
         if user_choice in ('d', 'D'):
@@ -24,14 +25,18 @@ def shift_menu(shift):
             shift.delivery_numbers.append(delivery.id)
             shift.deliveries.append(delivery)
         elif user_choice in ('e', 'E'):
-            # todo: fix to update extra stop lists to parent object
+    # todo: still need to work how to update shift extra stop id & parent lists
             extra_stop = Extra_Stop(shift, shift.extra_stop_id).start()
             shift.extra_stop_numbers.append(extra_stop.id)
             shift.extra_stops.append(extra_stop)
+            shift.extra_stop_id = shift.extra_stop_id + 1
         elif user_choice in ('s', 'S'):
             Split(shift).start()
         elif user_choice in ('x', 'X'):
             shift.end()
+        elif user_choice in ('i', 'I'):
+            # todo: write function for calculating current statistics
+            pass
         elif user_choice in ('q', 'Q'):
             quit()
         else:
@@ -189,11 +194,13 @@ class Shift:
             self.split = Split(self).load()
         while True:
             # check if an extra stop has been started
+            # todo: still need to work how to update shift id & parent lists
             if path.exists(path.join(self.path, 'extra_stop')):
                 extra_stop_id = check_id_number(self)
                 extra_stop = Extra_Stop(self, extra_stop_id).load_current()
                 self.extra_stop_numbers.append(extra_stop.id)
                 self.extra_stops.append(extra_stop)
+                self.extra_stop_id = self.extra_stop_id + 1
             # check if delivery directory exist, if so complete it
             elif path.exists(path.join(self.path, 'delivery')):
                 delivery_path = path.join(self.path, 'delivery')
