@@ -1,5 +1,8 @@
 
 __pycache__/
+
 td.bat
-*.pyc^M
+*.pyc
+
 shifts/
+brain/

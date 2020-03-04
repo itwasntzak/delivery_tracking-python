@@ -137,6 +137,7 @@ class Shift:
 
     def load(self):
         # todo: need to take into account missing data
+        # cnsd: when evaluating missing data, if missing part of time. dismiss all time
         shift_data = read_data(self.shift_info_path).split(',')
         self.miles_traveled = float(shift_data[0])
         self.fuel_economy = float(shift_data[1])
