@@ -63,10 +63,10 @@ class Shift:
         self.end_time_path = path.join(self.path, 'shift_end_time.txt')
         self.delivery_numbers_path =\
             path.join(self.path, 'delivery_numbers.txt')
-        self.extra_stop_id_path =\
-            path.join(self.path, 'extra_stop_id_number.txt')
         self.extra_stop_numbers_path =\
             path.join(self.path, 'extra_stop_numbers.txt')
+        self.extra_stop_id_path =\
+            path.join(self.path, 'extra_stop_id_number.txt')
         self.shift_info_path = path.join(self.path, 'shift_info.txt')
         self.split_info_path = path.join(self.path, 'split_info.txt')
         self.shift_numbers_path = path.join('shift_numbers.txt')
@@ -173,9 +173,7 @@ class Shift:
             delivery_numbers = read_data(self.delivery_numbers_path).split(',')
             self.delivery_numbers = [int(item) for item in delivery_numbers]
             for value in range(len(self.delivery_numbers)):
-                delivery_path = path.join(
-                    self.path,
-                    str(self.delivery_numbers[len(self.deliveries)]))
+                delivery_path = path.join(self.path, str(len(self.deliveries)))
                 self.deliveries.append(Delivery(self, delivery_path).load())
         if path.exists(self.extra_stop_id_path):
             self.extra_stop_id = int(read_data(self.extra_stop_id_path))
@@ -193,7 +191,6 @@ class Shift:
             self.split = Split(self).load()
         while True:
             # check if an extra stop has been started
-            # todo: still need to work how to update shift id & parent lists
             if path.exists(path.join(self.path, 'extra_stop')):
                 extra_stop_id = check_id_number(self)
                 extra_stop = Extra_Stop(self, extra_stop_id).load_current()

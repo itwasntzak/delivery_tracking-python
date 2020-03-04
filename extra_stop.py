@@ -87,6 +87,7 @@ class Extra_Stop:
                 self.reason = extra_stop_data[1]
                 self.miles_traveled = extra_stop_data[2]
                 self.end_time = extra_stop_data[3]
+            return self
 
     def load_current(self):
         if isinstance(self.parent, type(shift.Shift(00-00-00))):

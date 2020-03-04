@@ -152,7 +152,6 @@ class Order:
         # display amount of time to complete the order
         time_taken(self.parent.start_time, self.end_time,
                    'Order completed in:\t')
-        # return order class object to the function that called it
         return self
 
     def start(self):
