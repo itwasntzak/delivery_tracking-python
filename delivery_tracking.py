@@ -3,7 +3,7 @@
 # todo: write functions for data anyalisis
 
 from input_data import get_input
-from os import path, mkdir
+from os import chdir, path, mkdir
 from shift import shift_menu, Shift
 from split import Split
 from utility import now
