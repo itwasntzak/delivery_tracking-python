@@ -1,8 +1,9 @@
 import datetime
 from os import path, remove
 
-import extra_stop
+import delivery
 import input_data
+import shift
 
 
 def now():
@@ -44,30 +45,45 @@ def miles_traveled(prompt):
         ' miles\nIs this correct? [y/n]\n', str, 'y', 'n')
 
 
-def time_taken(start_time, end_time, variable_word):
-    time_difference = end_time - start_time
-    print('\n' + variable_word + ' completed in:\t' + str(time_difference) + '\n')
+def time_taken(start_time, end_time, prompt):
+    time_diff = end_time - start_time
+    print('\n' + prompt + str(time_diff) + '\n')
 
 
 def driving(object, prompt, destination):
-    if path.exists(path.join('delivery', 'driving-' + destination)):
-        pass
-    else:
-        # create file so code knows while driving, and can continue from there
-        write_data(path.join('delivery', 'driving-' + destination), None)
+    from extra_stop import Extra_Stop
     while True:
+        if path.exists(path.join(object.path, 'driving-' + destination)):
+            pass
+        else:
+            # create file so program knows while in driving process
+            write_data(path.join(object.path, 'driving-' + destination), None)
         wait_for_user = input_data.get_input(
-            prompt + '\nC after completing\n'
-                     'E for extra stop\n', str)
+            prompt + '\nC: To complete'
+                     '\nE: For extra stop'
+                     '\nT: To see current time\n\n', str)
         if wait_for_user in ('c', 'C'):
             # remove driving file so code can knows driving has ended
-            remove(path.join('delivery', 'driving-' + destination))
+            remove(path.join(object.path, 'driving-' + destination))
             break
+        # extra stop option
         elif wait_for_user in ('e', 'E'):
             # remove driving file so code can knows driving has ended
-            remove(path.join('delivery', 'driving-' + destination))
-            # extra stop option
-            extra_stop.Extra_Stop().extra_stop(object)
-            continue
+            remove(path.join(object.path, 'driving-' + destination))
+    # todo: still need to work how to update shift extra stop id & parent lists
+            if isinstance(object, type(shift.Shift(00-00-00))):
+                extra_stop = Extra_Stop(object, object.extra_stop_id).start()
+                object.extra_stop_numbers.append(extra_stop.id)
+                object.extra_stops.append(extra_stop)
+                return object
+    # todo: still need to work how to update shift extra stop id & parent lists
+            elif isinstance(object, type(delivery.Delivery(
+                    shift.Shift(00-00-00), ''))):
+                extra_stop = Extra_Stop(object, object.extra_stop_id).start()
+                object.parent.extra_stop_numbers.append(extra_stop.id)
+                object.parent.extra_stops.append(extra_stop)
+                return object
+        elif wait_for_user in ('t', 'T'):
+            time_taken(object.start_time, now(), 'Current time is:\t')
         else:
-            print('\nInvalid input...')
+            print('\nInvalid input...\n')

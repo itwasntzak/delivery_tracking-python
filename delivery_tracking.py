@@ -1,52 +1,42 @@
-# //TODO: write functions to be able to undo ending shift and split on accident
-# //TODO: make way to be able take multipule deliveries on one trip
-# //TODO: add option to be able to start a second shift for the day (dif store)
+# todo: make way to be able take multipule deliveries on one trip
+# todo: add option to be able to start a second shift for the day (dif store)
+# todo: write functions for data anyalisis
 
-from os import path, chdir
-
-from delivery import Delivery
-from extra_stop import Extra_Stop
-from order import Order
+from input_data import get_input
+from os import path, mkdir
 from shift import shift_menu, Shift
-from split import end_split
-from utility import driving
-
-
+from split import Split
+from utility import now
 
 
 chdir('delivery_tracking')
+if not path.exists('shifts'):
+    mkdir('shifts')
 while True:
-    shift_object = Shift()
-    # check if shift has started
-    if not path.exists(path.join('shift', 'shift_start_time.txt')):
-        shift_object.start()
-    else:
-        shift_object.load()
-        # check if end shift has been started
-        if path.exists(path.join('shift', 'end_shift')):
-            shift_object.resume_end_shift()
-        # check if an extra stop has been started
-        elif path.exists(path.join('shift', 'extra_stop')):
-            extra_stop_object = Extra_Stop().load(shift_object)
-            extra_stop_object.resume(shift_object)
-    # check if delivery directory exist, if so delivery must be completed
-    if path.exists(path.join('delivery')):
-        delivery_object = Delivery().load(shift_object)
-        # check if extra stop has been started while on delivery
-        if path.exists(path.join('delivery', 'extra_stop')):
-            extra_stop_object = Extra_Stop().load(delivery_object)
-            extra_stop_object.resume(delivery_object)
-        # check if order has been started
-        elif path.exists(path.join('delivery', 'order')):
-            order_object = Order().load()
-            order_object.resume()
-        # check if driving to address is in progress
-        elif path.exists(path.join('delivery', 'driving-address')):
-            driving(delivery_object, '\nDriving to address...', 'address')
+    shift = Shift(now().date())
+    # check if shift has been completed
+    if path.exists(path.join(shift.path, 'shift_info.txt')):
+        user_choice = get_input(
+            'You have already completed a shift for today.\n'
+            'Please select an option:\n'
+            'R: Resume today\'s shift\n'
+            'O: Overwrite shift\n'
+            'Q: Quit program\n\n', str)
+        if user_choice in ('r', 'R'):
+            shift.resume_shift()
+        elif user_choice in ('o', 'O'):
+            shift.overwrite()
+        elif user_choice in ('q', 'Q'):
+            quit()
         else:
-            delivery_object.resume()
-    # check if split has been started
-    elif path.exists(path.join('shift', 'split_start_time.txt')):
-        end_split()
+            print('\nInvalid input...\n')
+    # check if shift has started
+    if not path.exists(shift.path):
+        shift.start()
     else:
-        shift_menu(shift_object)
+        shift.load_current()
+    # check if split has been started
+    if path.exists(path.join(shift.path, 'split_start_time.txt')):
+        shift.split = Split(shift).end()
+    else:
+        shift_menu(shift)
