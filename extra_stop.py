@@ -72,6 +72,7 @@ class Extra_Stop:
         return self
 
     def load(self):
+        # todo: need to take into account missing data
         if path.exists(self.extra_stop_path):
             extra_stop_data = read_data(self.extra_stop_path).split(',')
             if isinstance(self.parent, type(shift.Shift(00-00-00))):

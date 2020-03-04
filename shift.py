@@ -136,22 +136,21 @@ class Shift:
                 print('\nInvalid input...')
 
     def load(self):
+        # todo: need to take into account missing data
         shift_data = read_data(self.shift_info_path).split(',')
-        self.miles_traveled = shift_data[0]
-        self.fuel_economy = shift_data[1]
-        self.mileage_paid = shift_data[2]
-        self.extra_tips_claimed = shift_data[3]
-        self.total_hours = shift_data[4]
-        self.start_time = shift_data[5]
-        self.end_time = shift_data[6]
+        self.miles_traveled = float(shift_data[0])
+        self.fuel_economy = float(shift_data[1])
+        self.mileage_paid = float(shift_data[2])
+        self.extra_tips_claimed = float(shift_data[3])
+        self.total_hours = float(shift_data[4])
+        self.start_time = to_datetime(shift_data[5])
+        self.end_time = to_datetime(shift_data[6])
         if path.exists(self.delivery_numbers_path):
             delivery_numbers =\
                 read_data(self.delivery_numbers_path).split(',')
             self.delivery_numbers = [int(item) for item in delivery_numbers]
             for value in range(len(self.delivery_numbers)):
-                delivery_path = path.join(
-                    self.path,
-                    str(self.delivery_numbers[len(self.deliveries)]))
+                delivery_path = path.join(self.path, str(len(self.deliveries)))
                 self.deliveries.append(Delivery(self, delivery_path).load())
         if path.exists(self.extra_stop_numbers_path):
             extra_stop_numbers =\

@@ -109,6 +109,7 @@ class Order:
                     print('\nInvalid input...')
 
     def load(self):
+        # todo: need to take into account missing data
         order_data = read_data(self.order_file_path).split(',')
         self.tip = order_data[0]
         self.tip_type = order_data[1]

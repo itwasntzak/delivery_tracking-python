@@ -47,6 +47,7 @@ class Delivery:
         self.update_id_file()
 
     def load(self):
+        # todo: need to take into account missing data
         # load data from file, convert to list
         delivery_data = read_data(self.delivery_info_path).split(',')
         # assign data to variable and convert to intended types
