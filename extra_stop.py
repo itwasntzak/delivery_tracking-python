@@ -12,10 +12,9 @@ def check_id_number(parent):
     if path.exists(id_number_path):
         return int(read_data(id_number_path))
     else:
-        if isinstance(parent, type(shift.Shift(00-00-00))):
+        if isinstance(parent, type(shift.Shift(now()))):
             return write_data(id_number_path, parent.extra_stop_id)
-        if isinstance(parent, type(delivery.Delivery(
-                shift.Shift(00-00-00), ''))):
+        if isinstance(parent, type(delivery.Delivery(shift.Shift(now()), ''))):
             return write_data(id_number_path, parent.parent.extra_stop_id)
 
 
@@ -35,23 +34,22 @@ class Extra_Stop:
         self.extra_stop_path = path.join(self.path, str(self.id) + '.txt')
         self.extra_stop_numbers_path =\
             path.join(self.path, 'extra_stop_numbers.txt')
-        if isinstance(parent, type(shift.Shift(00-00-00))):
+        if isinstance(parent, type(shift.Shift(now()))):
             self.shift_extra_stop_id_path =\
                 path.join(self.path, 'extra_stop_id_number.txt')
-        elif isinstance(parent, type(delivery.Delivery(
-                shift.Shift(00-00-00), ''))):
+        elif isinstance(parent, type(delivery.Delivery(shift.Shift(now()), ''))):
             self.shift_extra_stop_id_path =\
                 path.join(self.parent.parent.path, 'extra_stop_id_number.txt')
 
     def consolidate(self):
-        if isinstance(self.parent, type(shift.Shift(00-00-00))):
+        if isinstance(self.parent, type(shift.Shift(now()))):
             data = str(self.location) + ','\
                 + str(self.reason) + ','\
                 + str(self.miles_traveled) + ','\
                 + str(self.start_time) + ','\
                 + str(self.end_time)
-        elif isinstance(self.parent, type(delivery.Delivery(
-                shift.Shift(00-00-00), ''))):
+        elif isinstance(self.parent, type(
+                delivery.Delivery(shift.Shift(now()), ''))):
             data = str(self.location) + ','\
                 + str(self.reason) + ','\
                 + str(self.miles_traveled) + ','\
@@ -75,14 +73,14 @@ class Extra_Stop:
         # todo: need to take into account missing data
         if path.exists(self.extra_stop_path):
             extra_stop_data = read_data(self.extra_stop_path).split(',')
-            if isinstance(self.parent, type(shift.Shift(00-00-00))):
+            if isinstance(self.parent, type(shift.Shift(now()))):
                 self.location = extra_stop_data[0]
                 self.reason = extra_stop_data[1]
                 self.miles_traveled = extra_stop_data[2]
                 self.start_time = extra_stop_data[3]
                 self.end_time = extra_stop_data[4]
-            elif isinstance(self.parent, type(delivery.Delivery(
-                    shift.Shift(00-00-00), ''))):
+            elif isinstance(self.parent, type(
+                    delivery.Delivery(shift.Shift(now()), ''))):
                 self.location = extra_stop_data[0]
                 self.reason = extra_stop_data[1]
                 self.miles_traveled = extra_stop_data[2]
@@ -90,7 +88,7 @@ class Extra_Stop:
             return self
 
     def load_current(self):
-        if isinstance(self.parent, type(shift.Shift(00-00-00))):
+        if isinstance(self.parent, type(shift.Shift(now()))):
             if path.exists(self.start_time_path):
                 self.start_time = to_datetime(read_data(self.start_time_path))
         if path.exists(self.location_path):
@@ -110,7 +108,7 @@ class Extra_Stop:
 
     def resume(self):
         while True:
-            if isinstance(self.parent, type(shift.Shift(00-00-00))):
+            if isinstance(self.parent, type(shift.Shift(now()))):
                 if not path.exists(self.start_time_path):
                     self.start_time = write_data(self.start_time_path, now())
             if not path.exists(self.location_path):
@@ -138,11 +136,11 @@ class Extra_Stop:
         # consolidate extra stop data into one file
         self.consolidate()
         # display the amount of time since the delivery was started
-        if isinstance(self.parent, type(shift.Shift(00-00-00))):
+        if isinstance(self.parent, type(shift.Shift(now()))):
             time_taken(self.start_time, self.end_time,
                        'Extra stop completed in:\t')
-        elif isinstance(self.parent, type(delivery.Delivery(
-                shift.Shift(00-00-00), ''))):
+        elif isinstance(self.parent, type(
+                delivery.Delivery(shift.Shift(now()), ''))):
             time_taken(self.parent.start_time, self.end_time,
                        'Extra stop completed in:\t')
         return self
@@ -151,7 +149,7 @@ class Extra_Stop:
         # indicator to program when extra stop has been started
         write_data(path.join(self.path, 'extra_stop'), None)
         # assign a extra stop id number
-        if isinstance(self.parent, type(shift.Shift(00-00-00))):
+        if isinstance(self.parent, type(shift.Shift(now()))):
             # add start time if extra stop is seperate from a delivery
             self.start_time = write_data(self.start_time_path, now())
         write_data(self.id_number_path, self.id)
@@ -171,14 +169,14 @@ class Extra_Stop:
         # consolidate extra stop data into one file
         self.consolidate()
         # display the amount of time since the delivery was started
-        if isinstance(self.parent, type(shift.Shift(00-00-00))):
+        if isinstance(self.parent, type(shift.Shift(now()))):
             # todo: still need to work how to update shift id & parent lists
             object.extra_stop_numbers.append(self.id)
             object.extra_stops.append(self)
             time_taken(self.start_time, self.end_time,
                        'Extra stop completed in:\t')
-        elif isinstance(self.parent, type(delivery.Delivery(
-                shift.Shift(00-00-00), ''))):
+        elif isinstance(self.parent, type(
+                delivery.Delivery(shift.Shift(now()), ''))):
             # todo: still need to work how to update shift id & parent lists
             self.parent.parent.extra_stop_numbers.append(self.id)
             self.parent.parent.extra_stops.append(self)

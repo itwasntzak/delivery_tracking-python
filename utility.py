@@ -61,7 +61,8 @@ def driving(object, prompt, destination):
         wait_for_user = input_data.get_input(
             prompt + '\nC: To complete'
                      '\nE: For extra stop'
-                     '\nT: To see current time\n\n', str)
+                     '\nT: To see current time'
+                     '\nQ: To quit program\n\n', str)
         if wait_for_user in ('c', 'C'):
             # remove driving file so code can knows driving has ended
             remove(path.join(object.path, 'driving-' + destination))
@@ -71,19 +72,22 @@ def driving(object, prompt, destination):
             # remove driving file so code can knows driving has ended
             remove(path.join(object.path, 'driving-' + destination))
     # todo: still need to work how to update shift extra stop id & parent lists
-            if isinstance(object, type(shift.Shift(00-00-00))):
+            if isinstance(object, type(shift.Shift(now()))):
                 extra_stop = Extra_Stop(object, object.extra_stop_id).start()
                 object.extra_stop_numbers.append(extra_stop.id)
                 object.extra_stops.append(extra_stop)
                 return object
     # todo: still need to work how to update shift extra stop id & parent lists
             elif isinstance(object, type(delivery.Delivery(
-                    shift.Shift(00-00-00), ''))):
-                extra_stop = Extra_Stop(object, object.extra_stop_id).start()
+                    shift.Shift(now()), ''))):
+                extra_stop =\
+                    Extra_Stop(object, object.parent.extra_stop_id).start()
                 object.parent.extra_stop_numbers.append(extra_stop.id)
                 object.parent.extra_stops.append(extra_stop)
                 return object
         elif wait_for_user in ('t', 'T'):
             time_taken(object.start_time, now(), 'Current time is:\t')
+        elif wait_for_user in ('q', 'Q'):
+            quit()
         else:
             print('\nInvalid input...\n')

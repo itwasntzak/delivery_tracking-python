@@ -29,16 +29,16 @@ class Split:
         self.start_time = to_datetime(read_data(self.start_time_path))
         while True:
             user_check = get_input(
-                'Are you sure you want to start a split?\n'
-                'Y: yes\n N: no', str)
+                'Are you sure you want to end the split?\n'
+                'Y: yes\nN: no\n', str)
             if user_check in ('y', 'Y'):
                 self.start_time = to_datetime(read_data(self.start_time_path))
-                if path.exists(self.miles_traveled_path):
+                if path.exists(self.miles_path):
                     self.miles_traveled =\
-                        float(read_data(self.miles_traveled_path))
+                        float(read_data(self.miles_path))
                 else:
                     self.miles_traveled = write_data(
-                        self.miles_traveled_path, miles_traveled(
+                        self.miles_path, miles_traveled(
                             'Split miles traveled:    #.#'))
                 if path.exists(self.end_time_path):
                     self.end_time = to_datetime(read_data(self.end_time_path))
@@ -62,7 +62,7 @@ class Split:
         while True:
             user_check = get_input(
                 'Are you sure you want to start a split?\n'
-                'Y: yes\n N: no', str)
+                'Y: yes\nN: no\n', str)
             if user_check in ('y', 'Y'):
                 write_data(self.start_time_path, now())
                 enter_to_continue()
