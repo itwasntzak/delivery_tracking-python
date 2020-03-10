@@ -1,6 +1,5 @@
-# todo: make way to be able take multipule deliveries on one trip
-# todo: add option to be able to start a second shift for the day (dif store)
-# todo: write functions for data anyalisis
+# cnsd: make way to be able take multipule deliveries on one trip
+# cnsd: add option to be able to start a second shift for the day (dif store)
 
 from input_data import get_input
 from os import path, mkdir
@@ -11,7 +10,7 @@ from utility import now
 if not path.exists('shifts'):
     mkdir('shifts')
 while True:
-    shift = Shift(now().date())
+    shift = Shift(now())
     # check if shift has been completed
     if path.exists(path.join(shift.path, 'shift_info.txt')):
         user_choice = get_input(

@@ -28,6 +28,26 @@ class Delivery:
             path.join(self.path, 'extra_stop_numbers.txt')
         self.delivery_info_path = path.join(self.path, 'delivery_info.txt')
 
+    def card_tips(self):
+        card_tips = []
+        for items in self.orders:
+            order = self.orders[len(card_tips)]
+            if order.tip_type == 1:
+                card_tips.append(order.tip)
+            elif order.tip_type in (0, 2):
+                pass
+        return sum(card_tips)
+
+    def cash_tips(self):
+        cash_tips = []
+        for items in self.orders:
+            order = self.orders[len(cash_tips)]
+            if order.tip_type == 2:
+                cash_tips.append(order.tip)
+            elif order.tip_type in (0, 1):
+                pass
+        return sum(cash_tips)
+
     def consolidate(self):
         data = str(self.miles_traveled) + ','\
             + str(self.average_speed) + ','\
@@ -149,8 +169,8 @@ class Delivery:
                 # enter data for orders
                 order_id = order_id_check(self)
                 order = Order(self, order_id).start()
-                self.order_numbers.append(order.id_number)
-                self.order.append(order)
+                self.order_numbers.append(order.id)
+                self.orders.append(order)
             break
         # driving back to store
         driving(self, 'Driving back to store...', 'store')
@@ -215,6 +235,13 @@ class Delivery:
         # display the total time taken on delivery
         time_taken(self.start_time, self.end_time, 'Delivery completed in:\t')
         return self
+
+    def total_tips(self):
+        # todo: make functions for getting total tip amount
+        tips = []
+        for items in self.orders:
+            tips.append(round(self.orders[len(tips)].tip, 2))
+        return sum(tips)
 
     def update_id_file(self):
         if path.exists(self.parent.delivery_numbers_path):

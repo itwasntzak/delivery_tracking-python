@@ -8,6 +8,93 @@ from utility import append_data, enter_to_continue, miles_traveled, now,\
     read_data, to_datetime, write_data
 
 
+def load_all_shifts():
+    shift_numbers_list = read_data('shift_numbers.txt').split(',')
+    shift_list = []
+    for amount in shift_numbers_list:
+        id = to_datetime(shift_numbers_list[len(shift_list)] + ' 00:00:00.0')
+        shift_list.append(Shift(id).load())
+    return shift_list
+
+
+def load_current_month_shifts():
+    current_month = now().month
+    all_shifts = load_all_shifts()
+    if path.exists(path.join('shifts', str(now().date()))):
+        today = Shift(now()).load_current()
+        all_shifts.append(today)
+    current_month_shifts = []
+    for item in all_shifts:
+        if item.id.month == current_month:
+            current_month_shifts.append(item)
+        else:
+            pass
+    return current_month_shifts
+
+
+def load_current_week_shifts():
+    current_week = now().isocalendar()[1]
+    all_shifts = load_all_shifts()
+    if path.exists(path.join('shifts', str(now().date()))):
+        today = Shift(now()).load_current()
+        all_shifts.append(today)
+    current_week_shifts = []
+    for item in all_shifts:
+        if item.id.isocalendar()[1] == current_week:
+            current_week_shifts.append(item)
+        else:
+            pass
+    return current_week_shifts
+
+
+def current_month_total_tips():
+    tips = []
+    shifts = load_current_month_shifts()
+    for item in shifts:
+        tips.append(shifts[len(tips)].total_tips())
+    return round(sum(tips), 2)
+
+
+def current_month_card_tips():
+    tips = []
+    shifts = load_current_month_shifts()
+    for item in shifts:
+        tips.append(shifts[len(tips)].card_tips())
+    return round(sum(tips), 2)
+
+
+def current_month_cash_tips():
+    tips = []
+    shifts = load_current_month_shifts()
+    for item in shifts:
+        tips.append(shifts[len(tips)].cash_tips())
+    return round(sum(tips), 2)
+
+
+def current_week_total_tips():
+    tips = []
+    shifts = load_current_week_shifts()
+    for item in shifts:
+        tips.append(shifts[len(tips)].total_tips())
+    return round(sum(tips), 2)
+
+
+def current_week_card_tips():
+    tips = []
+    shifts = load_current_week_shifts()
+    for item in shifts:
+        tips.append(shifts[len(tips)].card_tips())
+    return round(sum(tips), 2)
+
+
+def current_week_cash_tips():
+    tips = []
+    shifts = load_current_week_shifts()
+    for item in shifts:
+        tips.append(shifts[len(tips)].cash_tips())
+    return round(sum(tips), 2)
+
+
 def shift_menu(shift):
     while True:
         user_choice = get_input(
@@ -16,7 +103,7 @@ def shift_menu(shift):
                    '\nE: Start an extra stop'
                    '\nS: Start split'
                    '\nX: End shift'
-                   '\nI: Information on statistics of shift'
+                   '\nI: Information on shift'
                    '\nQ: Quit program\n\n',
             kind=str)
         if user_choice in ('d', 'D'):
@@ -35,8 +122,9 @@ def shift_menu(shift):
         elif user_choice in ('x', 'X'):
             shift.end()
         elif user_choice in ('i', 'I'):
-            # todo: write function for calculating current statistics
-            pass
+            print('Total tips made:   $' + str(shift.total_tips()))
+            print('Card tips made:   $' + str(shift.card_tips()))
+            print('Cash tips made:   $' + str(shift.cash_tips()))
         elif user_choice in ('q', 'Q'):
             quit()
         else:
@@ -44,9 +132,12 @@ def shift_menu(shift):
 
 
 class Shift:
-    def __init__(self, id_number):
-        self.id = id_number
-        self.path = path.join('shifts', str(id_number))
+    # todo: add ability to input over counter tips
+    # todo: start tracking device usage
+    # todo: add total money in hand input for data
+    def __init__(self, id):
+        self.id = id
+        self.path = path.join('shifts', str(id.date()))
         self.delivery_numbers = []
         self.deliveries = []
         self.extra_stop_numbers = []
@@ -71,6 +162,20 @@ class Shift:
         self.split_info_path = path.join(self.path, 'split_info.txt')
         self.shift_numbers_path = path.join('shift_numbers.txt')
 
+    def card_tips(self):
+        card_tips = []
+        for items in self.deliveries:
+            card_tips.append(
+                round(self.deliveries[len(card_tips)].card_tips(), 2))
+        return round(sum(card_tips), 2)
+
+    def cash_tips(self):
+        cash_tips = []
+        for items in self.deliveries:
+            cash_tips.append(
+                round(self.deliveries[len(cash_tips)].cash_tips(), 2))
+        return round(sum(cash_tips), 2)
+
     def consolidate(self):
         data = str(self.miles_traveled) + ','\
             + str(self.fuel_economy) + ','\
@@ -91,14 +196,15 @@ class Shift:
         self.update_id_file()
 
     def end(self):
-        # cnsd: adding a total money in hand input for data
         while True:
             user_check = get_input(
                 'Are you sure you want to complete today\'s shift?\n'
-                'Y: yes\n N: no', str)
+                'Y: yes\nN: no\n', str)
             if user_check in ('y', 'Y'):
                 # create file so program knows if end shift has been started
                 write_data(path.join(self.path, 'end_shift'), None)
+                # save time for end of shift
+                self.end_time = write_data(self.end_time_path, now())
                 # input total miles traveled for shift
                 self.miles_traveled = write_data(
                     self.total_miles_path,  miles_traveled(
@@ -120,11 +226,9 @@ class Shift:
                         '\nIs this correct? [y/n]\n', str, 'y', 'n'))
                 # input extra claimed/reported tips
                 self.extra_tips_claimed = write_data(
-                    self.extra_tips_path, input_data(
+                    self.extra_tips_claimed_path, input_data(
                         '\nExtra tips claimed for shift:    $#.##\n$', float,
                         '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
-                # save time for end of shift
-                self.end_time = write_data(self.end_time_path, now())
                 remove(path.join(self.path, 'end_shift'))
                 self.consolidate()
                 print('Shift has been end!')
@@ -228,6 +332,8 @@ class Shift:
                 print('\nInvalid input...')
 
     def resume_end(self):
+        if path.exists(self.end_time_path):
+            self.end_time = to_datetime(read_data(self.end_time_path))
         if path.exists(self.total_miles_path):
             self.miles_traveled = float(read_data(self.total_miles_path))
         if path.exists(self.fuel_economy_path):
@@ -239,10 +345,11 @@ class Shift:
         if path.exists(self.extra_tips_claimed_path):
             self.extra_tips_claimed =\
                 float(read_data(self.extra_tips_claimed_path))
-        if path.exists(self.end_time_path):
-            self.end_time = to_datetime(read_data(self.end_time_path))
         while True:
-            if not path.exists(self.total_miles_path):
+            if not path.exists(self.end_time_path):
+                # save time for end of shift
+                self.end_time = write_data(self.end_time_path, now())
+            elif not path.exists(self.total_miles_path):
                 # input total miles traveled for shift
                 self.miles_traveled = write_data(
                     self.total_miles_path, miles_traveled(
@@ -271,9 +378,6 @@ class Shift:
                     self.extra_tips_claimed_path, input_data(
                         '\nExtra tips claimed for shift:    $#.##\n$', float,
                         '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
-            elif not path.exists(self.end_time_path):
-                # save time for end of shift
-                self.end_time = write_data(self.end_time_path, now())
             else:
                 break
         remove(path.join(self.path, 'end_shift'))
@@ -304,6 +408,12 @@ class Shift:
         print('\nShift has been started!\n')
         enter_to_continue()
         exit()
+
+    def total_tips(self):
+        tips = []
+        for items in self.deliveries:
+            tips.append(round(self.deliveries[len(tips)].total_tips(), 2))
+        return round(sum(tips), 2)
 
     def update_id_file(self):
         if path.exists(self.shift_numbers_path):

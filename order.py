@@ -111,10 +111,10 @@ class Order:
     def load(self):
         # todo: need to take into account missing data
         order_data = read_data(self.order_file_path).split(',')
-        self.tip = order_data[0]
-        self.tip_type = order_data[1]
-        self.miles_traveled = order_data[2]
-        self.end_time = order_data[3]
+        self.tip = float(order_data[0])
+        self.tip_type = int(order_data[1])
+        self.miles_traveled = float(order_data[2])
+        self.end_time = to_datetime(order_data[3])
         return self
 
     def load_current(self):
