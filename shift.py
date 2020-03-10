@@ -47,6 +47,17 @@ def load_current_week_shifts():
     return current_week_shifts
 
 
+def current_month_total_in_hand():
+    tips = []
+    mileage = []
+    shifts = load_current_month_shifts()
+    for item in shifts:
+        tips.append(shifts[len(tips)].total_tips())
+        mileage.append(shifts[len(mileage)].mileage_paid)
+    money = round(sum(tips), 2) + round(sum(mileage), 2)
+    return round(money, 2)
+
+
 def current_month_total_tips():
     tips = []
     shifts = load_current_month_shifts()
@@ -69,6 +80,17 @@ def current_month_cash_tips():
     for item in shifts:
         tips.append(shifts[len(tips)].cash_tips())
     return round(sum(tips), 2)
+
+
+def current_week_total_in_hand():
+    tips = []
+    mileage = []
+    shifts = load_current_week_shifts()
+    for item in shifts:
+        tips.append(shifts[len(tips)].total_tips())
+        mileage.append(shifts[len(mileage)].mileage_paid)
+    money = round(sum(tips), 2) + round(sum(mileage), 2)
+    return round(money, 2)
 
 
 def current_week_total_tips():

@@ -237,7 +237,6 @@ class Delivery:
         return self
 
     def total_tips(self):
-        # todo: make functions for getting total tip amount
         tips = []
         for items in self.orders:
             tips.append(round(self.orders[len(tips)].tip, 2))
