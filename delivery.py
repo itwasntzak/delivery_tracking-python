@@ -30,23 +30,21 @@ class Delivery:
 
     def card_tips(self):
         card_tips = []
-        for items in self.orders:
-            order = self.orders[len(card_tips)]
+        for order in self.orders:
             if order.tip_type == 1:
                 card_tips.append(order.tip)
             elif order.tip_type in (0, 2):
                 pass
-        return sum(card_tips)
+        return round(sum(card_tips), 2)
 
     def cash_tips(self):
         cash_tips = []
-        for items in self.orders:
-            order = self.orders[len(cash_tips)]
+        for order in self.orders:
             if order.tip_type == 2:
                 cash_tips.append(order.tip)
             elif order.tip_type in (0, 1):
                 pass
-        return sum(cash_tips)
+        return round(sum(cash_tips), 2)
 
     def consolidate(self):
         data = str(self.miles_traveled) + ','\
@@ -238,9 +236,9 @@ class Delivery:
 
     def total_tips(self):
         tips = []
-        for items in self.orders:
-            tips.append(round(self.orders[len(tips)].tip, 2))
-        return sum(tips)
+        for order in self.orders:
+            tips.append(order.tip)
+        return round(sum(tips), 2)
 
     def update_id_file(self):
         if path.exists(self.parent.delivery_numbers_path):

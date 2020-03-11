@@ -10,110 +10,70 @@ from utility import append_data, enter_to_continue, miles_traveled, now,\
 
 def load_all_shifts():
     shift_numbers_list = read_data('shift_numbers.txt').split(',')
-    shift_list = []
-    for amount in shift_numbers_list:
-        id = to_datetime(shift_numbers_list[len(shift_list)] + ' 00:00:00.0')
-        shift_list.append(Shift(id).load())
-    return shift_list
-
-
-def load_current_month_shifts():
-    current_month = now().month
-    all_shifts = load_all_shifts()
+    shifts_list = []
+    for shift_id in shift_numbers_list:
+        shifts_list.append(Shift(to_datetime(shift_id + ' 00:00:00.0')).load())
     if path.exists(path.join('shifts', str(now().date()))):
-        today = Shift(now()).load_current()
-        all_shifts.append(today)
+        shifts_list.append(Shift(now()).load_current())
+    return shifts_list
+
+
+def load_current_month():
+    current_month = now().month
+    shifts_list = load_all_shifts()
     current_month_shifts = []
-    for item in all_shifts:
-        if item.id.month == current_month:
-            current_month_shifts.append(item)
+    for shift in shifts_list:
+        if shift.id.month == current_month:
+            current_month_shifts.append(shift)
         else:
             pass
     return current_month_shifts
 
 
-def load_current_week_shifts():
+def load_current_week():
     current_week = now().isocalendar()[1]
-    all_shifts = load_all_shifts()
-    if path.exists(path.join('shifts', str(now().date()))):
-        today = Shift(now()).load_current()
-        all_shifts.append(today)
+    shifts_list = load_all_shifts()
     current_week_shifts = []
-    for item in all_shifts:
-        if item.id.isocalendar()[1] == current_week:
-            current_week_shifts.append(item)
+    for shift in shifts_list:
+        if shift.id.isocalendar()[1] == current_week:
+            current_week_shifts.append(shift)
         else:
             pass
     return current_week_shifts
 
 
-def current_month_total_in_hand():
+def total_in_hand(load_function):
+    shifts_list = load_function
     tips = []
     mileage = []
-    shifts = load_current_month_shifts()
-    for item in shifts:
-        tips.append(shifts[len(tips)].total_tips())
-        mileage.append(shifts[len(mileage)].mileage_paid)
-    money = round(sum(tips), 2) + round(sum(mileage), 2)
-    return round(money, 2)
+    for shift in shifts_list:
+        tips.append(shift.total_tips())
+        mileage.append(shift.mileage_paid)
+    money = round(round(sum(tips), 2) + round(sum(mileage), 2), 2)
+    return money
 
 
-def current_month_total_tips():
+def total_tips(load_function):
+    shifts_list = load_function
     tips = []
-    shifts = load_current_month_shifts()
-    for item in shifts:
-        tips.append(shifts[len(tips)].total_tips())
+    for shift in shifts_list:
+        tips.append(shift.total_tips())
     return round(sum(tips), 2)
 
 
-def current_month_card_tips():
+def card_tips(load_function):
+    shifts_list = load_function
     tips = []
-    shifts = load_current_month_shifts()
-    for item in shifts:
-        tips.append(shifts[len(tips)].card_tips())
+    for shift in shifts_list:
+        tips.append(shift.card_tips())
     return round(sum(tips), 2)
 
 
-def current_month_cash_tips():
+def cash_tips(load_function):
+    shifts_list = load_function
     tips = []
-    shifts = load_current_month_shifts()
-    for item in shifts:
-        tips.append(shifts[len(tips)].cash_tips())
-    return round(sum(tips), 2)
-
-
-def current_week_total_in_hand():
-    tips = []
-    mileage = []
-    shifts = load_current_week_shifts()
-    for item in shifts:
-        tips.append(shifts[len(tips)].total_tips())
-        mileage.append(shifts[len(mileage)].mileage_paid)
-    money = round(sum(tips), 2) + round(sum(mileage), 2)
-    return round(money, 2)
-
-
-def current_week_total_tips():
-    tips = []
-    shifts = load_current_week_shifts()
-    for item in shifts:
-        tips.append(shifts[len(tips)].total_tips())
-    return round(sum(tips), 2)
-
-
-def current_week_card_tips():
-    tips = []
-    shifts = load_current_week_shifts()
-    for item in shifts:
-        tips.append(shifts[len(tips)].card_tips())
-    return round(sum(tips), 2)
-
-
-def current_week_cash_tips():
-    tips = []
-    shifts = load_current_week_shifts()
-    for item in shifts:
-        tips.append(shifts[len(tips)].cash_tips())
+    for shift in shifts_list:
+        tips.append(shift.cash_tips())
     return round(sum(tips), 2)
 
 
@@ -186,16 +146,14 @@ class Shift:
 
     def card_tips(self):
         card_tips = []
-        for items in self.deliveries:
-            card_tips.append(
-                round(self.deliveries[len(card_tips)].card_tips(), 2))
+        for delivery in self.deliveries:
+            card_tips.append(round(delivery.card_tips(), 2))
         return round(sum(card_tips), 2)
 
     def cash_tips(self):
         cash_tips = []
-        for items in self.deliveries:
-            cash_tips.append(
-                round(self.deliveries[len(cash_tips)].cash_tips(), 2))
+        for delivery in self.deliveries:
+            cash_tips.append(round(delivery.cash_tips(), 2))
         return round(sum(cash_tips), 2)
 
     def consolidate(self):
@@ -433,12 +391,12 @@ class Shift:
 
     def total_tips(self):
         tips = []
-        for items in self.deliveries:
-            tips.append(round(self.deliveries[len(tips)].total_tips(), 2))
+        for delivery in self.deliveries:
+            tips.append(round(delivery.total_tips(), 2))
         return round(sum(tips), 2)
 
     def update_id_file(self):
         if path.exists(self.shift_numbers_path):
-            append_data(self.shift_numbers_path, ',' + str(self.id))
+            append_data(self.shift_numbers_path, ',' + str(self.id.date()))
         else:
-            write_data(self.shift_numbers_path, self.id)
+            write_data(self.shift_numbers_path, self.id.date())
