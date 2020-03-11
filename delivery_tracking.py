@@ -2,13 +2,12 @@
 # cnsd: add option to be able to start a second shift for the day (dif store)
 
 from input_data import get_input
-from os import chdir, path, mkdir
+from os import path, mkdir
 from shift import shift_menu, Shift
 from split import Split
 from utility import now
 
 
-chdir('delivery_tracking')
 if not path.exists('shifts'):
     mkdir('shifts')
 while True:
