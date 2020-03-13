@@ -14,20 +14,7 @@ while True:
     shift = Shift(now())
     # check if shift has been completed
     if path.exists(path.join(shift.path, 'shift_info.txt')):
-        user_choice = get_input(
-            'You have already completed a shift for today.\n'
-            'Please select an option:\n'
-            'R: Resume today\'s shift\n'
-            'O: Overwrite shift\n'
-            'Q: Quit program\n\n', str)
-        if user_choice in ('r', 'R'):
-            shift.resume_shift()
-        elif user_choice in ('o', 'O'):
-            shift.overwrite()
-        elif user_choice in ('q', 'Q'):
-            quit()
-        else:
-            print('\nInvalid input...\n')
+        shift.completed()
     # check if shift has started
     if not path.exists(shift.path):
         shift.start()
