@@ -47,7 +47,7 @@ class Split:
                 self.consolidate()
                 return self
             elif user_check in ('n', 'N'):
-                break
+                exit()
             else:
                 print('\nInvalid input...')
 

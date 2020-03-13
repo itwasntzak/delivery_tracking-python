@@ -8,13 +8,14 @@ from utility import append_data, enter_to_continue, miles_traveled, now,\
     read_data, to_datetime, write_data
 
 
+# todo: make average shifts per month function
+
+
 def load_all_shifts():
     shift_numbers_list = read_data('shift_numbers.txt').split(',')
     shifts_list = []
     for shift_id in shift_numbers_list:
         shifts_list.append(Shift(to_datetime(shift_id + ' 00:00:00.0')).load())
-    if path.exists(path.join('shifts', str(now().date()))):
-        shifts_list.append(Shift(now()).load_current())
     return shifts_list
 
 
@@ -42,8 +43,75 @@ def load_current_week():
     return current_week_shifts
 
 
-def total_in_hand(load_function):
-    shifts_list = load_function
+def average_deliveries_per_shift(shifts_list):
+    deliveries = []
+    for shift in shifts_list:
+        deliveries.append(len(shift.deliveries))
+    return round(sum(deliveries)/len(shifts_list), 3)
+
+
+def average_orders_per_delivery(shifts_list):
+    deliveries = []
+    orders = []
+    for shift in shifts_list:
+        deliveries.append(len(shift.deliveries))
+        for delivery in shift.deliveries:
+            orders.append(len(delivery.orders))
+    return round(sum(orders)/sum(deliveries), 3)
+
+
+def average_orders_per_shift(shifts_list):
+    orders = []
+    for shift in shifts_list:
+        orders.append(len(shift.total_orders()))
+    return round(sum(orders)/len(shifts_list), 3)
+
+
+def average_tip_per_delivery(shifts_list):
+    deliveries = []
+    for shift in shifts_list:
+        for delivery in shift.deliveries:
+            deliveries.append(delivery)
+    return round(total_tips(shifts_list)/len(deliveries), 2)
+
+
+def average_tip_per_order(shifts_list):
+    orders = []
+    for shift in shifts_list:
+        orders.append(len(shift.total_orders()))
+    return round(total_tips(shifts_list)/sum(orders), 2)
+
+
+def average_tip_per_shift(shifts_list):
+    average_tips = []
+    for shift in shifts_list:
+        average_tips.append(shift.average_tip_per_delivery())
+    return round(sum(average_tips)/len(shifts_list), 2)
+
+
+def avereage_total_in_hand_per_shift(shifts_list):
+    return round(total_in_hand(shifts_list)/len(shifts_list), 2)
+
+
+def average_total_tips_per_shift(shifts_list):
+    return round(total_tips(shifts_list)/len(shifts_list), 2)
+
+
+def card_tips(shifts_list):
+    tips = []
+    for shift in shifts_list:
+        tips.append(shift.card_tips())
+    return round(sum(tips), 2)
+
+
+def cash_tips(shifts_list):
+    tips = []
+    for shift in shifts_list:
+        tips.append(shift.cash_tips())
+    return round(sum(tips), 2)
+
+
+def total_in_hand(shifts_list):
     tips = []
     mileage = []
     for shift in shifts_list:
@@ -53,27 +121,10 @@ def total_in_hand(load_function):
     return money
 
 
-def total_tips(load_function):
-    shifts_list = load_function
+def total_tips(shifts_list):
     tips = []
     for shift in shifts_list:
         tips.append(shift.total_tips())
-    return round(sum(tips), 2)
-
-
-def card_tips(load_function):
-    shifts_list = load_function
-    tips = []
-    for shift in shifts_list:
-        tips.append(shift.card_tips())
-    return round(sum(tips), 2)
-
-
-def cash_tips(load_function):
-    shifts_list = load_function
-    tips = []
-    for shift in shifts_list:
-        tips.append(shift.cash_tips())
     return round(sum(tips), 2)
 
 
@@ -104,9 +155,7 @@ def shift_menu(shift):
         elif user_choice in ('x', 'X'):
             shift.end()
         elif user_choice in ('i', 'I'):
-            print('Total tips made:   $' + str(shift.total_tips()))
-            print('Card tips made:   $' + str(shift.card_tips()))
-            print('Cash tips made:   $' + str(shift.cash_tips()))
+            shift.statistics()
         elif user_choice in ('q', 'Q'):
             quit()
         else:
@@ -144,6 +193,12 @@ class Shift:
         self.split_info_path = path.join(self.path, 'split_info.txt')
         self.shift_numbers_path = path.join('shift_numbers.txt')
 
+    def average_tip_per_delivery(self):
+        return round(self.total_tips()/len(self.deliveries), 2)
+
+    def average_tip_per_order(self):
+        return round(self.total_tips()/self.total_orders(), 2)
+
     def card_tips(self):
         card_tips = []
         for delivery in self.deliveries:
@@ -155,6 +210,22 @@ class Shift:
         for delivery in self.deliveries:
             cash_tips.append(round(delivery.cash_tips(), 2))
         return round(sum(cash_tips), 2)
+
+    def completed(self):
+        user_choice = get_input(
+            'You have already completed a shift for today.\n'
+            'Please select an option:\n'
+            'R: Resume today\'s shift\n'
+            'O: Overwrite shift\n'
+            'Q: Quit program\n\n', str)
+        if user_choice in ('r', 'R'):
+            self.resume_shift()
+        elif user_choice in ('o', 'O'):
+            self.overwrite()
+        elif user_choice in ('q', 'Q'):
+            quit()
+        else:
+            print('\nInvalid input...\n')
 
     def consolidate(self):
         data = str(self.miles_traveled) + ','\
@@ -218,6 +289,16 @@ class Shift:
                 break
             else:
                 print('\nInvalid input...')
+
+    def statistics(self):
+        print('Total tips:    $' + str(self.total_tips()))
+        print('Card tips:    $' + str(self.card_tips()))
+        print('Cash tips:    $' + str(self.cash_tips()))
+        print('Number of deliveries:    ' + str(len(self.deliveries)))
+        print('Number of orders:    ' + str(self.total_orders()))
+        print('Average tip per:')
+        print('    Delivery:    ' + str(self.average_tip_per_delivery()))
+        print('    Order:    ' + str(self.average_tip_per_order()))
 
     def load(self):
         # todo: need to take into account missing data
@@ -388,6 +469,13 @@ class Shift:
         print('\nShift has been started!\n')
         enter_to_continue()
         exit()
+
+    def total_orders(self):
+        total_orders = []
+        for delivery in self.deliveries:
+            for order in delivery.orders:
+                total_orders.append(order)
+        return total_orders
 
     def total_tips(self):
         tips = []
