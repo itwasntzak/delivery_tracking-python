@@ -9,6 +9,9 @@ from utility import append_data, enter_to_continue, miles_traveled, now,\
 
 
 # todo: make average shifts per month function
+# todo: make average miles per delivery function
+# todo: make avereage speed per delviery function
+# todo: make average delivery per hour function
 
 
 def load_all_shifts():
@@ -193,11 +196,23 @@ class Shift:
         self.split_info_path = path.join(self.path, 'split_info.txt')
         self.shift_numbers_path = path.join('shift_numbers.txt')
 
+    def average_miles_per_delivery(self):
+        miles_traveled = []
+        for delivery in self.deliveries:
+            miles_traveled.append(delivery.miles_traveled)
+        return round(sum(miles_traveled)/len(self.deliveries), 1)
+
+    def average_speed_per_delivery(self):
+        average_speeds = []
+        for delivery in self.deliveries:
+            average_speeds.append(delivery.average_speed)
+        return round(sum(average_speeds)/len(self.deliveries))
+
     def average_tip_per_delivery(self):
         return round(self.total_tips()/len(self.deliveries), 2)
 
     def average_tip_per_order(self):
-        return round(self.total_tips()/self.total_orders(), 2)
+        return round(self.total_tips()/len(self.total_orders()), 2)
 
     def card_tips(self):
         card_tips = []
@@ -295,7 +310,7 @@ class Shift:
         print('Card tips:    $' + str(self.card_tips()))
         print('Cash tips:    $' + str(self.cash_tips()))
         print('Number of deliveries:    ' + str(len(self.deliveries)))
-        print('Number of orders:    ' + str(self.total_orders()))
+        print('Number of orders:    ' + str(len(self.total_orders())))
         print('Average tip per:')
         print('    Delivery:    ' + str(self.average_tip_per_delivery()))
         print('    Order:    ' + str(self.average_tip_per_order()))
