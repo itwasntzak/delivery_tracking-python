@@ -15,7 +15,7 @@ from utility import append_data, enter_to_continue, now, read_data,\
 
 
 def load_all_shifts():
-    shift_numbers_list = read_data('shift_numbers.txt').split(',')
+    shift_numbers_list = read_data('shift_ids.txt').split(',')
     shifts_list = []
     for shift_id in shift_numbers_list:
         shifts_list.append(Shift(to_datetime(shift_id + ' 00:00:00.0')).load())
@@ -256,17 +256,27 @@ class Shift:
 
     def load(self):
         # todo: need to fix shift files to include device usage paid
-        # todo: need to take into account missing data
-        # cnsd: when evaluating missing data, if missing part of time. dismiss all time
+        # cnsd: when evaluating missing data, if missing part of time
         shift_data = read_data(self.shift_info_path).split(',')
-        self.miles_traveled = float(shift_data[0])
-        self.fuel_economy = float(shift_data[1])
-        self.mileage_paid = float(shift_data[2])
-        self.device_usage_paid = float(shift_data[3])
-        self.extra_tips_claimed = float(shift_data[4])
-        self.total_hours = float(shift_data[5])
-        self.start_time = to_datetime(shift_data[6])
-        self.end_time = to_datetime(shift_data[7])
+        shift_data = list(filter(None, shift_data))
+        if len(shift_data) == 7:
+            self.miles_traveled = float(shift_data[0])
+            self.fuel_economy = float(shift_data[1])
+            self.mileage_paid = float(shift_data[2])
+            self.device_usage_paid = 0.0
+            self.extra_tips_claimed = float(shift_data[3])
+            self.total_hours = float(shift_data[4])
+            self.start_time = to_datetime(shift_data[5])
+            self.end_time = to_datetime(shift_data[6])
+        elif len(shift_data) == 8:
+            self.miles_traveled = float(shift_data[0])
+            self.fuel_economy = float(shift_data[1])
+            self.mileage_paid = float(shift_data[2])
+            self.device_usage_paid = float(shift_data[3])
+            self.extra_tips_claimed = float(shift_data[4])
+            self.total_hours = float(shift_data[5])
+            self.start_time = to_datetime(shift_data[6])
+            self.end_time = to_datetime(shift_data[7])
         if path.exists(self.delivery_ids_path):
             delivery_numbers = read_data(self.delivery_ids_path).split(',')
             self.delivery_ids = [int(item) for item in delivery_numbers]
