@@ -2,19 +2,19 @@
 
 def input_data(prompt1, input_type1,
                prompt2, input_type2,
-               option_yes, option_no,
+               option_1, option_2,
                symbol=''):
+    # todo: change the data_2 from == to in to be able to take tuples
     while True:
         data = get_input(
             prompt=prompt1, kind=input_type1)
         while True:
-            data2 = get_input(
+            data_2 = get_input(
                 prompt='\n' + symbol + str(data) + prompt2,
-                kind=input_type2
-            )
-            if data2 == option_yes:
+                kind=input_type2)
+            if data_2 == option_1:
                 return data
-            elif data2 == option_no:
+            elif data_2 == option_2:
                 break
             else:
                 print('\nInvalid input...')

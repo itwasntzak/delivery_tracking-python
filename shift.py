@@ -139,6 +139,7 @@ def shift_menu(shift):
                    'What would you like to do?\n'
                    'D: Start delivery\n'
                    'E: Start an extra stop\n'
+                   'C: Enter carry out tip\n'
                    'S: Start split\n'
                    'X: End shift\n'
                    'I: Information on shift\n'
@@ -150,10 +151,11 @@ def shift_menu(shift):
             shift.delivery_ids.append(delivery.id)
             shift.deliveries.append(delivery)
         elif user_choice in ('e', 'E'):
-    # todo: still need to work how to update shift extra stop id & parent lists
             extra_stop = Extra_Stop(shift).start()
             shift.extra_stop_ids.append(extra_stop.id)
             shift.extra_stops.append(extra_stop)
+        elif user_choice in ('c', 'C'):
+            shift.carry_out_tip()
         elif user_choice in ('s', 'S'):
             Split(shift).start()
         elif user_choice in ('x', 'X'):
@@ -176,8 +178,11 @@ class Shift:
         self.deliveries = []
         self.extra_stop_ids = []
         self.extra_stops = []
+        self.carry_out_tips = []
         # list of all paths
         try:
+            self.carry_out_tips_path =\
+                path.join(self.path, 'carry_out_tips.txt')
             self.total_miles_path =\
                 path.join(self.path, 'total_miles_traveled.txt')
             self.fuel_economy_path = path.join(self.path, 'fuel_economy.txt')
@@ -288,9 +293,41 @@ class Shift:
             self.extra_stop_ids = [int(item) for item in extra_stop_ids]
             for extra_stop_id in self.extra_stop_ids:
                 self.extra_stops.append(Extra_Stop(self, extra_stop_id).load())
+        if path.exists(self.carry_out_tips_path):
+            # reading from the file
+            tip_data = []
+            with open(self.carry_out_tips_path, 'r') as file:
+                tip_list = file.readlines()
+                for carry_out_tip in tip_list:
+                    tip_data.append(carry_out_tip.split(','))
+            # removing \n from any strings it occurs
+            for tip in tip_data:
+                tip_data_list = []
+                for data in tip:
+                    tip_data_list.append(data.rstrip('\n'))
+                self.carry_out_tips.append(tip_data_list)
         if path.exists(self.split_info_path):
             self.split = Split(self).load()
         return self
+
+    def carry_out_tip(self):
+        # todo: reformat strings with format
+        while True:
+            confirmation = get_input(
+                '\nAre you sure you want to add a carry out tip? [y/n]\n\n',
+                str)
+            if confirmation in ('y', 'Y'):
+                tip = self.input_carry_out_tip()
+                tip_type = self.input_carry_out_tip_type()
+                data = f'{tip},{tip_type}\n'
+                if path.exists(self.carry_out_tips_path):
+                    append_data(self.carry_out_tips_path, data)
+                else:
+                    write_data(self.carry_out_tips_path, data)
+            elif confirmation in ('n', 'N'):
+                break
+            else:
+                print('\nInvalid input...')
 
     def start(self):
         mkdir(self.path)
@@ -306,6 +343,40 @@ class Shift:
             write_data(self.shift_ids_path, self.id.date())
 
     # methods for inputting data
+    def input_carry_out_tip(self):
+        return input_data(
+            f"\n{'Enter tip amount:':<10}{'$#.##':>12}\n", float,
+            f"\n{'Is this correct?':<10}{'[y/n]':>13}\n", str, 'y', 'n')
+
+    def input_carry_out_tip_type(self):
+        card = 1
+        cash = 2
+        while True:
+            user_option = input_data.get_input(
+                '\nType of tip?\n'
+                '1. For card\n'
+                '2. For cash\n', int)
+            if user_option == 1:
+                check_correct = input_data.get_input(
+                   '\nCard\n'
+                   f"{'Is this correct?':<10}{'[y/n]':>13}\n", str)
+                if check_correct == 'y':
+                    return card
+                elif check_correct == 'n':
+                    continue
+                else:
+                    print('\nInvalid input...')
+            elif user_option == 2:
+                confirmation = input_data.get_input(
+                    '\nCash\n'
+                    f"{'Is this correct?':<10}{'[y/n]':>13}\n", str)
+                if confirmation == 'y':
+                    return cash
+                elif confirmation == 'n':
+                    continue
+                else:
+                    print('\nInvalid input...')
+
     def input_device_usage_paid(self):
         # todo: reformat strings with format
         return write_data(self.device_usage_paid_path, input_data(
@@ -350,37 +421,32 @@ class Shift:
             self.start_time = write_data(self.start_time_path, now())
         if path.exists(self.delivery_ids_path):
             delivery_ids = read_data(self.delivery_ids_path).split(',')
-            self.delivery_ids = [int(item) for item in delivery_ids]
-            for value in range(len(self.delivery_ids)):
-                delivery_path = path.join(self.path, str(len(self.deliveries)))
+            for delivery_id in delivery_ids:
+                self.delivery_ids.append(int(delivery_id))
+                delivery_path = path.join(self.path, delivery_id)
                 self.deliveries.append(Delivery(self, delivery_path).load())
         if path.exists(self.extra_stop_ids_path):
-            extra_stop_numbers =\
-                read_data(self.extra_stop_ids_path).split(',')
-            self.extra_stop_ids =\
-                [int(item) for item in extra_stop_numbers]
-            for value in range(len(self.extra_stop_ids)):
-                extra_stop_id = self.extra_stop_ids[len(self.extra_stops)]
+            extra_stop_ids = read_data(self.extra_stop_ids_path).split(',')
+            for extra_stop_id in extra_stop_ids:
+                self.extra_stop_ids.append(int(extra_stop_id))
                 self.extra_stops.append(Extra_Stop(self, extra_stop_id).load())
+        if path.exists(self.carry_out_tips_path):
+            # reading from the file
+            tip_data = []
+            with open(self.carry_out_tips_path, 'r') as file:
+                tip_list = file.readlines()
+                for carry_out_tip in tip_list:
+                    tip_data.append(carry_out_tip.split(','))
+            # removing \n from any strings it occurs
+            for tip in tip_data:
+                tip_data_list = []
+                for data in tip:
+                    tip_data_list.append(data.rstrip('\n'))
+                self.carry_out_tips.append(tip_data_list)
         if path.exists(self.split_info_path):
             self.split = Split(self).load()
-        while True:
-            # check if an extra stop has been started
-            if path.exists(path.join(self.path, 'extra_stop')):
-                extra_stop = Extra_Stop(self).load_current()
-                self.extra_stop_ids.append(extra_stop.id)
-                self.extra_stops.append(extra_stop)
-            # check if delivery directory exist, if so complete it
-            elif path.exists(path.join(self.path, 'delivery')):
-                delivery_path = path.join(self.path, 'delivery')
-                delivery = Delivery(self, delivery_path).load_current()
-                self.delivery_ids.append(delivery.id)
-                self.deliveries.append(delivery)
-            # check if end shift has been started
-            elif path.exists(path.join(self.path, 'end_shift')):
-                self.load_end()
-                self.resume_end()
-            return self
+        self.resume()
+        return self
 
     def load_end(self):
         if path.exists(self.end_time_path):
@@ -400,6 +466,26 @@ class Shift:
             self.extra_tips_claimed =\
                 float(read_data(self.extra_tips_claimed_path))
         return self
+
+    def resume(self):
+        while True:
+            # check if an extra stop has been started
+            if path.exists(path.join(self.path, 'extra_stop')):
+                extra_stop = Extra_Stop(self).load_current()
+                self.extra_stop_ids.append(extra_stop.id)
+                self.extra_stops.append(extra_stop)
+            # check if delivery directory exist, if so complete it
+            elif path.exists(path.join(self.path, 'delivery')):
+                delivery_path = path.join(self.path, 'delivery')
+                delivery = Delivery(self, delivery_path).load_current()
+                self.delivery_ids.append(delivery.id)
+                self.deliveries.append(delivery)
+            # check if end shift has been started
+            elif path.exists(path.join(self.path, 'end_shift')):
+                self.load_end()
+                self.resume_end()
+            else:
+                return self
 
     def resume_end(self):
         while True:
