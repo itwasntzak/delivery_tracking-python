@@ -87,4 +87,5 @@ def select_statistic(shifts_list):
             print('\nInvalid input...\n\n')
 
 
+chdir('delivery_tracking')
 select_statistic(select_shifts())
