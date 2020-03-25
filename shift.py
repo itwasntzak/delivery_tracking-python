@@ -321,9 +321,13 @@ class Shift:
                 tip_type = self.input_carry_out_tip_type()
                 data = f'{tip},{tip_type}\n'
                 if path.exists(self.carry_out_tips_path):
-                    append_data(self.carry_out_tips_path, data)
+                    self.carry_out_tips.append(
+                        append_data(self.carry_out_tips_path, data))
                 else:
-                    write_data(self.carry_out_tips_path, data)
+                    self.carry_out_tips.append(
+                        write_data(self.carry_out_tips_path, data))
+                break
+
             elif confirmation in ('n', 'N'):
                 break
             else:
@@ -352,12 +356,12 @@ class Shift:
         card = 1
         cash = 2
         while True:
-            user_option = input_data.get_input(
+            user_option = get_input(
                 '\nType of tip?\n'
                 '1. For card\n'
                 '2. For cash\n', int)
             if user_option == 1:
-                check_correct = input_data.get_input(
+                check_correct = get_input(
                    '\nCard\n'
                    f"{'Is this correct?':<10}{'[y/n]':>13}\n", str)
                 if check_correct == 'y':
@@ -367,7 +371,7 @@ class Shift:
                 else:
                     print('\nInvalid input...')
             elif user_option == 2:
-                confirmation = input_data.get_input(
+                confirmation = get_input(
                     '\nCash\n'
                     f"{'Is this correct?':<10}{'[y/n]':>13}\n", str)
                 if confirmation == 'y':
