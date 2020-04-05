@@ -7,7 +7,6 @@ from split import Split
 from utility import now
 
 
-chdir('delivery_tracking')
 if not path.exists('shifts'):
     mkdir('shifts')
 while True:
