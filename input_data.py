@@ -1,20 +1,20 @@
 
 
-def input_data(prompt1, input_type1,
-               prompt2, input_type2,
+def input_data(prompt_1, input_type_1,
+               prompt_2, input_type_2,
                option_1, option_2,
-               symbol=''):
-    # todo: change the data_2 from == to in to be able to take tuples
+               symbol='', word=''):
     while True:
         data = get_input(
-            prompt=prompt1, kind=input_type1)
+            prompt=prompt_1, kind=input_type_1)
         while True:
             data_2 = get_input(
-                prompt='\n' + symbol + str(data) + prompt2,
-                kind=input_type2)
-            if data_2 == option_1:
+                prompt=f'\n{symbol}{data}{word}\n'
+                       f'{prompt_2}\n',
+                kind=input_type_2)
+            if data_2 in option_1:
                 return data
-            elif data_2 == option_2:
+            elif data_2 in option_2:
                 break
             else:
                 print('\nInvalid input...')

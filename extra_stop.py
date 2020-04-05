@@ -1,6 +1,6 @@
 from os import path, remove
 
-import input_data
+from input_data import input_data
 from utility import append_data, now, read_data, to_datetime,\
     time_taken, write_data
 
@@ -44,18 +44,14 @@ class Extra_Stop:
 
     # methods for extra stop tracking
     def consolidate(self):
-        # todo: reformat strings with format
         if isinstance(self.parent, type(parent_type(self.parent, 'shift'))):
-            data = str(self.location) + ','\
-                + str(self.reason) + ','\
-                + str(self.miles_traveled) + ','\
-                + str(self.start_time) + ','\
-                + str(self.end_time)
-        elif isinstance(self.parent, type(parent_type(self.parent, 'delivery'))):
-            data = str(self.location) + ','\
-                + str(self.reason) + ','\
-                + str(self.miles_traveled) + ','\
-                + str(self.end_time)
+            data = '{0},{1},{2},{3},{4}'.format(
+                self.location, self.reason, self.miles_traveled,
+                self.start_time, self.end_time)
+        elif isinstance(self.parent, type(
+                parent_type(self.parent, 'delivery'))):
+            data = '{0},{1},{2},{3}'.format(
+                self.location, self.reason, self.miles_traveled, self.end_time)
         write_data(self.extra_stop_path, data)
         # remove files that are no longer needed
         remove(self.location_path)
@@ -70,16 +66,17 @@ class Extra_Stop:
         remove(path.join(self.path, 'extra_stop'))
 
     def load(self):
-        # todo: need to take into account missing data
         if path.exists(self.extra_stop_path):
             extra_stop_data = read_data(self.extra_stop_path).split(',')
-            if isinstance(self.parent, type(parent_type(self.parent, 'shift'))):
+            if isinstance(self.parent, type(
+                    parent_type(self.parent, 'shift'))):
                 self.location = extra_stop_data[0]
                 self.reason = extra_stop_data[1]
                 self.miles_traveled = extra_stop_data[2]
                 self.start_time = extra_stop_data[3]
                 self.end_time = extra_stop_data[4]
-            elif isinstance(self.parent, type(parent_type(self.parent, 'delivery'))):
+            elif isinstance(self.parent, type(
+                    parent_type(self.parent, 'delivery'))):
                 self.location = extra_stop_data[0]
                 self.reason = extra_stop_data[1]
                 self.miles_traveled = extra_stop_data[2]
@@ -114,34 +111,34 @@ class Extra_Stop:
         return self
 
     def update_id_file(self):
-        # todo: figure out how to update parent extra stop lists with this info
         if path.exists(self.extra_stop_ids_path):
             append_data(self.extra_stop_ids_path, ',' + str(self.id))
         else:
             write_data(self.extra_stop_ids_path, self.id)
 
     def update_id_number(self):
-        # todo: needs to update shift's extra stop id without having to reload
-        write_data(self.extra_stop_id_path, self.id + 1)
+        self.id += 1
+        write_data(self.extra_stop_id_path, self.id)
 
     # methods for inputting data
     def input_location(self):
-        # todo: reformat strings with format
-        return write_data(self.location_path, input_data.input_data(
-            '\nExtra stop location:\n', str,
-            '\nIs this correct? [y/n]\n', str, 'y', 'n'))
+        return write_data(self.location_path, input_data(
+            f"\n{'Extra stop location:'}\n", str,
+            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'Y')))
 
     def input_miles_traveled(self):
-        # todo: reformat strings with format
-        return write_data(self.miles_path, input_data.input_data(
-            '\nExtra stop miles traveled:    #.#\n', float,
-            ' miles\nIs this correct? [y/n]\n', str, 'y', 'n'))
+        return write_data(self.miles_path, input_data(
+            f"\n{'Extra stop miles traveled:'} {'#.#'}\n", float,
+            ' miles\n'
+            f"{'Is this correct?'}         {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'Y')))
 
     def input_reason(self):
-        # todo: reformat strings with format
-        return write_data(self.reason_path, input_data.input_data(
+        return write_data(self.reason_path, input_data(
             '\nReason for extra stop?\n', str,
-            '\nIs this correct? [y/n]\n', str, 'y', 'n'))
+            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'Y')))
 
     # methods for continuing tracking if program ends
     def load_current(self):

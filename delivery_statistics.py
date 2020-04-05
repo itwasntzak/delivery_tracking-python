@@ -1,13 +1,12 @@
 from os import chdir
 
-import input_data
+from input_data import get_input
 import shift
 
 
 def select_shifts():
     while True:
-        # todo: reformat strings with format
-        user_choice = input_data.get_input(
+        user_choice = get_input(
             '\n\nSelect a time range to calculate:\n'
             'A. All shifts\n'
             'M. Current month\n'
@@ -24,8 +23,7 @@ def select_shifts():
 
 def select_statistic(shifts_list):
     while True:
-        # todo: reformat strings with format
-        user_choice = input_data.get_input(
+        user_choice = get_input(
             '\n\nSelect the statistic you would like to see:\n'
             '1. Average deliveries per shift\n'
             '2. Average orders per shift\n'

@@ -1,16 +1,8 @@
 from os import path, remove
 
-import input_data
+from input_data import get_input, input_data
 from utility import append_data, now, read_data, time_taken,\
     to_datetime, write_data
-
-
-# function to check if order id number file exists
-def check_id_number(delivery):
-    if path.exists(delivery.id_path):
-        return int(read_data(delivery.id_path))
-    else:
-        return write_data(delivery.id_path, delivery.input_id_number())
 
 
 class Order:
@@ -30,15 +22,16 @@ class Order:
         self.tip_type_path = path.join(self.path, 'tip_type.txt')
         self.miles_path = path.join(self.path, 'order_miles_traveled.txt')
         self.end_time_path = path.join(self.path, 'order_end_time.txt')
-        self.order_file_path = path.join(self.path, str(self.id) + '.txt')
+        self.order_file_path = path.join(self.path, f'{self.id}.txt')
 
     # methods for order tracking
     def consolidate(self):
-        # todo: reformat strings with format
-        data = str(self.tip) + ','\
-            + str(self.tip_type) + ','\
-            + str(self.miles_traveled) + ','\
-            + str(self.end_time)
+        try:
+            data = '{0[0]},{1[0]},{0[1]},{1[1]},{2},{3}'.format(
+                self.tip, self.tip_type, self.miles_traveled, self.end_time)
+        except TypeError:
+            data = '{0},{1},{2},{3}'.format(
+                self.tip, self.tip_type, self.miles_traveled, self.end_time)
         write_data(self.order_file_path, data)
         # remove files that are no longer needed
         remove(self.id_path)
@@ -52,21 +45,36 @@ class Order:
         remove(path.join(self.path, 'order'))
 
     def load(self):
-        # todo: need to take into account missing data
         order_data = read_data(self.order_file_path).split(',')
-        self.tip = float(order_data[0])
-        self.tip_type = int(order_data[1])
-        self.miles_traveled = float(order_data[2])
-        self.end_time = to_datetime(order_data[3])
+        if len(order_data) == 6:
+            card = 1
+            cash = 2
+            try:
+                self.tip = [float(order_data[0]), float(order_data[2])]
+                self.tip_type = [card, cash]
+                self.miles_traveled = float(order_data[4])
+                self.end_time = to_datetime(order_data[5])
+            except ValueError:
+                self.tip = [float(order_data[0]), float(order_data[2])]
+                self.tip_type = [card, cash]
+                self.miles_traveled = float(order_data[4])
+        elif len(order_data) == 4:
+            try:
+                self.tip = float(order_data[0])
+                self.tip_type = int(order_data[1])
+                self.miles_traveled = float(order_data[2])
+                self.end_time = to_datetime(order_data[3])
+            except ValueError:
+                self.tip = float(order_data[0])
+                self.tip_type = int(order_data[1])
+                self.miles_traveled = float(order_data[2])
         return self
 
     def start(self):
         # create file, program knows order was started
         write_data(path.join(self.path, 'order'), None)
         # input the tip amount, or if tipped at all
-        self.tip = self.input_tip()
-        # input the tip type. if no tip, automaticly inputs
-        self.tip_type = self.input_tip_type()
+        self.tip()
         # input the miles since prev destination
         self.miles_traveled = self.input_miles_traveled()
         # save/assign current time for end of order
@@ -75,9 +83,24 @@ class Order:
         self.consolidate()
         # display amount of time to complete the order
         time_taken(self.parent.start_time, self.end_time,
-                   'Order completed in:\t')
+                   'Order completed in:')
         # return order class object to the function that called it
         return self
+
+    def tip(self):
+        while True:
+            split_check = get_input(
+                '\nWas there a split tip?\n'
+                'Y. Yes\n'
+                'N. No\n\n', str)
+            if split_check in ('y', 'Y'):
+                self.input_split_tip()
+            elif split_check in ('n', 'N'):
+                self.tip = self.input_tip()
+                self.tip_type = self.input_tip_type()
+            else:
+                print('\nInvalid input...')
+            return self
 
     def update_id_file(self):
         if path.exists(self.parent.order_ids_path):
@@ -87,44 +110,59 @@ class Order:
 
     # methods for inputting data
     def input_miles_traveled(self):
-        return write_data(self.miles_path, input_data.input_data(
-            f"\n{'Order miles traveled:':<10}{'#.#':>8}\n", float,
-            ' miles\n'
-            f"{'Is this correct?':<10}{'[y/n]':>13}\n", str, 'y', 'n'))
+        return write_data(self.miles_path, input_data(
+            f"\n{'Order miles traveled:'}      {'#.#'}\n", float,
+            f"{'Is this correct?'}         {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'N'), word=' miles'))
 
     def input_id_number(self):
-        # todo: reformat strings with format
-        return write_data(self.id_path, input_data.input_data(
-            f"\n{'Enter order number:':<10}{'#-####':>11}\n", int,
-            f"\n{'Is this correct?':<10}{'[y/n]':>14}\n", str, 'y', 'n'))
+        return write_data(self.id_path, input_data(
+            f"\n{'Enter order number:'}     {'#-####'}\n", int,
+            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'N')))
+
+    def input_split_tip(self):
+        card = 1
+        cash = 2
+        card_tip = input_data(
+            f"\n{'Enter card tip amount:'}   {'$#.##'}\n", float,
+            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'N'), '$')
+        cash_tip = input_data(
+            f"\n{'Enter cash tip amount:'}   {'$#.##'}\n", float,
+            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'N'), '$')
+        write_data(self.tip_path, f'{card_tip},{cash_tip}')
+        write_data(self.tip_type_path, f'{card},{cash}')
+        self.tip = [card_tip, cash_tip]
+        self.tip_type = [card, cash]
+        return self
 
     def input_tip(self):
-        # todo: add the ability to add a split tip amount/type
         while True:
-            tip_amount = input_data.get_input(
-                f"\n{'Enter tip amount:':<10}{'$#.##':>12}\n"
-                '(if no tip, enter 0)\n$',
-                float)
+            tip_amount = get_input(
+                f"\n{'Enter tip amount:'}        {'$#.##'}\n"
+                '(if no tip, enter 0)\n$', float)
             if tip_amount == 0.0:
-                user_confirm = input_data.get_input(
+                user_confirm = get_input(
                     '\nNo tip'
-                    f"\n{'Is this correct?':<10}{'[y/n]':>13}\n", str)
+                    f"\n{'Is this correct?'}         {'[y/n]'}\n", str)
                 if user_confirm == 'y':
                     return write_data(self.tip_path, 0.0)
                 elif user_confirm == 'n':
                     continue
                 else:
-                    print('Invalid input...')
+                    print('\nInvalid input...')
             else:
-                user_confirm = input_data.get_input(
+                user_confirm = get_input(
                     f"\n{'$'}{tip_amount}\n"
-                    f"{'Is this correct?':<10}{'[y/n]':>13}\n", str)
+                    f"{'Is this correct?'}         {'[y/n]'}\n", str)
                 if user_confirm == 'y':
                     return write_data(self.tip_path, tip_amount)
                 elif user_confirm == 'n':
                     continue
                 else:
-                    print('Invalid input...')
+                    print('\nInvalid input...')
 
     def input_tip_type(self):
         no_tip = 0
@@ -134,14 +172,14 @@ class Order:
             return write_data(self.tip_type_path, no_tip)
         else:
             while True:
-                user_option = input_data.get_input(
+                user_option = get_input(
                     '\nType of tip?\n'
                     '1. For card\n'
                     '2. For cash\n', int)
                 if user_option == 1:
-                    check_correct = input_data.get_input(
+                    check_correct = get_input(
                        '\nCard\n'
-                       f"{'Is this correct?':<10}{'[y/n]':>13}\n", str)
+                       f"{'Is this correct?'}         {'[y/n]'}\n", str)
                     if check_correct == 'y':
                         return write_data(self.tip_type_path, card)
                     elif check_correct == 'n':
@@ -149,9 +187,9 @@ class Order:
                     else:
                         print('\nInvalid input...')
                 elif user_option == 2:
-                    check_correct = input_data.get_input(
+                    check_correct = get_input(
                         '\nCash\n'
-                        f"{'Is this correct?':<10}{'[y/n]':>13}\n", str)
+                        f"{'Is this correct?'}         {'[y/n]'}\n", str)
                     if check_correct == 'y':
                         return write_data(self.tip_type_path, cash)
                     elif check_correct == 'n':
@@ -164,9 +202,19 @@ class Order:
     # methods for continuing tracking if program ends
     def load_current(self):
         if path.exists(self.tip_path):
-            self.tip = float(read_data(self.tip_path))
+            tip_data = read_data(self.tip_path).split(',')
+            if len(tip_data) == 2:
+                self.tip = [float(tip_data[0]), float(tip_data[1])]
+            elif len(tip_data) == 1:
+                self.tip = float(tip_data[0])
         if path.exists(self.tip_type_path):
-            self.tip_type = int(read_data(self.tip_type_path))
+            card = 1
+            cash = 2
+            tip_type_data = read_data(self.tip_type_path).split(',')
+            if len(tip_type_data) == 2:
+                self.tip_type = [card, cash]
+            elif len(tip_type_data) == 1:
+                self.tip_type = int(tip_type_data[0])
         if path.exists(self.miles_path):
             self.miles_traveled = float(read_data(self.miles_path))
         if path.exists(self.end_time_path):
@@ -178,7 +226,7 @@ class Order:
         while True:
             if not path.exists(self.tip_path):
                 # input the tip amount, or if tipped at all
-                self.tip = self.input_tip()
+                self.tip()
             elif not path.exists(self.tip_type_path):
                 # input the tip type. if no tip, automaticly inputs
                 self.tip_type = self.input_tip_type()

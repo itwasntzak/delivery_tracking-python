@@ -1,7 +1,7 @@
 import datetime
 from os import path, remove
 
-import input_data
+from input_data import get_input
 
 
 def now():
@@ -41,10 +41,10 @@ def read_data(file):
         return file_object.read()
 
 
+# todo: func cacluates len of strings, force everything to same screen length
 def time_taken(start_time, end_time, prompt):
-    # todo: reformat strings with format
     time_diff = end_time - start_time
-    print('\n' + prompt + str(time_diff) + '\n')
+    print(f"\n{prompt}     {time_diff}\n")
 
 
 def driving(object, prompt, destination):
@@ -55,12 +55,12 @@ def driving(object, prompt, destination):
         else:
             # create file so program knows while in driving process
             write_data(path.join(object.path, 'driving-' + destination), None)
-        wait_for_user = input_data.get_input(
-            f"{prompt}\n"
-            f"{'C: To complete'}\n"
-            f"{'E: For extra stop'}\n"
-            f"{'T: See current time'}\n"
-            f"{'Q: Quit program'}\n\n", str)
+        wait_for_user = get_input(
+            f'{prompt}\n'
+            'C: To complete\n'
+            'E: For extra stop\n'
+            'T: See current time\n'
+            'Q: Quit program\n\n', str)
         if wait_for_user in ('c', 'C'):
             # remove driving file so code can knows driving has ended
             remove(path.join(object.path, 'driving-' + destination))

@@ -2,7 +2,7 @@ from os import path, mkdir, remove
 
 from delivery import Delivery
 from extra_stop import Extra_Stop
-from input_data import input_data, get_input
+from input_data import get_input, input_data
 from split import Split
 from utility import append_data, enter_to_continue, now, read_data,\
     to_datetime, to_money, write_data
@@ -133,18 +133,15 @@ def total_tips(shifts_list):
 
 def shift_menu(shift):
     while True:
-        # todo: reformat strings with format
         user_choice = get_input(
-            prompt='\n'
-                   'What would you like to do?\n'
-                   'D: Start delivery\n'
-                   'E: Start an extra stop\n'
-                   'C: Enter carry out tip\n'
-                   'S: Start split\n'
-                   'X: End shift\n'
-                   'I: Information on shift\n'
-                   'Q: Quit program\n\n',
-            kind=str)
+            '\nWhat would you like to do?\n'
+            'D: Start delivery\n'
+            'E: Start an extra stop\n'
+            'C: Enter carry out tip\n'
+            'S: Start split\n'
+            'X: End shift\n'
+            'I: Information on shift\n'
+            'Q: Quit program\n\n', str)
         if user_choice in ('d', 'D'):
             delivery_path = path.join(shift.path, 'delivery')
             delivery = Delivery(shift, delivery_path).start()
@@ -155,7 +152,7 @@ def shift_menu(shift):
             shift.extra_stop_ids.append(extra_stop.id)
             shift.extra_stops.append(extra_stop)
         elif user_choice in ('c', 'C'):
-            shift.carry_out_tip()
+            shift.carry_out_tips.append(shift.carry_out_tip())
         elif user_choice in ('s', 'S'):
             Split(shift).start()
         elif user_choice in ('x', 'X'):
@@ -169,7 +166,6 @@ def shift_menu(shift):
 
 
 class Shift:
-    # todo: add ability to input over counter tips
     def __init__(self, id=''):
         if id != '':
             self.id = id
@@ -205,16 +201,40 @@ class Shift:
             pass
 
     # methods for basic shift tracking
+    def carry_out_tip(self):
+        while True:
+            confirmation = get_input(
+                '\nAre you sure you want to add a carry out tip?\n'
+                'Y. Yes\n'
+                'N. No\n\n', str)
+            if confirmation in ('y', 'Y'):
+                split_check = get_input(
+                    '\nWas there a split tip?\n'
+                    'Y. Yes\n'
+                    'N. No\n\n', str)
+                if split_check in ('y', 'Y'):
+                    data = self.input_carry_out_split_tip()
+                    string = '{0[0][0]},{0[0][1]},'\
+                             '{0[1][0]},{0[1][1]}\n'.format(data)
+                elif split_check in ('n', 'N'):
+                    data = [self.input_carry_out_tip(),
+                            self.input_carry_out_tip_type()]
+                    string = f'{data[0]},{data[1]}\n'
+                if path.exists(self.carry_out_tips_path):
+                    append_data(self.carry_out_tips_path, string)
+                else:
+                    write_data(self.carry_out_tips_path, string)
+                return data
+            elif confirmation in ('n', 'N'):
+                break
+            else:
+                print('\nInvalid input...')
+
     def consolidate(self):
-        # todo: reformat strings with format
-        data = str(self.miles_traveled) + ','\
-            + str(self.fuel_economy) + ','\
-            + str(self.mileage_paid) + ','\
-            + str(self.device_usage_paid) + ','\
-            + str(self.extra_tips_claimed) + ','\
-            + str(self.total_hours) + ','\
-            + str(self.start_time) + ','\
-            + str(self.end_time)
+        data = '{0},{1},{2},{3},{4},{5},{6},{7}'.format(
+            self.miles_traveled, self.fuel_economy, self.mileage_paid,
+            self.device_usage_paid, self.extra_tips_claimed, self.total_hours,
+            self.start_time, self.end_time)
         write_data(self.shift_info_path, data)
         # remove files that are no longer needed
         remove(self.total_miles_path)
@@ -229,9 +249,8 @@ class Shift:
 
     def end(self):
         while True:
-            # todo: reformat strings with format
             user_check = get_input(
-                '\nAre you sure you want to complete today\'s shift?\n\n'
+                '\nAre you sure you want to complete today\'s shift?\n'
                 'Y: yes\nN: no\n', str)
             if user_check in ('y', 'Y'):
                 # create file so program knows if end shift has been started
@@ -261,19 +280,8 @@ class Shift:
 
     def load(self):
         # todo: need to fix shift files to include device usage paid
-        # cnsd: when evaluating missing data, if missing part of time
         shift_data = read_data(self.shift_info_path).split(',')
-        shift_data = list(filter(None, shift_data))
-        if len(shift_data) == 7:
-            self.miles_traveled = float(shift_data[0])
-            self.fuel_economy = float(shift_data[1])
-            self.mileage_paid = float(shift_data[2])
-            self.device_usage_paid = 0.0
-            self.extra_tips_claimed = float(shift_data[3])
-            self.total_hours = float(shift_data[4])
-            self.start_time = to_datetime(shift_data[5])
-            self.end_time = to_datetime(shift_data[6])
-        elif len(shift_data) == 8:
+        try:
             self.miles_traveled = float(shift_data[0])
             self.fuel_economy = float(shift_data[1])
             self.mileage_paid = float(shift_data[2])
@@ -282,56 +290,52 @@ class Shift:
             self.total_hours = float(shift_data[5])
             self.start_time = to_datetime(shift_data[6])
             self.end_time = to_datetime(shift_data[7])
+        except ValueError:
+            try:
+                self.miles_traveled = float(shift_data[0])
+                self.fuel_economy = float(shift_data[1])
+                self.mileage_paid = float(shift_data[2])
+                self.device_usage_paid = 0.0
+                self.extra_tips_claimed = float(shift_data[4])
+                self.total_hours = float(shift_data[5])
+                self.start_time = to_datetime(shift_data[6])
+                self.end_time = to_datetime(shift_data[7])
+            except ValueError:
+                self.miles_traveled = float(shift_data[0])
+                self.fuel_economy = float(shift_data[1])
+                self.mileage_paid = float(shift_data[2])
+                self.device_usage_paid = 0.0
+                self.extra_tips_claimed = float(shift_data[4])
+                self.total_hours = float(shift_data[5])
         if path.exists(self.delivery_ids_path):
-            delivery_numbers = read_data(self.delivery_ids_path).split(',')
-            self.delivery_ids = [int(item) for item in delivery_numbers]
-            for delivery in self.delivery_ids:
-                delivery_path = path.join(self.path, str(delivery))
+            delivery_ids = read_data(self.delivery_ids_path).split(',')
+            for delivery_id in delivery_ids:
+                self.delivery_ids.append(int(delivery_id))
+                delivery_path = path.join(self.path, delivery_id)
                 self.deliveries.append(Delivery(self, delivery_path).load())
         if path.exists(self.extra_stop_ids_path):
             extra_stop_ids = read_data(self.extra_stop_ids_path).split(',')
-            self.extra_stop_ids = [int(item) for item in extra_stop_ids]
-            for extra_stop_id in self.extra_stop_ids:
+            for extra_stop_id in extra_stop_ids:
+                self.extra_stop_ids.append(int(extra_stop_id))
                 self.extra_stops.append(Extra_Stop(self, extra_stop_id).load())
         if path.exists(self.carry_out_tips_path):
-            # reading from the file
-            tip_data = []
             with open(self.carry_out_tips_path, 'r') as file:
                 tip_list = file.readlines()
-                for carry_out_tip in tip_list:
-                    tip_data.append(carry_out_tip.split(','))
-            # removing \n from any strings it occurs
-            for tip in tip_data:
-                tip_data_list = []
-                for data in tip:
-                    tip_data_list.append(data.rstrip('\n'))
-                self.carry_out_tips.append(tip_data_list)
+            for carry_out_tip in tip_list:
+                carry_out_tip = carry_out_tip.split(',')
+                if len(carry_out_tip) == 4:
+                    self.carry_out_tips.append(
+                        [[float(carry_out_tip[0]),
+                          int(carry_out_tip[1])],
+                         [float(carry_out_tip[2]),
+                          int(carry_out_tip[3].rstrip('\n'))]])
+                elif len(carry_out_tip) == 2:
+                    self.carry_out_tips.append(
+                        [float(carry_out_tip[0]),
+                         int(carry_out_tip[1].rstrip('\n'))])
         if path.exists(self.split_info_path):
             self.split = Split(self).load()
         return self
-
-    def carry_out_tip(self):
-        # todo: reformat strings with format
-        while True:
-            confirmation = get_input(
-                '\nAre you sure you want to add a carry out tip? [y/n]\n\n',
-                str)
-            if confirmation in ('y', 'Y'):
-                tip = self.input_carry_out_tip()
-                tip_type = self.input_carry_out_tip_type()
-                data = f'{tip},{tip_type}\n'
-                if path.exists(self.carry_out_tips_path):
-                    self.carry_out_tips.append(
-                        append_data(self.carry_out_tips_path, data))
-                else:
-                    self.carry_out_tips.append(
-                        write_data(self.carry_out_tips_path, data))
-                break
-
-            elif confirmation in ('n', 'N'):
-                break
-            else:
-                print('\nInvalid input...')
 
     def start(self):
         mkdir(self.path)
@@ -347,10 +351,24 @@ class Shift:
             write_data(self.shift_ids_path, self.id.date())
 
     # methods for inputting data
+    def input_carry_out_split_tip(self):
+        card = 1
+        cash = 2
+        card_tip = input_data(
+            f"\n{'Enter card tip amount:'}   {'$#.##'}\n", float,
+            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'N'), '$')
+        cash_tip = input_data(
+            f"\n{'Enter cash tip amount:'}   {'$#.##'}\n", float,
+            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'N'), '$')
+        return [[card_tip, card], [cash_tip, cash]]
+
     def input_carry_out_tip(self):
         return input_data(
-            f"\n{'Enter tip amount:':<10}{'$#.##':>12}\n", float,
-            f"\n{'Is this correct?':<10}{'[y/n]':>13}\n", str, 'y', 'n')
+            f"\n{'Enter tip amount:'}        {'$#.##'}\n", float,
+            f"\n{'Is this correct?'}        {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'N'), '$')
 
     def input_carry_out_tip_type(self):
         card = 1
@@ -363,7 +381,7 @@ class Shift:
             if user_option == 1:
                 check_correct = get_input(
                    '\nCard\n'
-                   f"{'Is this correct?':<10}{'[y/n]':>13}\n", str)
+                   f"{'Is this correct?'}         {'[y/n]'}\n", str)
                 if check_correct == 'y':
                     return card
                 elif check_correct == 'n':
@@ -373,7 +391,7 @@ class Shift:
             elif user_option == 2:
                 confirmation = get_input(
                     '\nCash\n'
-                    f"{'Is this correct?':<10}{'[y/n]':>13}\n", str)
+                    f"{'Is this correct?'}         {'[y/n]'}\n", str)
                 if confirmation == 'y':
                     return cash
                 elif confirmation == 'n':
@@ -382,40 +400,43 @@ class Shift:
                     print('\nInvalid input...')
 
     def input_device_usage_paid(self):
-        # todo: reformat strings with format
         return write_data(self.device_usage_paid_path, input_data(
-            '\nAmount of device usage paid:    $#.##\n$', float,
-            '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
+            f"\n{'Amount of device usage paid:'} {'$#.##'}\n"
+            '$', float,
+            f"\n{'Is this correct?'}        {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'N'), '$'))
 
     def input_extra_tips_claimed(self):
-        # todo: reformat strings with format
         return write_data(self.extra_tips_claimed_path, input_data(
-            '\nExtra tips claimed for shift:    $#.##\n$', float,
-            '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
+            f"\n{'Extra tips claimed for shift:'} {'$#.##'}\n"
+            '$', float,
+            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'N'), '$'))
 
     def input_fuel_economy(self):
-        # todo: reformat strings with format
         return write_data(self.fuel_economy_path, input_data(
-            '\nEnter fuel economy:    ##.#\n', float,
-            '\nIs this correct? [y/n]\n', str, 'y', 'n'))
+            f"\n{'Enter fuel economy:'}       {'##.#'}\n", float,
+            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'N')))
 
     def input_mileage_paid(self):
-        # todo: reformat strings with format
         return write_data(self.mileage_paid_path, input_data(
-            '\nAmount of mileage paid:    $#.##\n$', float,
-            '\nIs this correct? [y/n]\n', str, 'y', 'n', '$'))
+            f"\n{'Amount of mileage paid:'}  {'$#.##'}\n$", float,
+            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'N'), '$'))
 
     def input_miles_traveled(self):
-        # todo: reformat strings with format
         return write_data(self.total_miles_path, input_data(
-            '\nTotal miles traveled for this shift:    #.#\n', float,
-            ' miles\nIs this correct? [y/n]\n', str, 'y', 'n'))
+            f"\n{'Total miles traveled for this shift:'} {'#.#'}\n", float,
+            ' miles'
+            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'N')))
 
     def input_total_hours(self):
-        # todo: reformat strings with format
         return write_data(self.total_hours_path, input_data(
-            '\nEnter total hours worked:    #.##\n', float,
-            '\nIs this correct? [y/n]\n', str, 'y', 'n'))
+            f"\n{'Enter total hours worked:'} {'#.##'}\n", float,
+            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
+            ('y', 'Y'), ('n', 'N')))
 
     # methods for continuing tracking if program ends
     def load_current(self):
@@ -435,18 +456,20 @@ class Shift:
                 self.extra_stop_ids.append(int(extra_stop_id))
                 self.extra_stops.append(Extra_Stop(self, extra_stop_id).load())
         if path.exists(self.carry_out_tips_path):
-            # reading from the file
-            tip_data = []
             with open(self.carry_out_tips_path, 'r') as file:
                 tip_list = file.readlines()
-                for carry_out_tip in tip_list:
-                    tip_data.append(carry_out_tip.split(','))
-            # removing \n from any strings it occurs
-            for tip in tip_data:
-                tip_data_list = []
-                for data in tip:
-                    tip_data_list.append(data.rstrip('\n'))
-                self.carry_out_tips.append(tip_data_list)
+            for carry_out_tip in tip_list:
+                carry_out_tip = carry_out_tip.split(',')
+                if len(carry_out_tip) == 4:
+                    self.carry_out_tips.append(
+                        [[float(carry_out_tip[0].rstrip('\n')),
+                          int(carry_out_tip[1].rstrip('\n'))],
+                         [float(carry_out_tip[2].rstrip('\n')),
+                          int(carry_out_tip[3].rstrip('\n'))]])
+                elif len(carry_out_tip) == 2:
+                    self.carry_out_tips.append(
+                        [float(carry_out_tip[0].rstrip('\n')),
+                         int(carry_out_tip[1].rstrip('\n'))])
         if path.exists(self.split_info_path):
             self.split = Split(self).load()
         self.resume()
@@ -524,7 +547,6 @@ class Shift:
     # methods for when current day's shift has already been completed
     def completed(self):
         while True:
-            # todo: reformat strings with format
             user_choice = get_input(
                 '\nYou have already completed a shift for today.\n'
                 'Please select an option:\n'
@@ -544,7 +566,6 @@ class Shift:
 
     def overwrite(self):
         while True:
-            # todo: reformat strings with format
             user_check = get_input(
                 '\nAre you sure you want to overwrite the completed shift?\n'
                 'Y: Yes\n'
@@ -563,7 +584,6 @@ class Shift:
 
     def resume_shift(self):
         while True:
-            # todo: reformat strings with format
             user_check = get_input(
                 '\nAre you sure you want to resume the completed shift?\n'
                 'Y: Yes\n'
@@ -591,27 +611,61 @@ class Shift:
         tips = []
         for delivery in self.deliveries:
             for order in delivery.orders:
-                tips.append(order.tip)
+                try:
+                    for tip in order.tip:
+                        tips.append(tip)
+                except TypeError:
+                    tips.append(order.tip)
+        for tip in self.carry_out_tips:
+            tips.append(tip[0])
         return tips
 
     def card_tips(self):
         card_tips = []
         for delivery in self.deliveries:
             for order in delivery.orders:
-                if order.tip_type == 1:
-                    card_tips.append(order.tip)
-                elif order.tip_type in (0, 2):
-                    pass
+                try:
+                    index_counter = 0
+                    for tip in order.tip:
+                        if order.tip_type[index_counter] == 1:
+                            card_tips.append(tip)
+                        elif order.tip_type in (0, 2):
+                            pass
+                        index_counter += 1
+                except TypeError:
+                    if order.tip_type == 1:
+                        card_tips.append(order.tip)
+                    elif order.tip_type in (0, 2):
+                        pass
+        for tip in self.carry_out_tips:
+            if tip[1] == 1:
+                card_tips.append(tip[0])
+            elif tip[1] == 2:
+                pass
         return card_tips
 
     def cash_tips(self):
         cash_tips = []
         for delivery in self.deliveries:
             for order in delivery.orders:
-                if order.tip_type == 2:
-                    cash_tips.append(order.tip)
-                elif order.tip_type in (0, 1):
-                    pass
+                try:
+                    index_counter = 0
+                    for tip in order.tip:
+                        if order.tip_type[index_counter] == 2:
+                            cash_tips.append(tip)
+                        elif order.tip_type in (0, 1):
+                            pass
+                        index_counter += 1
+                except TypeError:
+                    if order.tip_type == 2:
+                        cash_tips.append(order.tip)
+                    elif order.tip_type in (0, 1):
+                        pass
+        for tip in self.carry_out_tips:
+            if tip[1] == 2:
+                cash_tips.append(tip[0])
+            elif tip[1] == 1:
+                pass
         return cash_tips
 
     # methods for getting statistics on shift's data
