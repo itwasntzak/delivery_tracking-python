@@ -24,3 +24,5 @@ while True:
         shift.split = Split(shift).end()
     else:
         shift_menu(shift)
+
+# todo: make the tip class changes that were made in java version

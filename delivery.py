@@ -9,7 +9,7 @@ from utility import append_data, driving, now, read_data, time_taken,\
 
 
 class Delivery:
-    # todo: use commas to split delivery data, then use newline to seperate if multi-delivery
+    # cnsd: use commas to split delivery data, then use newline to seperate if multi-delivery
     def __init__(self, shift='', delivery_path=''):
         if (shift) != '':
             self.parent = shift
@@ -20,22 +20,19 @@ class Delivery:
         self.extra_stop_ids = []
         self.extra_stops = []
         # list of all paths
-        try:
-            self.order_quantity_path =\
-                path.join(self.path, 'order_quantity.txt')
-            self.miles_path =\
-                path.join(self.path, 'delivery_miles_traveled.txt')
-            self.average_speed_path =\
-                path.join(self.path, 'delivery_average_speed.txt')
-            self.start_time_path =\
-                path.join(self.path, 'delivery_start_time.txt')
-            self.end_time_path = path.join(self.path, 'delivery_end_time.txt')
-            self.order_ids_path = path.join(self.path, 'order_ids.txt')
-            self.extra_stop_ids_path =\
-                path.join(self.path, 'extra_stop_ids.txt')
-            self.delivery_info_path = path.join(self.path, 'delivery_info.txt')
-        except AttributeError:
-            pass
+        self.order_quantity_path =\
+            path.join(self.path, 'order_quantity.txt')
+        self.miles_path =\
+            path.join(self.path, 'delivery_miles_traveled.txt')
+        self.average_speed_path =\
+            path.join(self.path, 'delivery_average_speed.txt')
+        self.start_time_path =\
+            path.join(self.path, 'delivery_start_time.txt')
+        self.end_time_path = path.join(self.path, 'delivery_end_time.txt')
+        self.order_ids_path = path.join(self.path, 'order_ids.txt')
+        self.extra_stop_ids_path =\
+            path.join(self.path, 'extra_stop_ids.txt')
+        self.delivery_info_path = path.join(self.path, 'delivery_info.txt')
 
     # methods for delivery tracking
     def consolidate(self):
@@ -51,13 +48,15 @@ class Delivery:
         remove(self.start_time_path)
         remove(self.end_time_path)
         # move temp folder to perma folder named the delivery's id number
+        # todo: name folder to id at all times. check if path.exists(length(shift.delivery_ids) + 1)
         move(self.path, path.join(self.parent.path, str(self.id)))
         # create/update file tracking delivery quantity
-        self.update_id_file()
+        self.update_ids_file()
 
     def load(self):
         # load data from file, convert to list
         delivery_data = read_data(self.delivery_info_path).split(',')
+        #  todo: this it is better to try indaviduly and then handle it
         try:
             self.miles_traveled = float(delivery_data[0])
             self.average_speed = int(delivery_data[1])
@@ -86,7 +85,8 @@ class Delivery:
         # make folder to store data
         mkdir(self.path)
         # save the start time of the delivery and add it to the delivery object
-        self.start_time = write_data(self.start_time_path, now())
+        self.start_time = now()
+        write_data(self.start_time_path, self.start_time)
         # assign delivery an id number
         self.id = len(self.parent.delivery_ids)
         # save number of order per delivery, add it to the delivedy object
@@ -105,38 +105,41 @@ class Delivery:
         # input/save/set average speed to delivery object
         self.average_speed = self.input_average_speed()
         # save/set current time for end time of delivery object
-        self.end_time = write_data(self.end_time_path, now())
+        self.end_time = now()
+        write_data(self.end_time_path, self.end_time)
         # consolidate files relating to delivery into one file
         self.consolidate()
         # display the total time taken on delivery
         time_taken(self.start_time, self.end_time, 'Delivery completed in:')
         return self
 
-    def update_id_file(self):
+    def update_ids_file(self):
         if path.exists(self.parent.delivery_ids_path):
-            return append_data(
-                self.parent.delivery_ids_path, ',' + str(self.id))
+            append_data(self.parent.delivery_ids_path, ',' + str(self.id))
         else:
-            return write_data(self.parent.delivery_ids_path, self.id)
+            write_data(self.parent.delivery_ids_path, self.id)
 
     # methods for inputting data
     def input_average_speed(self):
-        return write_data(self.average_speed_path, input_data(
-            '\nEnter the average speed for this delivery:\n', int,
-            f"{'Is this correct?'}         {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'N'), word='mph'))
+        self.average_speed = input_data(
+            '\nEnter the average speed for this delivery:\t##\n', int,
+            'Is this correct?\t[y/n]\n', str,
+            ('y', 'Y'), ('n', 'N'), word='mph')
+        write_data(self.average_speed_path, self.average_speed)
 
     def input_miles_traveled(self):
-        return write_data(self.miles_path, input_data(
-            f"\n{'Delivery miles traveled:'}   {'#.#'}\n", float,
-            f"{'Is this correct?'}         {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'N'), word=' miles'))
+        self.miles_traveled = input_data(
+            '\nDelivery miles traveled:\t#.#\n', float,
+            'Is this correct?\t[y/n]\n', str,
+            ('y', 'Y'), ('n', 'N'), word=' miles')
+        write_data(self.miles_path, self.miles_traveled)
 
     def input_order_quantity(self):
-        return write_data(self.order_quantity_path, input_data(
+        self.order_quantity = input_data(
             '\nNumber of orders?\n', int,
-            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'N')))
+            '\nIs this correct?\t[y/n]\n', str,
+            ('y', 'Y'), ('n', 'N'))
+        write_data(self.order_quantity_path, self.order_quantity)
 
     # methods for continuing tracking if program ends
     def load_current(self):
@@ -144,14 +147,15 @@ class Delivery:
         if path.exists(self.start_time_path):
             self.start_time = to_datetime(read_data(self.start_time_path))
         else:
-            self.start_time = write_data(self.start_time_path, now())
+            self.start_time = now()
+            write_data(self.start_time_path, self.start_time)
         self.id = len(self.parent.delivery_ids)
         # read and set order quantity for delivery object
         if path.exists(self.order_quantity_path):
             self.order_quantity = int(read_data(self.order_quantity_path))
         else:
             # save number of order per delivery, add it to the delivery object
-            self.order_quantity = self.input_order_quantity()
+            self.input_order_quantity()
         # check if miles traveled file has been created yet
         if path.exists(self.miles_path):
             self.miles_traveled = float(read_data(self.miles_path))
@@ -177,26 +181,23 @@ class Delivery:
         return self
 
     def resume(self):
-        while True:
-            # check if extra stop has been started while on delivery
-            if path.exists(path.join(self.path, 'extra_stop')):
-                extra_stop = Extra_Stop(self).load_current()
-                self.extra_stop_ids.append(extra_stop.id)
-                self.extra_stops.append(extra_stop)
-            # check if order has been started
-            elif path.exists(path.join(self.path, 'order')):
-                order = Order(self).load_current()
-                self.order_ids.append(order.id)
-                self.orders.append(order)
-            # check if driving to address is in progress
-            elif path.exists(path.join(self.path, 'driving-address')):
-                driving(self, '\nDriving to address...', 'address')
-                # enter data for orders
-                order = Order(self).start()
-                self.order_ids.append(order.id)
-                self.orders.append(order)
-            else:
-                break
+        # check if extra stop has been started while on delivery
+        if path.exists(path.join(self.path, 'extra_stop')):
+            extra_stop = Extra_Stop(self).load_current()
+            self.extra_stop_ids.append(extra_stop.id)
+            self.extra_stops.append(extra_stop)
+        # check if order has been started
+        if path.exists(path.join(self.path, 'order')):
+            order = Order(self).load_current()
+            self.order_ids.append(order.id)
+            self.orders.append(order)
+        # check if driving to address is in progress
+        if path.exists(path.join(self.path, 'driving-address')):
+            driving(self, '\nDriving to address...', 'address')
+            # enter data for orders
+            order = Order(self).start()
+            self.order_ids.append(order.id)
+            self.orders.append(order)
         orders_remaining = self.order_quantity - len(self.orders)
         # loop through these functions for all of order quantity
         for value in range(orders_remaining):
@@ -208,18 +209,16 @@ class Delivery:
             self.orders.append(order)
         # driving back to store
         driving(self, '\nDriving back to store...', 'store')
-        while True:
-            if not path.exists(self.miles_path):
-                # input/save/set total miles traveled to delivery object
-                self.miles_traveled = self.input_miles_traveled()
-            elif not path.exists(self.average_speed_path):
-                # input/save/set average speed to delivery object
-                self.average_speed = self.input_average_speed()
-            elif not path.exists(self.end_time_path):
-                # save/set current time for end time of delivery object
-                self.end_time = write_data(self.end_time_path, now())
-            else:
-                break
+        if not path.exists(self.miles_path):
+            # input/save/set total miles traveled to delivery object
+            self.input_miles_traveled()
+        if not path.exists(self.average_speed_path):
+            # input/save/set average speed to delivery object
+            self.average_speed = self.input_average_speed()
+        if not path.exists(self.end_time_path):
+            # save/set current time for end time of delivery object
+            self.end_time = now()
+            write_data(self.end_time_path, self.end_time)
         # consolidate files relating to delivery into one file
         self.consolidate()
         # display the total time taken on delivery
@@ -227,26 +226,29 @@ class Delivery:
         return self
 
     # methods for analyzing data
-# def card_tips(self):
-#     card_tips = []
-#     for order in self.orders:
-#         if order.tip_type == 1:
-#             card_tips.append(order.tip)
-#         elif order.tip_type in (0, 2):
-#             pass
-#     return card_tips
+    def card_tips(self):
+        card_tips = []
+        for order in self.orders:
+            if order.tip_type == 1:
+                card_tips.append(order.tip)
+            elif order.tip_type in (0, 2):
+                pass
+        return card_tips
 
-# def cash_tips(self):
-#     cash_tips = []
-#     for order in self.orders:
-#         if order.tip_type == 2:
-#             cash_tips.append(order.tip)
-#         elif order.tip_type in (0, 1):
-#             pass
-#     return cash_tips
+    def cash_tips(self):
+        cash_tips = []
+        for order in self.orders:
+            if order.tip_type == 2:
+                cash_tips.append(order.tip)
+            elif order.tip_type in (0, 1):
+                pass
+        return cash_tips
 
-# def total_tips(self):
-#     tips = []
-#     for order in self.orders:
-#         tips.append(order.tip)
-#     return tips
+    def total_tips(self):
+        tips = []
+        for order in self.orders:
+            tips.append(order.tip)
+        return tips
+
+# todo: need to write function that allows the user to change data
+# todo: need to write function that saves changes to data

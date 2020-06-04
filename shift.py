@@ -8,12 +8,6 @@ from utility import append_data, enter_to_continue, now, read_data,\
     to_datetime, to_money, write_data
 
 
-# todo: make average shifts per month function
-# todo: make average miles per delivery function
-# todo: make avereage speed per delviery function
-# todo: make average delivery per hour function
-
-
 def load_all_shifts():
     shift_numbers_list = read_data('shift_ids.txt').split(',')
     shifts_list = []
@@ -154,7 +148,7 @@ def shift_menu(shift):
         elif user_choice in ('c', 'C'):
             shift.carry_out_tips.append(shift.carry_out_tip())
         elif user_choice in ('s', 'S'):
-            Split(shift).start()
+            shift.split = Split(shift.path).start()
         elif user_choice in ('x', 'X'):
             shift.end()
         elif user_choice in ('i', 'I'):
@@ -163,6 +157,11 @@ def shift_menu(shift):
             quit()
         else:
             print('\nInvalid input...')
+
+# todo: make average shifts per month function
+# todo: make average miles per delivery function
+# todo: make avereage speed per delviery function
+# todo: make average delivery per hour function
 
 
 class Shift:
@@ -245,7 +244,7 @@ class Shift:
         remove(self.total_hours_path)
         remove(self.start_time_path)
         remove(self.end_time_path)
-        self.update_id_file()
+        self.update_ids_file()
 
     def end(self):
         while True:
@@ -253,24 +252,21 @@ class Shift:
                 '\nAre you sure you want to complete today\'s shift?\n'
                 'Y: yes\nN: no\n', str)
             if user_check in ('y', 'Y'):
-                # create file so program knows if end shift has been started
+                #  create file to indatce to program the start of ending the shift
                 write_data(path.join(self.path, 'end_shift'), None)
                 # save time for end of shift
-                self.end_time = write_data(self.end_time_path, now())
-                # input total miles traveled for shift
-                self.miles_traveled = self.input_miles_traveled()
-                # input fuel economy
-                self.fuel_economy = self.input_fuel_economy()
-                # input mileage paid
-                self.mileage_paid = self.input_mileage_paid()
-                self.device_usage_paid = self.input_device_usage_paid()
-                # input total hours worked
-                self.total_hours = self.input_total_hours()
-                # input extra claimed/reported tips
-                self.extra_tips_claimed = self.input_extra_tips_claimed()
-                remove(path.join(self.path, 'end_shift'))
+                self.end_time = now()
+                write_data(self.end_time_path, self.end_time)
+                self.input_miles_traveled()
+                self.input_fuel_economy()
+                self.input_mileage_paid()
+                self.input_device_usage_paid()
+                self.input_total_hours()
+                self.input_extra_tips_claimed()
                 self.consolidate()
-                print('\n\nShift has been end!')
+                # remove file to indicate to program all data has been entered
+                remove(path.join(self.path, 'end_shift'))
+                print('\n\nShift has been ended!')
                 enter_to_continue()
                 exit()
             elif user_check in ('n', 'N'):
@@ -279,34 +275,19 @@ class Shift:
                 print('\nInvalid input...')
 
     def load(self):
-        # todo: need to fix shift files to include device usage paid
         shift_data = read_data(self.shift_info_path).split(',')
-        try:
-            self.miles_traveled = float(shift_data[0])
-            self.fuel_economy = float(shift_data[1])
-            self.mileage_paid = float(shift_data[2])
-            self.device_usage_paid = float(shift_data[3])
-            self.extra_tips_claimed = float(shift_data[4])
-            self.total_hours = float(shift_data[5])
-            self.start_time = to_datetime(shift_data[6])
-            self.end_time = to_datetime(shift_data[7])
-        except ValueError:
-            try:
-                self.miles_traveled = float(shift_data[0])
-                self.fuel_economy = float(shift_data[1])
-                self.mileage_paid = float(shift_data[2])
-                self.device_usage_paid = 0.0
-                self.extra_tips_claimed = float(shift_data[4])
-                self.total_hours = float(shift_data[5])
-                self.start_time = to_datetime(shift_data[6])
-                self.end_time = to_datetime(shift_data[7])
-            except ValueError:
-                self.miles_traveled = float(shift_data[0])
-                self.fuel_economy = float(shift_data[1])
-                self.mileage_paid = float(shift_data[2])
-                self.device_usage_paid = 0.0
-                self.extra_tips_claimed = float(shift_data[4])
-                self.total_hours = float(shift_data[5])
+        self.miles_traveled = float(shift_data[0])
+        self.fuel_economy = float(shift_data[1])
+        self.mileage_paid = float(shift_data[2])
+        self.device_usage_paid = float(shift_data[3])
+        self.extra_tips_claimed = float(shift_data[4])
+        self.total_hours = float(shift_data[5])
+        self.start_time = to_datetime(shift_data[6])
+        self.end_time = to_datetime(shift_data[7])
+        self.load_parts()
+        return self
+
+    def load_parts(self):
         if path.exists(self.delivery_ids_path):
             delivery_ids = read_data(self.delivery_ids_path).split(',')
             for delivery_id in delivery_ids:
@@ -335,7 +316,6 @@ class Shift:
                          int(carry_out_tip[1].rstrip('\n'))])
         if path.exists(self.split_info_path):
             self.split = Split(self).load()
-        return self
 
     def start(self):
         mkdir(self.path)
@@ -344,7 +324,7 @@ class Shift:
         enter_to_continue()
         exit()
 
-    def update_id_file(self):
+    def update_ids_file(self):
         if path.exists(self.shift_ids_path):
             append_data(self.shift_ids_path, ',' + str(self.id.date()))
         else:
@@ -352,6 +332,7 @@ class Shift:
 
     # methods for inputting data
     def input_carry_out_split_tip(self):
+        # todo: impament tip class changes
         card = 1
         cash = 2
         card_tip = input_data(
@@ -359,18 +340,20 @@ class Shift:
             f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
             ('y', 'Y'), ('n', 'N'), '$')
         cash_tip = input_data(
-            f"\n{'Enter cash tip amount:'}   {'$#.##'}\n", float,
-            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
+            '\nEnter cash tip amount:\t$#.##\n', float,
+            '\nIs this correct?\t[y/n]\n', str,
             ('y', 'Y'), ('n', 'N'), '$')
         return [[card_tip, card], [cash_tip, cash]]
 
     def input_carry_out_tip(self):
+        # todo: impament tip class changes
         return input_data(
-            f"\n{'Enter tip amount:'}        {'$#.##'}\n", float,
-            f"\n{'Is this correct?'}        {'[y/n]'}\n", str,
+            '\nEnter tip amount:\t$#.##\n', float,
+            '\nIs this correct?\t[y/n]\n', str,
             ('y', 'Y'), ('n', 'N'), '$')
 
     def input_carry_out_tip_type(self):
+        # todo: impament tip class changes
         card = 1
         cash = 2
         while True:
@@ -400,78 +383,54 @@ class Shift:
                     print('\nInvalid input...')
 
     def input_device_usage_paid(self):
-        return write_data(self.device_usage_paid_path, input_data(
-            f"\n{'Amount of device usage paid:'} {'$#.##'}\n"
-            '$', float,
-            f"\n{'Is this correct?'}        {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'N'), '$'))
+        self.device_usage_paid = input_data(
+            '\nAmount of device usage paid:\t$#.##\n$', float,
+            '\nIs this correct?\t[y/n]\n', str,
+            ('y', 'Y'), ('n', 'N'), '$')
+        write_data(self.device_usage_paid_path, self.device_usage_paid)
 
     def input_extra_tips_claimed(self):
-        return write_data(self.extra_tips_claimed_path, input_data(
-            f"\n{'Extra tips claimed for shift:'} {'$#.##'}\n"
-            '$', float,
-            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'N'), '$'))
+        self.extra_tips_claimed = input_data(
+            '\nExtra tips claimed for shift:\t$#.##\n$', float,
+            '\nIs this correct?\t[y/n]\n', str,
+            ('y', 'Y'), ('n', 'N'), '$')
+        write_data(self.extra_tips_claimed_path, self.extra_tips_claimed)
 
     def input_fuel_economy(self):
-        return write_data(self.fuel_economy_path, input_data(
-            f"\n{'Enter fuel economy:'}       {'##.#'}\n", float,
-            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'N')))
+        self.fuel_economy = input_data(
+            '\nEnter fuel economy:\t##.#\n', float,
+            '\nIs this correct?\t[y/n]\n', str,
+            ('y', 'Y'), ('n', 'N'))
+        write_data(self.fuel_economy_path, self.fuel_economy)
 
     def input_mileage_paid(self):
-        return write_data(self.mileage_paid_path, input_data(
-            f"\n{'Amount of mileage paid:'}  {'$#.##'}\n$", float,
-            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'N'), '$'))
+        self.mileage_paid = input_data(
+            '\nAmount of mileage paid:\t$#.##\n$', float,
+            '\nIs this correct?\t[y/n]\n', str,
+            ('y', 'Y'), ('n', 'N'), '$')
+        write_data(self.mileage_paid_path, self.mileage_paid)
 
     def input_miles_traveled(self):
-        return write_data(self.total_miles_path, input_data(
-            f"\n{'Total miles traveled for this shift:'} {'#.#'}\n", float,
-            ' miles'
-            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'N')))
+        self.miles_traveled = input_data('\nTotal miles traveled for this shift:\t#.#\n', float,
+                                         '\nIs this correct?\t[y/n]\n', str,
+                                         ('y', 'Y'), ('n', 'N'), word=' miles')
+        write_data(self.total_miles_path, self.miles_traveled)
 
     def input_total_hours(self):
-        return write_data(self.total_hours_path, input_data(
-            f"\n{'Enter total hours worked:'} {'#.##'}\n", float,
-            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'N')))
+        self.total_hours = input_data(
+            '\nEnter total hours worked:\t#.##\n', float,
+            '\nIs this correct?\t[y/n]\n', str,
+            ('y', 'Y'), ('n', 'N'))
+        write_data(self.total_hours_path, self.total_hours)
 
     # methods for continuing tracking if program ends
     def load_current(self):
         if path.exists(self.start_time_path):
             self.start_time = to_datetime(read_data(self.start_time_path))
         else:
-            self.start_time = write_data(self.start_time_path, now())
-        if path.exists(self.delivery_ids_path):
-            delivery_ids = read_data(self.delivery_ids_path).split(',')
-            for delivery_id in delivery_ids:
-                self.delivery_ids.append(int(delivery_id))
-                delivery_path = path.join(self.path, delivery_id)
-                self.deliveries.append(Delivery(self, delivery_path).load())
-        if path.exists(self.extra_stop_ids_path):
-            extra_stop_ids = read_data(self.extra_stop_ids_path).split(',')
-            for extra_stop_id in extra_stop_ids:
-                self.extra_stop_ids.append(int(extra_stop_id))
-                self.extra_stops.append(Extra_Stop(self, extra_stop_id).load())
-        if path.exists(self.carry_out_tips_path):
-            with open(self.carry_out_tips_path, 'r') as file:
-                tip_list = file.readlines()
-            for carry_out_tip in tip_list:
-                carry_out_tip = carry_out_tip.split(',')
-                if len(carry_out_tip) == 4:
-                    self.carry_out_tips.append(
-                        [[float(carry_out_tip[0].rstrip('\n')),
-                          int(carry_out_tip[1].rstrip('\n'))],
-                         [float(carry_out_tip[2].rstrip('\n')),
-                          int(carry_out_tip[3].rstrip('\n'))]])
-                elif len(carry_out_tip) == 2:
-                    self.carry_out_tips.append(
-                        [float(carry_out_tip[0].rstrip('\n')),
-                         int(carry_out_tip[1].rstrip('\n'))])
-        if path.exists(self.split_info_path):
-            self.split = Split(self).load()
+            self.start_time = now()
+            write_data(self.start_time_path, self.start_time)
+        self.load_parts()
         self.resume()
         return self
 
@@ -515,32 +474,25 @@ class Shift:
                 return self
 
     def resume_end(self):
-        while True:
-            if not path.exists(self.end_time_path):
-                # save time for end of shift
-                self.end_time = write_data(self.end_time_path, now())
-            elif not path.exists(self.total_miles_path):
-                # input total miles traveled for shift
-                self.miles_traveled = self.input_miles_traveled()
-            elif not path.exists(self.fuel_economy_path):
-                # input fuel economy
-                self.fuel_economy = self.input_fuel_economy()
-            elif not path.exists(self.mileage_paid_path):
-                # input mileage paid
-                self.mileage_paid = self.input_mileage_paid()
-            elif not path.exists(self.device_usage_paid_path):
-                self.device_usage_paid = self.input_device_usage_paid()
-            elif not path.exists(self.total_hours_path):
-                # input total hours worked
-                self.total_hours = self.input_total_hours()
-            elif not path.exists(self.extra_tips_claimed_path):
-                # input extra claimed/reported tips
-                self.extra_tips_claimed = self.input_extra_tips_claimed()
-            else:
-                break
+        if not path.exists(self.end_time_path):
+            # save time for end of shift
+            self.end_time = now()
+            write_data(self.end_time_path, self.end_time)
+        if not path.exists(self.total_miles_path):
+            self.input_miles_traveled()
+        if not path.exists(self.fuel_economy_path):
+            self.input_fuel_economy()
+        if not path.exists(self.mileage_paid_path):
+            self.input_mileage_paid()
+        if not path.exists(self.device_usage_paid_path):
+            self.input_device_usage_paid()
+        if not path.exists(self.total_hours_path):
+            self.input_total_hours()
+        if not path.exists(self.extra_tips_claimed_path):
+            self.input_extra_tips_claimed()
         remove(path.join(self.path, 'end_shift'))
         self.consolidate()
-        print('Shift has been end!\n')
+        print('Shift has been ended!\n')
         enter_to_continue()
         exit()
 
@@ -573,7 +525,8 @@ class Shift:
             if user_check in ('y', 'Y'):
                 remove(self.path)
                 mkdir(self.path)
-                write_data(self.start_time_path, now())
+                self.start_time = now()
+                write_data(self.start_time_path, self.start_time)
                 print('\nShift has been overwriten!\n')
                 enter_to_continue()
                 exit()
@@ -590,14 +543,16 @@ class Shift:
                 'N: No\n\n', str)
             if user_check in ('y', 'Y'):
                 shift_data = read_data(self.shift_info_path).split(',')
-                self.start_time = write_data(
-                    self.start_time_path, to_datetime(shift_data[7]))
+                self.start_time = to_datetime(shift_data[7])
+                write_data(self.start_time_path, self.start_time)
                 remove(self.shift_info_path)
                 break
             elif user_check in ('n', 'N'):
                 break
             else:
                 print('\nInvalid input...')
+
+    # todo: make method that removes today's id from the file when resuming/overwriting
 
     # methods for analyzing data
     def all_orders(self):
@@ -707,3 +662,6 @@ class Shift:
             enter_to_continue()
         except ZeroDivisionError:
             print('\n\nNothing has yet to be tracked\n\n')
+
+# todo: need to write function that allows the user to change data
+# todo: need to write function that saves changes to data

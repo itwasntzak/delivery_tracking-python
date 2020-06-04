@@ -25,15 +25,16 @@ def enter_to_continue():
             continue
 
 
+# todo: need to update all methods and functions that use this function, no longer returns data
 def write_data(file, data):
     with open(file, 'w') as file_object:
         file_object.write(str(data))
-        return data
 
 
+# todo: need to update all methods and functions that use this function, no longer returns data
 def append_data(file, data):
     with open(file, 'a') as file_object:
-        return file_object.write(str(data))
+        file_object.write(str(data))
 
 
 def read_data(file):

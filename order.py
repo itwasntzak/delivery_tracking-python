@@ -12,7 +12,7 @@ class Order:
         if id == '':
             self.id_path = path.join(self.path, 'order_id.txt')
             if not path.exists(self.id_path):
-                self.id = self.input_id_number()
+                self.input_id_number()
             else:
                 self.id = int(read_data(self.id_path))
         else:
@@ -24,6 +24,7 @@ class Order:
         self.end_time_path = path.join(self.path, 'order_end_time.txt')
         self.order_file_path = path.join(self.path, f'{self.id}.txt')
 
+    # todo: impament tip class changes
     # methods for order tracking
     def consolidate(self):
         try:
@@ -40,7 +41,7 @@ class Order:
         remove(self.miles_path)
         remove(self.end_time_path)
         # update/create order_numbers.txt
-        self.update_id_file()
+        self.update_ids_file()
         # remove file telling program, order is in progress
         remove(path.join(self.path, 'order'))
 
@@ -78,7 +79,8 @@ class Order:
         # input the miles since prev destination
         self.miles_traveled = self.input_miles_traveled()
         # save/assign current time for end of order
-        self.end_time = write_data(self.end_time_path, now())
+        self.end_time = now()
+        write_data(self.end_time_path, self.end_time)
         # consolidate order files into one file
         self.consolidate()
         # display amount of time to complete the order
@@ -102,7 +104,7 @@ class Order:
                 print('\nInvalid input...')
             return self
 
-    def update_id_file(self):
+    def update_ids_file(self):
         if path.exists(self.parent.order_ids_path):
             append_data(self.parent.order_ids_path, ',' + str(self.id))
         else:
@@ -110,16 +112,18 @@ class Order:
 
     # methods for inputting data
     def input_miles_traveled(self):
-        return write_data(self.miles_path, input_data(
-            f"\n{'Order miles traveled:'}      {'#.#'}\n", float,
-            f"{'Is this correct?'}         {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'N'), word=' miles'))
+        self.miles_traveled = input_data(
+            '\nOrder miles traveled:\t#.#\n', float,
+            'Is this correct?\t[y/n]\n', str,
+            ('y', 'Y'), ('n', 'N'), word=' miles')
+        write_data(self.miles_path, self.miles_traveled)
 
     def input_id_number(self):
-        return write_data(self.id_path, input_data(
-            f"\n{'Enter order number:'}     {'#-####'}\n", int,
-            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'N')))
+        self.id = input_data(
+            '\nEnter order number:\t#-####\n', int,
+            '\nIs this correct?\t[y/n]\n', str,
+            ('y', 'Y'), ('n', 'N'))
+        write_data(self.id_path, self.id)
 
     def input_split_tip(self):
         card = 1
@@ -148,7 +152,8 @@ class Order:
                     '\nNo tip'
                     f"\n{'Is this correct?'}         {'[y/n]'}\n", str)
                 if user_confirm == 'y':
-                    return write_data(self.tip_path, 0.0)
+                    write_data(self.tip_path, 0.0)
+                    return 0.0
                 elif user_confirm == 'n':
                     continue
                 else:
@@ -158,7 +163,8 @@ class Order:
                     f"\n{'$'}{tip_amount}\n"
                     f"{'Is this correct?'}         {'[y/n]'}\n", str)
                 if user_confirm == 'y':
-                    return write_data(self.tip_path, tip_amount)
+                    write_data(self.tip_path, tip_amount)
+                    return tip_amount
                 elif user_confirm == 'n':
                     continue
                 else:
@@ -169,7 +175,8 @@ class Order:
         card = 1
         cash = 2
         if self.tip == 0.0:
-            return write_data(self.tip_type_path, no_tip)
+            write_data(self.tip_type_path, no_tip)
+            return no_tip
         else:
             while True:
                 user_option = get_input(
@@ -181,7 +188,8 @@ class Order:
                        '\nCard\n'
                        f"{'Is this correct?'}         {'[y/n]'}\n", str)
                     if check_correct == 'y':
-                        return write_data(self.tip_type_path, card)
+                        write_data(self.tip_type_path, card)
+                        return card
                     elif check_correct == 'n':
                         continue
                     else:
@@ -191,7 +199,8 @@ class Order:
                         '\nCash\n'
                         f"{'Is this correct?'}         {'[y/n]'}\n", str)
                     if check_correct == 'y':
-                        return write_data(self.tip_type_path, cash)
+                        write_data(self.tip_type_path, cash)
+                        return cash
                     elif check_correct == 'n':
                         continue
                     else:
@@ -223,24 +232,24 @@ class Order:
         return self
 
     def resume(self):
-        while True:
-            if not path.exists(self.tip_path):
-                # input the tip amount, or if tipped at all
-                self.tip()
-            elif not path.exists(self.tip_type_path):
-                # input the tip type. if no tip, automaticly inputs
-                self.tip_type = self.input_tip_type()
-            elif not path.exists(self.miles_path):
-                # input the miles since prev destination
-                self.miles_traveled = self.input_miles_traveled()
-            elif not path.exists(self.end_time_path):
-                # save/assign current time for end of order
-                self.end_time = write_data(self.end_time_path, now())
-            else:
-                break
-        # consolidate order files into one file
+        if not path.exists(self.tip_path):
+            # input the tip amount, or if tipped at all
+            self.tip()
+        if not path.exists(self.tip_type_path):
+            # input the tip type. if no tip, automaticly inputs
+            self.input_tip_type()
+        if not path.exists(self.miles_path):
+            # input the miles since prev destination
+            self.input_miles_traveled()
+        if not path.exists(self.end_time_path):
+            # save/assign current time for end of order
+            self.end_time = now()
+            write_data(self.end_time_path, self.end_time)
         self.consolidate()
         # display amount of time to complete the order
         time_taken(self.parent.start_time, self.end_time,
                    'Order completed in:\t')
         return self
+
+# todo: need to write function that allows the user to change data
+# todo: need to write function that saves changes to data

@@ -5,10 +5,9 @@ from utility import enter_to_continue, now, read_data, to_datetime, write_data
 
 
 class Split:
-    def __init__(self, shift):
-        self.parent = shift
-        self.path = shift.path
+    def __init__(self, parent_directory):
         # list of all paths
+        self.path = parent_directory
         self.miles_path = path.join(self.path, 'split_miles_traveled.txt')
         self.start_time_path = path.join(self.path, 'split_start_time.txt')
         self.end_time_path = path.join(self.path, 'split_end_time.txt')
@@ -34,14 +33,14 @@ class Split:
             if user_check in ('y', 'Y'):
                 self.start_time = to_datetime(read_data(self.start_time_path))
                 if path.exists(self.miles_path):
-                    self.miles_traveled =\
-                        float(read_data(self.miles_path))
+                    self.miles_traveled = float(read_data(self.miles_path))
                 else:
-                    self.miles_traveled = self.input_miles_traveled()
+                    self.input_miles_traveled()
                 if path.exists(self.end_time_path):
                     self.end_time = to_datetime(read_data(self.end_time_path))
                 else:
-                    self.end_time = write_data(self.end_time_path, now())
+                    self.end_time = now()
+                    write_data(self.end_time_path, self.end_time)
                 self.consolidate()
                 return self
             elif user_check in ('n', 'N'):
@@ -73,8 +72,8 @@ class Split:
 
     # methods for inputting data
     def input_miles_traveled(self):
-        return write_data(self.miles_path, input_data(
-            f"\n{'Split miles traveled:'}      {'#.#'}\n", float,
-            ' miles\n'
-            "{'Is this correct?'}         {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'N')))
+        self.miles_traveled = input_data('\nTotal miles traveled for split:\t#.#\n', float,
+                          ' miles\n'
+                          'Is this correct?\t[y/n]\n', str,
+                          ('y', 'Y'), ('n', 'N'))
+        write_data(self.miles_path, self.miles_traveled)

@@ -60,7 +60,7 @@ class Extra_Stop:
         remove(self.end_time_path)
         if path.exists(self.start_time_path):
             remove(self.start_time_path)
-        self.update_id_file()
+        self.update_ids_file()
         self.update_id_number()
         # remove file telling program that extra stop in progress
         remove(path.join(self.path, 'extra_stop'))
@@ -89,15 +89,17 @@ class Extra_Stop:
         # assign a extra stop id number
         if isinstance(self.parent, type(parent_type(self.parent, 'shift'))):
             # add start time if extra stop is seperate from a delivery
-            self.start_time = write_data(self.start_time_path, now())
+            self.start_time = now()
+            write_data(self.start_time_path, self.start_time)
         # input extra stop location
-        self.location = self.input_location()
+        self.input_location()
         # input extra stop reason
-        self.reason = self.input_reason()
+        self.input_reason()
         # input extra stop miles traveled
-        self.miles_traveled = self.input_miles_traveled()
+        self.input_miles_traveled()
         # save the time at the end of the extra stop
-        self.end_time = write_data(self.end_time_path, now())
+        self.end_time = now()
+        write_data(self.end_time_path, self.end_time)
         # consolidate extra stop data into one file
         self.consolidate()
         # display the amount of time since the delivery was started
@@ -110,7 +112,7 @@ class Extra_Stop:
         # return parent object with updateded lists
         return self
 
-    def update_id_file(self):
+    def update_ids_file(self):
         if path.exists(self.extra_stop_ids_path):
             append_data(self.extra_stop_ids_path, ',' + str(self.id))
         else:
@@ -122,23 +124,25 @@ class Extra_Stop:
 
     # methods for inputting data
     def input_location(self):
-        return write_data(self.location_path, input_data(
-            f"\n{'Extra stop location:'}\n", str,
-            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'Y')))
+        self.location = input_data(
+            '\nExtra stop location:\n', str,
+            '\nIs this correct?\t[y/n]\n', str,
+            ('y', 'Y'), ('n', 'Y'))
+        write_data(self.location_path, self.location)
 
     def input_miles_traveled(self):
-        return write_data(self.miles_path, input_data(
-            f"\n{'Extra stop miles traveled:'} {'#.#'}\n", float,
-            ' miles\n'
-            f"{'Is this correct?'}         {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'Y')))
+        self.miles_traveled = input_data('\nExtra stop miles traveled:\t#.#\n', float,
+                                         ' miles\n'
+                                         'Is this correct?\t[y/n]\n', str,
+                                         ('y', 'Y'), ('n', 'Y'))
+        return write_data(self.miles_path, self.miles_traveled)
 
     def input_reason(self):
-        return write_data(self.reason_path, input_data(
+        self.reason = input_data(
             '\nReason for extra stop?\n', str,
-            f"\n{'Is this correct?'}         {'[y/n]'}\n", str,
-            ('y', 'Y'), ('n', 'Y')))
+            '\nIs this correct?\t[y/n]\n', str,
+            ('y', 'Y'), ('n', 'Y'))
+        write_data(self.reason_path, self.reason)
 
     # methods for continuing tracking if program ends
     def load_current(self):
@@ -162,10 +166,11 @@ class Extra_Stop:
         return self
 
     def resume(self):
+        if isinstance(self.parent, type(parent_type(self.parent, 'shift'))):
+            if not path.exists(self.start_time_path):
+                self.start_time = now()
+                write_data(self.start_time_path, self.start_time)
         while True:
-            if isinstance(self.parent, type(parent_type(self.parent, 'shift'))):
-                if not path.exists(self.start_time_path):
-                    self.start_time = write_data(self.start_time_path, now())
             if not path.exists(self.location_path):
                 # input extra stop location
                 self.location = self.input_location()
@@ -177,7 +182,8 @@ class Extra_Stop:
                 self.miles_traveled = self.input_miles_traveled()
             elif not path.exists(self.end_time_path):
                 # save the time at the end of the extra stop
-                self.end_time = write_data(self.end_time_path, now())
+                self.end_time = now()
+                write_data(self.end_time_path, self.end_time)
             else:
                 break
         # consolidate extra stop data into one file
@@ -190,3 +196,7 @@ class Extra_Stop:
             time_taken(self.parent.start_time, self.end_time,
                        'Extra stop completed in:\t')
         return self
+
+# todo: change extra stops from comma seperated to newline seperated
+# todo: need to write function that allows the user to change data
+# todo: need to write function that saves changes to data
