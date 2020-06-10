@@ -17,10 +17,10 @@ def parent_type(parent, intended):
 
 
 class Extra_Stop:
-    def __init__(self, parent, id=''):
+    def __init__(self, parent, id=None):
         self.parent = parent
         self.path = parent.path
-        if id == '':
+        if id is None:
             if isinstance(parent, type(parent_type(parent, 'shift'))):
                 self.extra_stop_id_path =\
                     path.join(self.path, 'extra_stop_id_number.txt')

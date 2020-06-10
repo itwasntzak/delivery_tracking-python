@@ -9,20 +9,19 @@ from utility import now
 
 if not path.exists('shifts'):
     mkdir('shifts')
-while True:
-    shift = Shift(now())
-    # check if shift has been completed
-    if path.exists(path.join(shift.path, 'shift_info.txt')):
-        shift.completed()
-    # check if shift has started
-    if not path.exists(shift.path):
-        shift.start()
-    else:
-        shift.load_current()
-    # check if split has been started
-    if path.exists(path.join(shift.path, 'split_start_time.txt')):
-        shift.split = Split(shift).end()
-    else:
-        shift_menu(shift)
+shift = Shift(now())
+# check if shift has been completed
+if path.exists(shift.info_path):
+    shift.completed()
+# check if shift has started
+elif not path.exists(shift.path):
+    shift.start()
+else:
+    shift.load_current()
+# check if split has been started
+if path.exists(shift.split.start_time_path):
+    shift.split = Split(shift).end()
+else:
+    shift_menu(shift)
 
-# todo: make the tip class changes that were made in java version
+# todo: need to improve modularity of all classes

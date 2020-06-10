@@ -16,8 +16,15 @@ def to_money(value):
     return '${:.2f}'.format(round(value, 2))
 
 
-def enter_to_continue():
+# todo: func cacluates len of strings, force everything to same screen length
+def time_taken(start_time, end_time, prompt):
+    time_diff = end_time - start_time
+    print(f"\n{prompt}\t{time_diff}")
+
+
+def enter_to_continue(prompt):
     while True:
+        print(prompt + '\n')
         wait_for_user = input('Press enter to continue.\n')
         if wait_for_user == '':
             break
@@ -25,56 +32,13 @@ def enter_to_continue():
             continue
 
 
-# todo: need to update all methods and functions that use this function, no longer returns data
-def write_data(file, data):
-    with open(file, 'w') as file_object:
-        file_object.write(str(data))
-
-
-# todo: need to update all methods and functions that use this function, no longer returns data
-def append_data(file, data):
-    with open(file, 'a') as file_object:
-        file_object.write(str(data))
-
-
-def read_data(file):
-    with open(file, 'r') as file_object:
-        return file_object.read()
-
-
-# todo: func cacluates len of strings, force everything to same screen length
-def time_taken(start_time, end_time, prompt):
-    time_diff = end_time - start_time
-    print(f"\n{prompt}     {time_diff}\n")
-
-
-def driving(object, prompt, destination):
-    from extra_stop import Extra_Stop
+def user_confirmation(prompt):
+    prompt += 'Y: yes\nN: no\n'
     while True:
-        if path.exists(path.join(object.path, 'driving-' + destination)):
-            pass
+        user_confirmation = get_input(prompt, str)
+        if user_confirmation in ('y', 'Y'):
+            return True
+        elif user_confirmation in ('n', 'N'):
+            return False
         else:
-            # create file so program knows while in driving process
-            write_data(path.join(object.path, 'driving-' + destination), None)
-        wait_for_user = get_input(
-            f'{prompt}\n'
-            'C: To complete\n'
-            'E: For extra stop\n'
-            'T: See current time\n'
-            'Q: Quit program\n\n', str)
-        if wait_for_user in ('c', 'C'):
-            # remove driving file so code can knows driving has ended
-            remove(path.join(object.path, 'driving-' + destination))
-            break
-        # extra stop option
-        elif wait_for_user in ('e', 'E'):
-            extra_stop = Extra_Stop(object).start()
-            object.extra_stop_ids.append(extra_stop.id)
-            object.extra_stops.append(extra_stop)
-        elif wait_for_user in ('t', 'T'):
-            time_taken(object.start_time, now(), 'Current time is:\t')
-        elif wait_for_user in ('q', 'Q'):
-            quit()
-        else:
-            print('\nInvalid input...\n')
-    return object
+            print('\nInvalid input...')
