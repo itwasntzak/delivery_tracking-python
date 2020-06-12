@@ -1,1 +1,0 @@
-find /n "# cnsd:" *.py

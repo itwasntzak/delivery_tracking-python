@@ -1,8 +1,6 @@
 import datetime
 from os import path, remove
 
-from input_data import get_input
-
 
 def now():
     return datetime.datetime.now()

@@ -67,6 +67,20 @@ def integer(prompt, preced=None):
             return user_input
 
 
+def money(prompt, succeed=None):
+    money = decimal(prompt, '$', 2)
+    if isinstance(succeed, str):
+        while not confirmation(money, '$', succeed):
+            money = decimal(prompt, '$', 2)
+    elif not succeed:
+        while not confirmation(money, '$'):
+            money = decimal(prompt, '$', 2)
+    elif succeed:
+        raise TypeError('succeed must be able to be converted to string')
+
+    return money
+
+
 def text(prompt, preced=None, alpha_only=False, forbid=None, permit=None):
     """
     preced = type that can be converted into string | comes before user input
@@ -137,6 +151,42 @@ def preceded_input(prompt, preced=None):
     if preced:
         return input(f'{preced}')
     return input()
+
+
+class User_Input():
+    def __init__(self, prompt):
+        self.prompt = prompt
+
+    # shared inputs
+    def id(self):
+        id = integer(self.prompt, '#')
+        while not confirmation(id, 'Id is, #'):
+            id = integer(self.prompt, '#')
+        return id
+
+    def miles_traveled(self):
+        from resources.strings import User_Input__miles_traveled__succeed as\
+            succeed
+        miles_traveled = decimal(self.prompt)
+        while not confirmation(miles_traveled, succeed):
+            miles_traveled = decimal(self.prompt)
+        return miles_traveled
+
+    # tip inputs
+    def card_tip(self):
+        from resources.strings import User_Input__card_tip_succeed as succeed
+        return money(self.prompt, succeed)
+
+    def cash_tip(self):
+        from resources.strings import User_Input__cash_tip_succeed as succeed
+        return money(self.prompt, succeed)
+
+    def unknown_tip(self):
+        from resources.strings import User_Input__unknown_tip_succeed as\
+            succeed
+        return money(self.prompt, succeed)
+
+
 
 
 # OLD

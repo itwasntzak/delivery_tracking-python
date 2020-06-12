@@ -4,12 +4,19 @@ from os import chdir, path, mkdir
 
 from shift import shift_menu, Shift
 from split import Split
+from resources.system_names import\
+    user_data_directory as user_data, shifts_directory as shifts
 from utility import now
 
 
-if not path.exists('shifts'):
-    mkdir('shifts')
 shift = Shift(now())
+shifts_path = path.join(user_data, shifts)
+
+if not path.exists(user_data):
+    mkdir(user_data)
+if not path.exists(shifts_path):
+    mkdir(shifts_path)
+
 # check if shift has been completed
 if path.exists(shift.info_path):
     shift.completed()

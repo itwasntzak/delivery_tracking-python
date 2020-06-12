@@ -1,5 +1,5 @@
 __pycache__/
-td.bat
-*.pyc
 brain/
-.vscode/settings.json
+.vscode/
+ide_tools
+*.pyc

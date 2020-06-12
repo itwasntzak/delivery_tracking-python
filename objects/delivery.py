@@ -63,7 +63,6 @@ class Delivery:
             path.join(self.path, 'delivery_average_speed.txt')
         self.start_time_path = path.join(self.path, 'delivery_start_time.txt')
         self.end_time_path = path.join(self.path, 'delivery_end_time.txt')
-        self.order_ids_path = path.join(self.path, 'order_ids.txt')
         self.extra_stop_ids_path = path.join(self.path, 'extra_stop_ids.txt')
         self.delivery_info_path = path.join(self.path, 'delivery_info.txt')
 
