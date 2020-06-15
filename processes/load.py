@@ -1,31 +1,40 @@
 from utility.file import Read
 
 
-def tip(tip):
-    """
-    file_path=sting of file path or\n
-    order_data=list/tuple
-    """
+def delivery(delivery):
+    from objects.delivery import Delivery
+    # delivery info
+    if isinstance(delivery, Delivery):
+        try:
+            delivery_data = Read(delivery.file_list['directory']).comma()
+        except FileNotFoundError:
+            # todo: still not sure how to handle when file isnt found
+            pass
+        else:
+            from utility.utility import to_datetime
+            delivery.miles_traveled = float(delivery_data[0])
+            delivery.average_speed = int(delivery_data[1])
+            delivery.start_time = to_datetime(delivery_data[2])
+            delivery.end_time = to_datetime(delivery_data[3])
 
-    try:
-        if tip.file_path:
-            tip.__init__(Read(tip.file_path).floats())
-    except AttributeError:
-        # not sure how to handle this
-        pass
+        # orders
+        from objects.order import Order
+        try:
+            order_ids = Read(Order(delivery).file_list['completed_ids']).comma()
+        except FileNotFoundError:
+            # todo: still not sure how to handle when file isnt found
+            pass
+        else:
+            for id in order_ids:
+                delivery.add_order(order(Order(delivery, id)))
 
-    try:
-        if tip.order_data:
-            tip.__init__(tip.order_data[0], tip.order_data[1], tip.order_data[2])
-    except AttributeError:
-        # not sure how to handle this
-        pass
+        # todo: need to add loading extra stops
 
-    return tip
-
-
-def carry_out_tips(tip, tip_list=[]):
-    pass
+        # return loaded delivery
+        return delivery
+    else:
+        # todo: need to write error message
+        raise TypeError
 
 
 def order(order):
@@ -44,8 +53,11 @@ def order(order):
             from resources.error_messages import Order__load__file_not_found
             print(Order__load__file_not_found)
         else:
-            from utility import to_datetime
-            order.tip = tip(order_data)
+            from objects.tip import Tip
+            from utility.utility import to_datetime
+            tip_instance = Tip()
+            tip_instance.order_data = order_data
+            order.tip = tip(tip_instance)
             order.miles_traveled = float(order_data[3])
             order.end_time = to_datetime(order_data[4])
             return order
@@ -55,19 +67,28 @@ def order(order):
         raise TypeError(error_message)
 
 
-def delivery(delivery, file_path=None):
+def tip(tip):
     """
     file_path=sting of file path or\n
-    file_path=a list/tuple with directory path and file name
+    order_data=list/tuple
     """
-    if isinstance(file_path, str):
-        delivery_data = Read(file_path).comma()
 
-    elif isinstance(file_path, list or tuple):
-        delivery_data = Read(file_path[1], directory_path=file_path[0]).comma()
-
-
-class Load:
-
-    def __init__(self):
+    try:
+        if tip.file_path:
+            tip.__init__(Read(tip.file_path).floats())
+    except AttributeError:
+        # todo: not sure how to handle this
         pass
+
+    try:
+        if tip.order_data:
+            tip.__init__(tip.order_data[0], tip.order_data[1], tip.order_data[2])
+    except AttributeError:
+        # todo: not sure how to handle this
+        pass
+
+    return tip
+
+
+def carry_out_tips(tip, tip_list=[]):
+    pass

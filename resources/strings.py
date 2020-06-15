@@ -7,6 +7,10 @@ resource legend:
 #   shift
 
 #   delivery
+Delivery__average_speed__prompt = 'Enter the average speed for this delivery:\t##'
+Delivery__miles_traveled_prompt = 'Delivery miles traveled:\t#.#'
+Delivery__order_quantity__prompt = 'Number of orders?'
+Delivery__time_taken__display = 'Delivery completed in:\t'
 
 #   order
 Order__change_data__prompt =\
@@ -33,6 +37,7 @@ Tip__input_cash__prompt  = 'Enter cash tip amount:\t$#.##\n(0 for no tip)'
 
 # utility
 #   user input
+User_Input__average_speed__succeed = ' mph'
 User_Input__card_tip__succeed = ' card tip'
 User_Input__cash_tip__succeed = ' cash tip'
 User_Input__unknown_tip__succeed = ' unknown tip amount'

@@ -157,7 +157,14 @@ class User_Input():
     def __init__(self, prompt):
         self.prompt = prompt
 
-    # shared inputs
+    def average_speed(self):
+        from resources.strings import User_Input__average_speed__succeed as\
+            succeed
+        average_speed = integer(self.prompt)
+        while not confirmation(average_speed, succeed):
+            average_speed = integer(self.prompt)
+        return average_speed
+
     def id(self):
         id = integer(self.prompt, '#')
         while not confirmation(id, 'Id is, #'):
@@ -172,7 +179,6 @@ class User_Input():
             miles_traveled = decimal(self.prompt)
         return miles_traveled
 
-    # tip inputs
     def card_tip(self):
         from resources.strings import User_Input__card_tip_succeed as succeed
         return money(self.prompt, succeed)

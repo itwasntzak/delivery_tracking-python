@@ -30,13 +30,32 @@ def enter_to_continue(prompt):
             continue
 
 
-def user_confirmation(prompt):
-    prompt += 'Y: yes\nN: no\n'
+# todo: need to fix to work with new system
+def driving(delivery, prompt, destination):
+    from extra_stop import Extra_Stop
     while True:
-        user_confirmation = get_input(prompt, str)
-        if user_confirmation in ('y', 'Y'):
-            return True
-        elif user_confirmation in ('n', 'N'):
-            return False
+        if path.exists(path.join(delivery.path, 'driving-' + destination)):
+            pass
         else:
-            print('\nInvalid input...')
+            # create file so program knows while in driving process
+            write_data(path.join(delivery.path, 'driving-' + destination), None)
+        wait_for_user = get_input(
+            f'{prompt}\n'
+            'C: To complete\n'
+            'E: For extra stop\n'
+            'T: See current time\n'
+            'Q: Quit program\n', str)
+        if wait_for_user in ('c', 'C'):
+            # remove driving file so code can knows driving has ended
+            remove(path.join(delivery.path, 'driving-' + destination))
+            break
+        # extra stop option
+        elif wait_for_user in ('e', 'E'):
+            delivery.add_extra_stop(Extra_Stop(delivery).start())
+        elif wait_for_user in ('t', 'T'):
+            time_taken(delivery.start_time, now(), 'Current time is:\t')
+        elif wait_for_user in ('q', 'Q'):
+            exit()
+        else:
+            print('\nInvalid input...\n')
+    return delivery

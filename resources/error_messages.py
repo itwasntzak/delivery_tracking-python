@@ -24,7 +24,7 @@ Order__load__file_not_found = 'the file was not found, or does not exist'
 #       delivery
 
 Order__info_file__missing_id = 'this Order does not have an assigned id'
-Order__directory__wrong_parent = 'parent of Order must be Delivery'
+Order__directory__no_parent = 'this Order does not have an assigned delivery'
 
 #       tip
 # not used - Tip__input_data__wrong_parameter = 'parameter for input_data.tip must be of type Tip'

@@ -93,7 +93,7 @@ class Read():
         else:
             return float_list
 
-    def datetime(self):
+    def datetimes(self):
         datetime_list = []
         for data in self.comma():
             datetime_list.append(to_datetime(data))
