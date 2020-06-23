@@ -180,15 +180,15 @@ class User_Input():
         return miles_traveled
 
     def card_tip(self):
-        from resources.strings import User_Input__card_tip_succeed as succeed
+        from resources.strings import User_Input__card_tip__succeed as succeed
         return money(self.prompt, succeed)
 
     def cash_tip(self):
-        from resources.strings import User_Input__cash_tip_succeed as succeed
+        from resources.strings import User_Input__cash_tip__succeed as succeed
         return money(self.prompt, succeed)
 
     def unknown_tip(self):
-        from resources.strings import User_Input__unknown_tip_succeed as\
+        from resources.strings import User_Input__unknown_tip__succeed as\
             succeed
         return money(self.prompt, succeed)
 

@@ -5,6 +5,22 @@ resource legend:
 """
 # objects
 #   shift
+Shift__completed__menu =\
+    'You have already completed a shift for today.\n'\
+    'Please select an option:\n'\
+    "R: Resume today's shift\n"\
+    'O: Overwrite shift\n'\
+    'Q: Quit program\n'
+Shift__device_compensation__prompt = 'Amount of device usage paid:\t$#.##'
+Shift__end___enter_to_continue__display = 'Shift has been ended!'
+Shift__extra_tips_claimed__prompt = 'Extra tips claimed for shift:\t$#.##\n$'
+Shift__fuel_economy__prompt = 'Enter fuel economy:\t##.#'
+Shift__miles_traveled__prompt = 'Total miles traveled for this shift:\t#.#'
+Shift__overwritten__confirmation = 'Shift has been overwriten!'
+Shift__overwrite__prompt = 'Are you sure you want to overwrite the completed shift?'
+Shift__start__enter_to_continue__display = 'Shift has been started!'
+Shift__total_hours__prompt = 'Enter total hours worked:\t#.##'
+Shift__vehical_compensation__prompt = 'Amount of vehicle paid:\t$#.##'
 
 #   delivery
 Delivery__average_speed__prompt = 'Enter the average speed for this delivery:\t##'
@@ -32,8 +48,29 @@ Tip__input_card__prompt = 'Enter card tip amount:\t$#.##\n(0 for no tip)'
 Tip__input_cash__prompt  = 'Enter cash tip amount:\t$#.##\n(0 for no tip)'
 
 #   extra stop
+Extra_Stop__location__prompt = 'Extra stop location:'
+Extra_Stop__miles_traveled__prompt = 'Extra stop miles traveled:\t#.#'
+Extra_Stop__reason__prompt = 'Reason for extra stop?'
+Extra_Stop__time_taken__display = 'Extra stop completed in:\t'
 
 #   split
+Split__end__confirmation = 'Are you sure you want to end the split?'
+Split__start__enter_to_continue = 'Split has been started.'
+Split__start__confirmation = 'Are you sure you want to start a split?'
+
+
+# menus
+daily_tracking__prompts = {
+            'initial': 'What would you like to do?\n',
+            'delivery': ['D: Start a delivery\n', 'D: Continue delivery\n'],
+            'extra_stop': ['E: Start an extra stop\n', 'E: Continue extra stop\n'],
+            'carry_out_tip': 'C: Enter carry out tip\n',
+            'split': 'S: Start split\n',
+            'end': ['X: End shift\n', 'X: Continue ending shift\n'],
+            'info': 'I: Information on shift\n',
+            'quit': 'Q: Quit program'
+        }
+
 
 # utility
 #   user input

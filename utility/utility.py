@@ -31,6 +31,8 @@ def enter_to_continue(prompt):
 
 
 # todo: need to fix to work with new system
+# todo: want to change so that there isnt an order quantity file,
+#       press '[aA]' to add order, press '[eE]' take extra stop, press '[cC]' to complete delivery
 def driving(delivery, prompt, destination):
     from extra_stop import Extra_Stop
     while True:

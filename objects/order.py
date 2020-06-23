@@ -1,38 +1,26 @@
-from tip import Tip
-from utility.user_input import User_Input
-
 
 class Order:
     # list of attributes
     id = None
     parent = None
-    tip = Tip()
+    tip = None
     miles_traveled = None
     end_time = None
 
-    def __init__(self, delivery=None, id=None):
+    def __init__(self, delivery, id=None):
         from objects.delivery import Delivery
-        if isinstance(delivery, Delivery):
-            self.parent = delivery
-        elif delivery:
+        if not isinstance(delivery, Delivery):
+            # todo: move this error message to resources, use %s in place of {}
             error_message =\
                 f"parent of Order must be Delivery not '{type(delivery)}'"
             raise TypeError(error_message)
+        else:
+            self.parent = delivery
 
         if isinstance(id, int):
             self.id = id
         elif id:
             raise TypeError
-
-    def directory(self):
-        from objects.delivery import Delivery
-        try:
-            from os import path
-            return self.parent.directory()
-        except AttributeError:
-            from resources.error_messages import\
-                Order__directory__no_parent as error_message
-            print(error_message)
 
     def csv(self):
         return f'{self.tip.csv()},{self.miles_traveled},{self.end_time}'
@@ -43,10 +31,12 @@ class Order:
             end_time, miles_traveled, Order__completed_ids as completed_ids,\
             order_directory, Order__id as order_id, Tip__info as tip
 
-        directory = path.join(self.directory(), order_directory)
+        parent_directory = self.parent.file_list()['directory']
+        directory = path.join(parent_directory, order_directory)
 
         return {
-            'completed_ids': path.join(self.directory(), completed_ids),
+            'completed_ids': path.join(parent_directory, completed_ids),
+            'directory': directory,
             'end_time': path.join(directory, end_time),
             'id': path.join(directory, order_id),
             'miles_traveled': path.join(directory, miles_traveled),
@@ -54,13 +44,15 @@ class Order:
         }
 
     def info_file(self):
-        try:
+        if isinstance(self.id, int):
             from os import path
             return path.join(self.directory(), f'{self.id}.txt')
-        except AttributeError:
+        elif not self.id:
             from resources.error_messages import\
                 Order__info_file__missing_id as error_message
-            print(error_message)
+            raise AttributeError(error_message)
+        elif not isinstance(self.id, int):
+            raise TypeError
 
     def view(self):
         from resources.strings import Order__time_taken__display as\

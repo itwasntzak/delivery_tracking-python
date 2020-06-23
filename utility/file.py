@@ -1,14 +1,14 @@
-from utility import to_datetime
+from utility.utility import to_datetime
 
 
 def append(data, separator, file_name, directory_path=None):
     if isinstance(directory_path, str):
         from os import path
         with open(path.join(directory_path, file_name), 'a') as file:
-            file.write(f'{data}{separator}')
+            file.write(f'{separator}{data}')
     elif not directory_path:
         with open(file_name, 'a') as file:
-            file.write(f'{data}{separator}')
+            file.write(f'{separator}{data}')
     elif directory_path:
         raise TypeError('directory_path must be a string type')
 
