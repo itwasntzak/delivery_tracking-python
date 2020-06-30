@@ -32,10 +32,14 @@ else:
 
 # check if split has been started
 if path.exists(Split(shift).file_list()['start_time']):
-    shift.split = Split(shift).end()
+    # todo: probably want to add this eval to shift menu. make it not possible to enter other data while on split
+    from processes.input_data import end_split
+    shift.split = end_split(shift)
 
 else:
-    from menus import daily_tracking as main_menu
-    shift, menu_condition = main_menu(shift)
-    while menu_condition:
-        shift, menu_condition = main_menu(shift)
+    from menus import Shift_Menu
+    shift_menu = Shift_Menu(shift)
+    shift = shift_menu.return_shift()
+    while shift.shift_menu_condition:
+        shift_menu = Shift_Menu(shift)
+        shift = shift_menu.return_shift()

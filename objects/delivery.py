@@ -1,14 +1,5 @@
 
 class Delivery:
-    id = None
-    parent = None
-    miles_traveled = None
-    average_speed = None
-    order_ids = []
-    orders = []
-    extra_stop_ids = []
-    extra_stops = []
-
     # cnsd: use commas to split delivery data, use newline to split multi-delv
     def __init__(self, shift, id=None):
         from objects.shift import Shift
@@ -18,8 +9,17 @@ class Delivery:
 
         if isinstance(id, int):
             self.id = id
+        elif id is None:
+            self.id = len(shift.deliveries)
         elif id:
             raise TypeError
+
+        self.miles_traveled = None
+        self.average_speed = None
+        self.order_ids = []
+        self.orders = []
+        self.extra_stop_ids = []
+        self.extra_stops = []
 
     def add_extra_stop(self, extra_stop):
         from objects.extra_stop import Extra_Stop
@@ -32,15 +32,11 @@ class Delivery:
 
     def add_order(self, order):
         from objects.order import Order
+        if not isinstance(order, Order):
+            raise TypeError(f'{order} is of type {type(order)}')
 
-        if isinstance(order, Order):
-            self.order_ids.append(order.id)
-            self.orders.append(order)
-        else:
-            raise TypeError
-
-    def assign_id(self):
-        self.id = len(self.parent.deliveries)
+        self.order_ids.append(order.id)
+        self.orders.append(order)
 
     def csv(self):
         return f'{self.miles_traveled},{self.average_speed},'\
@@ -57,14 +53,14 @@ class Delivery:
             start_time as start_time
 
         parent_directory = self.parent.file_list()['directory']
-        directory = path.join(parent_directory, delivery_directory)
+        directory = path.join(parent_directory, f'{self.id}')
 
         return {
-            'average_speed': path.join(directory, average_speed),
             'completed_ids': path.join(parent_directory, completed_ids),
             'directory': directory,
+            'average_speed': path.join(directory, average_speed),
             'end_time': path.join(directory, end_time),
-            'info_file': path.join(directory, info_file),
+            'info': path.join(directory, info_file),
             'miles_traveled': path.join(directory, miles_traveled),
             'start_time': path.join(directory, start_time)
         }

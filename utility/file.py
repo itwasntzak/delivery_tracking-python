@@ -71,16 +71,15 @@ class Read():
         else:
             return data_list
 
+    def integer(self):
+        return int(self.data)
+
     def integers(self):
         integer_list = []
         for data in self.comma():
             integer_list.append(int(data))
-        if len(integer_list) == 0:
-            pass
-        elif len(integer_list) == 1:
-            return integer_list[0]
-        else:
-            return integer_list
+
+        return integer_list
 
     def floats(self):
         float_list = []

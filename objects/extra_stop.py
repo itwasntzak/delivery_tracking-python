@@ -1,31 +1,37 @@
 
 class Extra_Stop:
-    id = None
-    parent = None
-    location = None
-    reason = None
-    miles_traveled = None
-    start_time = None
-    end_time = None
-
+    # todo: need to update all existing shifts with newline sep
     def __init__(self, parent, id=None):
+        from objects.delivery import Delivery
+        from objects.shift import Shift
+        if not isinstance(parent, (Shift, Delivery)):
+            raise TypeError
+
         self.parent = parent
 
         if isinstance(id, int):
             self.id = id
         elif id is None:
-            pass
+            self.assign_id()
         else:
             raise TypeError
+
+        self.location = None
+        self.reason = None
+        self.miles_traveled = None
+        self.start_time = None
+        self.end_time = None
 
     def assign_id(self):
         from os import path
 
-        if not path.exists(self.file_list()['running_id']):
-            self.id = 0
-        else:
+        self.id = 0
+
+        if path.exists(self.file_list()['running_id']):
             from utility.file import Read
-            self.id = Read(self.file_list()['running_id']).integers()
+            self.id = Read(self.file_list()['running_id']).integer()
+
+        return self
 
     def csv(self):
         from objects.delivery import Delivery
@@ -55,14 +61,14 @@ class Extra_Stop:
         directory = path.join(parent_directory, extra_stop_directory)
 
         return {
+            'running_id': path.join(shift_directory, running_id),
             'completed_ids': path.join(parent_directory, completed_ids),
+            'info': path.join(parent_directory, info_file.format(self.id)),
             'directory': directory,
             'end_time': path.join(directory, end_time),
-            'info': path.join(parent_directory, info_file),
             'location': path.join(directory, location),
             'miles_traveled': path.join(directory, miles_traveled),
             'reason': path.join(directory, reason),
-            'running_id': path.join(shift_directory, running_id),
             'start_time': path.join(directory, start_time)
         }
 

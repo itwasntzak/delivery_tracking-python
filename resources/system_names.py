@@ -42,7 +42,7 @@ Tip__info = 'tip.txt'
 
 # extra stop files
 Extra_Stop__completed_ids = 'extra_stop_ids.txt'
-Extra_Stop__info = '%d.txt'
+Extra_Stop__info = '{}.txt'
 Extra_Stop__location = 'location.txt'
 Extra_Stop__reason = 'reason.txt'
 Extra_Stop__running_id = 'extra_stop_id_number.txt'

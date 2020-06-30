@@ -1,16 +1,15 @@
 
 class Split:
-    parent = None
-    start_time = None
-    end_time = None
-    miles_traveled = None
-
     def __init__(self, shift):
         from objects.shift import Shift
         if isinstance(shift, Shift):
             self.parent = shift
         else:
             raise TypeError
+
+        self.start_time = None
+        self.end_time = None
+        self.miles_traveled = None
 
     def csv(self):
         return f'{self.miles_traveled},{self.start_time},{self.end_time}'

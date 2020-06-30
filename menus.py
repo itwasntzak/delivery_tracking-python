@@ -32,133 +32,208 @@ def completed_shift(shift):
             pass
 
 
-def delivery(delivery):
-    # todo: this is next need todo to get everything back to functional
-    import re
-    from utility.user_input import text
-    # todo: need to move this prompt to resources
-    prompt = 'Please select an option:\n'\
-             'O. Add new order\n'\
-             'E. Take extra stop\n'\
-             'T. View current time since start of delivery\n'\
-             'Q. To quit the program'
-    user_choice = text(prompt, permit='[oOeEtTqQ]{1,1}')
+class Delivery_Menu:
+    '''
+    todo: think there should be a check before completing delivery if any
+          orders have been entered. ask user if they really want to end
+          delivery without order, or if they want to delete the order
+    '''
+    # todo: add an options menu option to let user edit data for the delivery
+    def __init__(self, shift):
+        from objects.shift import Shift
+        if not isinstance(shift, Shift):
+            raise TypeError
 
-    if re.match('[oO]{1,1}', user_choice):
-        from processes.input_data import order
-        delivery.add_order(order(delivery))
+        from processes.input_data import start_delivery
+        from utility.user_input import confirmation
 
-    elif re.match('[eE]{1,1}', user_choice):
-        from processes.input_data import delivery_extra_stop as extra_stop
-        delivery.add_extra_stop(extra_stop(delivery))
+        self.shift = shift
+        self.shift.delivery_menu_condition = True
+        self.delivery = start_delivery(self.shift)
 
-    elif re.match('[tT]{1,1}', user_choice):
-        # todo: need to write a display text for time taken in delivery menu
-        from utility.utility import now, time_taken
-        time_taken(delivery.start_time, now(), )
+        self.option_selection()
+        while not confirmation(self.display_text):
+            self.option_selection()
 
-    elif re.match('[qQ]{1,1}', user_choice):
-        pass
+        self.result()
+
+    def option_selection(self):
+        import re
+        from resources.strings import delivery__prompt as prompt
+        from utility.user_input import text
+        # todo: need to add build_prompt that makes a prompted based on if things have started
+        self.user_choice = text(prompt, permit='[oOeEcCtTqQ]{1,1}')
+
+        if re.match('[oO]{1,1}', self.user_choice):
+            self.display_text = 'Enter a new order'
+        elif re.match('[eE]{1,1}', self.user_choice):
+            self.display_text = 'Take an extra stop'
+        elif re.match('[cC]{1,1}', self.user_choice):
+            self.display_text = 'Complete this delivery'
+        elif re.match('[tT]{1,1}', self.user_choice):
+            self.display_text = 'View current time since start of delivery'
+        elif re.match('[qQ]{1,1}', self.user_choice):
+            self.display_text = 'Quit the program'
+
+    def return_shift(self):
+        return self.shift
+
+    def result(self):
+        import re
+
+        if re.match('[oO]{1,1}', self.user_choice):
+            from processes.input_data import order
+            self.delivery.add_order(order(self.delivery))
+
+        elif re.match('[eE]{1,1}', self.user_choice):
+            from processes.input_data import delivery_extra_stop as extra_stop
+            self.delivery.add_extra_stop(extra_stop(self.delivery))
+
+        elif re.match('[cC]{1,1}', self.user_choice):
+            from processes.input_data import end_delivery
+            self.shift.add_delivery(end_delivery(self.delivery))
+            self.shift.delivery_menu_condition = False
+
+        elif re.match('[tT]{1,1}', self.user_choice):
+            # todo: need to write a display text for time taken in delivery menu
+            from utility.utility import now, time_taken
+            time_taken(self.delivery.start_time, now(), 'time taken:')
+
+        elif re.match('[qQ]{1,1}', self.user_choice):
+            self.shift.delivery_menu_condition = False
+            self.shift.shift_menu_condition = False
 
 
-def daily_tracking(shift):
-    import re
-    from utility.user_input import confirmation, text
+class Shift_Menu:
+    def __init__(self, shift):
+        from objects.shift import Shift
+        if not isinstance(shift, Shift):
+            raise TypeError(f'{type(shift)}')
 
-    def build_prompt(shift):
+        from utility.user_input import confirmation
+
+        self.shift = shift
+        self.shift.shift_menu_condition = True
+
+        self.build_prompt()
+        self.option_selection()
+        while not confirmation(self.display_text):
+            self.build_prompt()
+            self.option_selection()
+
+        self.result()
+
+    def build_prompt(self):
         from objects.delivery import Delivery
         from objects.extra_stop import Extra_Stop
         from os import path
-        from resources.strings import daily_tracking__prompts as prompts
+        from resources.strings import shift__prompts as prompts
 
-        prompt = prompts['initial']
+        self.prompt = prompts['initial']
 
-        delivery = Delivery(shift)
-        if not path.exists(delivery.file_list()['directory']):
-            prompt += prompts['delivery'][0]
+        if not path.exists(Delivery(self.shift).file_list()['directory']):
+            self.prompt += prompts['delivery'][0]
         else:
-            prompt += prompts['delivery'][1]
+            self.prompt += prompts['delivery'][1]
 
-        extra_stop = Extra_Stop(shift)
-        if not path.exists(extra_stop.file_list()['directory']):
-            prompt += prompts['extra_stop'][0]
+        if not path.exists(Extra_Stop(self.shift, 0).file_list()['directory']):
+            self.prompt += prompts['extra_stop'][0]
         else:
-            prompt += prompts['extra_stop'][1]
+            self.prompt += prompts['extra_stop'][1]
 
-        prompt += prompts['carry_out_tip']
-        prompt += prompts['split']
+        self.prompt += prompts['carry_out_tip']
+        self.prompt += prompts['split']
 
-        if not path.exists(shift.file_list()['end_time']):
-            prompt += prompts['end'][0]
+        if not path.exists(self.shift.file_list()['end_time']):
+            self.prompt += prompts['end'][0]
         else:
-            prompt += prompts['end'][1]
+            self.prompt += prompts['end'][1]
 
-        prompt += prompts['info']
-        prompt += prompts['quit']
+        self.prompt += prompts['info']
+        self.prompt += prompts['quit']
 
-        return prompt
+        return self
 
-    def option_selection(prompt):
-        user_choice = text(prompt, permit='[dDeEcCsSxXiIqQ]{1,1}')
+    def option_selection(self):
+        import re
+        from utility.user_input import text
 
-        if re.match('[dD]{1,1}', user_choice):
-            data = 'Start/continue delivery'
-        elif re.match('[eE]{1,1}', user_choice):
-            data = 'Start/continue extra stop'
-        elif re.match('[cC]{1,1}', user_choice):
-            data = 'Input carry out tip'
-        elif re.match('[sS]{1,1}', user_choice):
-            data = 'Start a split'
-        elif re.match('[xX]{1,1}', user_choice):
-            data = 'End shift'
-        elif re.match('[iI]{1,1}', user_choice):
-            data = 'Check shift info'
-        elif re.match('[qQ]{1,1}', user_choice):
-            data = 'Quit the program'
+        self.user_choice = text(self.prompt, permit='[dDeEcCsSxXiIqQ]{1,1}')
 
-        return user_choice, data
+        if re.match('[dD]{1,1}', self.user_choice):
+            # todo: add assessment to desplay start or continue
+            self.display_text = 'Start/continue delivery'
+        elif re.match('[eE]{1,1}', self.user_choice):
+            self.display_text = 'Start/continue extra stop'
+        elif re.match('[cC]{1,1}', self.user_choice):
+            self.display_text = 'Input carry out tip'
+        elif re.match('[sS]{1,1}', self.user_choice):
+            self.display_text = 'Start a split'
+        elif re.match('[xX]{1,1}', self.user_choice):
+            self.display_text = 'End shift'
+        elif re.match('[iI]{1,1}', self.user_choice):
+            self.display_text = 'Check shift info'
+        elif re.match('[qQ]{1,1}', self.user_choice):
+            self.display_text = 'Quit the program'
 
-    prompt = build_prompt(shift)
+        return self
 
-    user_choice, data = option_selection(prompt)
-    while not confirmation(data):
-        user_choice, data = option_selection(prompt)
-    else:
-        if re.match('[dD]{1,1}', user_choice):
-            from processes.input_data import delivery as input_delivery
-            shift.add_delivery(input_delivery(shift))
+    def return_shift(self):
+        return self.shift
 
-        elif re.match('[eE]{1,1}', user_choice):
+    def result(self):
+        import re
+
+        if re.match('[dD]{1,1}', self.user_choice):
+            delivery_menu = Delivery_Menu(self.shift)
+            self.shift = delivery_menu.return_shift()
+            while self.shift.delivery_menu_condition:
+                delivery_menu = Delivery_Menu(self.shift)
+                self.shift = delivery_menu.return_shift()
+
+        elif re.match('[eE]{1,1}', self.user_choice):
             from processes.input_data import shift_extra_stop as\
                 input_extra_stop
-            shift.add_extra_stop(input_extra_stop(shift))
+            self.shift.add_extra_stop(input_extra_stop(self.shift))
 
-        elif re.match('[cC]{1,1}', user_choice):
+        elif re.match('[cC]{1,1}', self.user_choice):
             from processes.input_data import tip as input_tip
             from utility.file import save
             tip = input_tip()
-            shift.add_carry_out_tip(tip)
-            save(tip.csv(), shift.file_list()['carry_out_tips'],
+            self.shift.add_carry_out_tip(tip)
+            save(tip.csv(), self.shift.file_list()['carry_out_tips'],
                  separator='\n')
 
-        elif re.match('[sS]{1,1}', user_choice):
+        elif re.match('[sS]{1,1}', self.user_choice):
             from processes.input_data import start_split
-            shift.split = start_split(shift)
-            return shift, False
+            self.shift = start_split(self.shift)
+            self.shift.shift_menu_condition = False
 
-        elif re.match('[xX]{1,1}', user_choice):
+        elif re.match('[xX]{1,1}', self.user_choice):
             from processes.input_data import end_shift
-            shift = end_shift(shift)
-            return shift, False
+            self.shift = end_shift(self.shift)
+            self.shift.shift_menu_condition = False
 
-        elif re.match('[iI]{1,1}', user_choice):
+        elif re.match('[iI]{1,1}', self.user_choice):
             # todo: add method call once written
-            pass
+            print(self.shift.start_time)
+            print(self.shift.delivery_ids)
+            print(self.shift.deliveries)
+            for delivery_id in self.shift.delivery_ids:
+                print(delivery_id)
+                print(self.shift.deliveries[delivery_id].order_ids)
+                print(self.shift.deliveries[delivery_id].orders)
+                for index in range(len(self.shift.deliveries[delivery_id].order_ids)):
+                    print(self.shift.deliveries[delivery_id].orders[index])
+                    print(self.shift.deliveries[delivery_id].orders[index].id)
+                    print(self.shift.deliveries[delivery_id].orders[index].tip.csv())
+                    print(self.shift.deliveries[delivery_id].orders[index].miles_traveled)
+                    print(self.shift.deliveries[delivery_id].orders[index].end_time)
 
-        elif re.match('[qQ]{1,1}', user_choice):
-            return shift, False
+        elif re.match('[qQ]{1,1}', self.user_choice):
+            self.shift.shift_menu_condition = False
 
-        return shift, True
+        return self
 
 
 def edit_order(order):

@@ -11,16 +11,16 @@ Shift__completed__menu =\
     "R: Resume today's shift\n"\
     'O: Overwrite shift\n'\
     'Q: Quit program\n'
-Shift__device_compensation__prompt = 'Amount of device usage paid:\t$#.##'
+Shift__device_compensation__prompt = 'Amount of device compensation paid:\t$#.##'
 Shift__end___enter_to_continue__display = 'Shift has been ended!'
-Shift__extra_tips_claimed__prompt = 'Extra tips claimed for shift:\t$#.##\n$'
+Shift__extra_tips_claimed__prompt = 'Extra tips claimed for shift:\t$#.##'
 Shift__fuel_economy__prompt = 'Enter fuel economy:\t##.#'
 Shift__miles_traveled__prompt = 'Total miles traveled for this shift:\t#.#'
 Shift__overwritten__confirmation = 'Shift has been overwriten!'
 Shift__overwrite__prompt = 'Are you sure you want to overwrite the completed shift?'
 Shift__start__enter_to_continue__display = 'Shift has been started!'
 Shift__total_hours__prompt = 'Enter total hours worked:\t#.##'
-Shift__vehical_compensation__prompt = 'Amount of vehicle paid:\t$#.##'
+Shift__vehical_compensation__prompt = 'Amount of vehicle compensation paid:\t$#.##'
 
 #   delivery
 Delivery__average_speed__prompt = 'Enter the average speed for this delivery:\t##'
@@ -60,7 +60,7 @@ Split__start__confirmation = 'Are you sure you want to start a split?'
 
 
 # menus
-daily_tracking__prompts = {
+shift__prompts = {
             'initial': 'What would you like to do?\n',
             'delivery': ['D: Start a delivery\n', 'D: Continue delivery\n'],
             'extra_stop': ['E: Start an extra stop\n', 'E: Continue extra stop\n'],
@@ -70,6 +70,13 @@ daily_tracking__prompts = {
             'info': 'I: Information on shift\n',
             'quit': 'Q: Quit program'
         }
+delivery__prompt =\
+    'Please select an option:\n'\
+    'O. Add new order\n'\
+    'E. Take extra stop\n'\
+    'T. View current time since start of delivery\n'\
+    'C. To complete the delivery\n'\
+    'Q. To quit the program'
 
 
 # utility

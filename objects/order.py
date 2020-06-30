@@ -1,12 +1,5 @@
 
 class Order:
-    # list of attributes
-    id = None
-    parent = None
-    tip = None
-    miles_traveled = None
-    end_time = None
-
     def __init__(self, delivery, id=None):
         from objects.delivery import Delivery
         if not isinstance(delivery, Delivery):
@@ -14,13 +7,19 @@ class Order:
             error_message =\
                 f"parent of Order must be Delivery not '{type(delivery)}'"
             raise TypeError(error_message)
-        else:
-            self.parent = delivery
+
+        self.parent = delivery
 
         if isinstance(id, int):
             self.id = id
+        elif id is None:
+            self.id = id
         elif id:
-            raise TypeError
+            raise TypeError(f'{id} is of type {type(id)}')
+
+        self.tip = None
+        self.miles_traveled = None
+        self.end_time = None
 
     def csv(self):
         return f'{self.tip.csv()},{self.miles_traveled},{self.end_time}'
@@ -36,23 +35,13 @@ class Order:
 
         return {
             'completed_ids': path.join(parent_directory, completed_ids),
+            'info': path.join(parent_directory, f'{self.id}.txt'),
             'directory': directory,
             'end_time': path.join(directory, end_time),
             'id': path.join(directory, order_id),
             'miles_traveled': path.join(directory, miles_traveled),
             'tip': path.join(directory, tip)
         }
-
-    def info_file(self):
-        if isinstance(self.id, int):
-            from os import path
-            return path.join(self.directory(), f'{self.id}.txt')
-        elif not self.id:
-            from resources.error_messages import\
-                Order__info_file__missing_id as error_message
-            raise AttributeError(error_message)
-        elif not isinstance(self.id, int):
-            raise TypeError
 
     def view(self):
         from resources.strings import Order__time_taken__display as\

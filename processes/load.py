@@ -21,12 +21,12 @@ def current_shift():
     if path.exists(Delivery(shift).file_list()['completed_ids']):
         shift.delivery_ids =\
             Read(Delivery(shift).file_list()['completed_ids']).integers()
-        for id in shift.delivery_ids:
-            shift.deliveries.append(delivery(Delivery(shift, id)))
+        for delivery_id in shift.delivery_ids:
+            shift.deliveries.append(delivery(Delivery(shift, delivery_id)))
 
     # extra stops
     from objects.extra_stop import Extra_Stop
-    if path.exists(Extra_Stop(shift).file_list()['completed_ids']):
+    if path.exists(Extra_Stop(shift, 0).file_list()['completed_ids']):
         from processes.load import shift_extra_stop as load_extra_stop
         shift.extra_stop_ids =\
             Read(Extra_Stop(shift).file_list()['completed_ids']).integers()
@@ -59,12 +59,12 @@ def shift(date):
     shift = Shift()
 
     try:
-        # load shift info
+        # shift info
         shift_data = Read(shift.file_list()['info_file']).comma
     except FileNotFoundError:
         # todo: need to figure out how to handle this
         # probably tell user info file doesnt exist and ask if they want to input data for it
-        pass
+        raise FileNotFoundError
     else:
         from utility.utility import to_datetime
         shift.miles_traveled = float(shift_data[0])
@@ -76,17 +76,17 @@ def shift(date):
         shift.start_time = to_datetime(shift_data[6])
         shift.end_time = to_datetime(shift_data[7])
 
-    # load delivery
+    # delivery
     from objects.delivery import Delivery
     if path.exists(Delivery(shift).completed_ids_file()):
         shift.delivery_ids =\
-            Read(Delivery(shift).completed_ids_file()).integers()
+            Read(Delivery(shift).file_list()['completed_ids']).integers()
         for id in shift.delivery_ids:
             shift.deliveries.append(delivery(Delivery(shift, id)))
 
-    # load extra stops
+    # extra stops
     from objects.extra_stop import Extra_Stop
-    if path.exists(Extra_Stop(shift).file_list()['completed_ids']):
+    if path.exists(Extra_Stop(shift, 0).file_list()['completed_ids']):
         from processes.load import shift_extra_stop as load_extra_stop
         shift.extra_stop_ids =\
             Read(Extra_Stop(shift).file_list()['completed_ids']).integers()
@@ -94,11 +94,11 @@ def shift(date):
             extra_stop = Extra_Stop(shift, id)
             shift.extra_stops.append(load_extra_stop(extra_stop))
 
-    # load carry out tips
+    # carry out tips
     if path.exists(shift.file_list()['carry_out_tips']):
         shift.carry_out_tips = carry_out_tips(shift)
 
-    # load split
+    # split
     from objects.split import Split
     if path.exists(Split(shift).file_list()['info']):
         shift.split = split(shift)
@@ -108,70 +108,78 @@ def shift(date):
 
 def delivery(delivery):
     from objects.delivery import Delivery
-    # delivery info
-    if isinstance(delivery, Delivery):
-        from utility.file import Read
-        try:
-            delivery_data = Read(delivery.file_list['directory']).comma()
-        except FileNotFoundError:
-            # todo: still not sure how to handle when file isnt found
-            pass
-        else:
-            from utility.utility import to_datetime
-            delivery.miles_traveled = float(delivery_data[0])
-            delivery.average_speed = int(delivery_data[1])
-            delivery.start_time = to_datetime(delivery_data[2])
-            delivery.end_time = to_datetime(delivery_data[3])
-
-        # orders
-        from objects.order import Order
-        try:
-            order_ids = Read(Order(delivery).file_list['completed_ids']).comma()
-        except FileNotFoundError:
-            # todo: still not sure how to handle when file isnt found
-            pass
-        else:
-            for id in order_ids:
-                delivery.add_order(order(Order(delivery, id)))
-
-        # todo: need to add loading extra stops
-
-        # return loaded delivery
-        return delivery
-    else:
+    if not isinstance(delivery, Delivery):
         # todo: need to write error message
         raise TypeError
 
+    from os import path
 
-def order(order):
-    from objects.order import Order
-    if isinstance(order, Order):
+    delivery_file = delivery.file_list()['info']
+
+    # delivery info
+    if path.exists(delivery_file):
         from utility.file import Read
-        try:
-            order_data = Read(order.info_file(), order.directory()).comma
-        except AttributeError:
-            # todo: present user with option to input id
-            # todo: present user with option to cancel order
-            pass
-        except FileNotFoundError:
-            # todo: present user with the option to change the id
-            # todo: present user with option to enter data for the order
-            # todo: present user with option to remove the order id
-            from resources.error_messages import Order__load__file_not_found
-            print(Order__load__file_not_found)
-        else:
-            from objects.tip import Tip
-            from utility.utility import to_datetime
-            tip_instance = Tip()
-            tip_instance.order_data = order_data
-            order.tip = tip(tip_instance)
-            order.miles_traveled = float(order_data[3])
-            order.end_time = to_datetime(order_data[4])
-            return order
-    else:
+        delivery_data = Read(delivery_file).comma()
+
+        from utility.utility import to_datetime
+        delivery.miles_traveled = float(delivery_data[0])
+        delivery.average_speed = int(delivery_data[1])
+        delivery.start_time = to_datetime(delivery_data[2])
+        delivery.end_time = to_datetime(delivery_data[3])
+
+    # orders
+    from objects.order import Order
+    order_ids_file = Order(delivery, 0).file_list()['completed_ids']
+    if path.exists(order_ids_file):
+        from utility.file import Read
+        delivery.order_ids = Read(order_ids_file).integers()
+
+        for order_id in delivery.order_ids:
+            delivery.orders.append(order(delivery, order_id))
+
+    # extra stops
+    from objects.extra_stop import Extra_Stop
+    if path.exists(Extra_Stop(delivery, 0).file_list()['completed_ids']):
+        from processes.load import delivery_extra_stop as load_extra_stop
+        delivery.extra_stop_ids =\
+            Read(Extra_Stop(delivery).file_list()['completed_ids']).integers()
+        for id in delivery.extra_stop_ids:
+            extra_stop = Extra_Stop(delivery, id)
+            delivery.extra_stops.append(load_extra_stop(extra_stop))
+
+    return delivery
+
+
+def order(delivery, order_id):
+    from objects.delivery import Delivery
+    if not isinstance(delivery, Delivery):
+        # todo: need to fix error message for taking delivery
         from resources.error_messages import\
             load__order__wrong_parameter as error_message
         raise TypeError(error_message)
+
+    from objects.order import Order
+    order = Order(delivery, order_id)
+    order_file = order.file_list()['info']
+
+    from os import path
+    if path.exists(order_file):
+        from utility.file import Read
+        order_data = Read(order_file).comma()
+
+        from objects.tip import Tip
+        from utility.utility import to_datetime
+        order.tip = tip(tip_data=order_data)
+        order.miles_traveled = float(order_data[3])
+        order.end_time = to_datetime(order_data[4])
+        return order
+
+    # else:
+    #     # todo: present user with the option to change the id
+    #     # todo: present user with option to enter data for the order
+    #     # todo: present user with option to remove the order id
+    #     from resources.error_messages import Order__load__file_not_found
+    #     raise FileNotFoundError(Order__load__file_not_found)
 
 
 def tip(file_path=None, tip_data=None):
@@ -183,7 +191,8 @@ def tip(file_path=None, tip_data=None):
     from utility.file import Read
     if isinstance(file_path, str):
         # todo: this needs work, doesn't count for file not found
-        tip = Tip(Read(file_path).floats())
+        data = Read(file_path).floats()
+        tip = Tip(data[0], data[1], data[2])
     elif file_path:
         raise TypeError
 

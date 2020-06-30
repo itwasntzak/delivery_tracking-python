@@ -157,17 +157,10 @@ class User_Input():
     def __init__(self, prompt):
         self.prompt = prompt
 
-    def average_speed(self):
-        from resources.strings import User_Input__average_speed__succeed as\
-            succeed
-        average_speed = integer(self.prompt)
-        while not confirmation(average_speed, succeed):
-            average_speed = integer(self.prompt)
-        return average_speed
-
+    # general
     def id(self):
         id = integer(self.prompt, '#')
-        while not confirmation(id, 'Id is, #'):
+        while not confirmation(id, 'Id is #'):
             id = integer(self.prompt, '#')
         return id
 
@@ -175,23 +168,47 @@ class User_Input():
         from resources.strings import User_Input__miles_traveled__succeed as\
             succeed
         miles_traveled = decimal(self.prompt)
-        while not confirmation(miles_traveled, succeed):
+        while not confirmation(miles_traveled, succeed=succeed):
             miles_traveled = decimal(self.prompt)
         return miles_traveled
 
+    # delivery
+    def average_speed(self):
+        from resources.strings import User_Input__average_speed__succeed as\
+            succeed
+        average_speed = integer(self.prompt)
+        while not confirmation(average_speed, succeed=succeed):
+            average_speed = integer(self.prompt)
+        return average_speed
+
+    # tip
     def card_tip(self):
         from resources.strings import User_Input__card_tip__succeed as succeed
-        return money(self.prompt, succeed)
+        return money(self.prompt, succeed=succeed)
 
     def cash_tip(self):
         from resources.strings import User_Input__cash_tip__succeed as succeed
-        return money(self.prompt, succeed)
+        return money(self.prompt, succeed=succeed)
 
     def unknown_tip(self):
         from resources.strings import User_Input__unknown_tip__succeed as\
             succeed
-        return money(self.prompt, succeed)
+        return money(self.prompt, succeed=succeed)
 
+    # extra stop
+    def location(self):
+        location = text(self.prompt)
+        while not confirmation(location):
+            location = text(self.prompt)
+
+        return location
+
+    def reason(self):
+        reason = text(self.prompt)
+        while not confirmation(reason):
+            reason = text(self.prompt)
+
+        return reason
 
 
 
