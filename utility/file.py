@@ -1,4 +1,4 @@
-from utility.utility import to_datetime
+from utility.utility import To_Datetime
 
 
 def append(data, separator, file_name, directory_path=None):
@@ -55,7 +55,14 @@ class Read():
             raise TypeError('directory_path must be a string type')
 
     def newline(self):
-        return self.data.split('\n')
+        newline_list = []
+        for data in self.data.split('\n'):
+            if data == '':
+                pass
+            else:
+                newline_list.append(data)
+
+        return newline_list
 
     def comma(self):
         return self.data.split(',')
@@ -95,7 +102,7 @@ class Read():
     def datetimes(self):
         datetime_list = []
         for data in self.comma():
-            datetime_list.append(to_datetime(data))
+            datetime_list.append(To_Datetime(data).from_datetime())
         if len(datetime_list) == 0:
             pass
         elif len(datetime_list) == 1:

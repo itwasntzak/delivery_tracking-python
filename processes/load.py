@@ -46,57 +46,63 @@ def current_shift():
     return shift
 
 
-def shift(date):
+def shift(shift_id):
     from objects.shift import Shift
     from os import path
     from utility.file import Read
     from utility.utility import now
 
-    if not isinstance(date, type(now().date())):
+    if not isinstance(shift_id, type(now().date())):
         # todo: write error message for this
         raise TypeError
 
-    shift = Shift()
+    shift = Shift(shift_id)
 
     try:
         # shift info
-        shift_data = Read(shift.file_list()['info_file']).comma
+        shift_data = Read(shift.file_list()['info']).comma()
     except FileNotFoundError:
         # todo: need to figure out how to handle this
         # probably tell user info file doesnt exist and ask if they want to input data for it
         raise FileNotFoundError
     else:
-        from utility.utility import to_datetime
-        shift.miles_traveled = float(shift_data[0])
-        shift.fuel_economy = float(shift_data[1])
-        shift.vehicle_compensation = float(shift_data[2])
-        shift.device_compensation = float(shift_data[3])
-        shift.extra_tips_claimed = float(shift_data[4])
-        shift.total_hours = float(shift_data[5])
-        shift.start_time = to_datetime(shift_data[6])
-        shift.end_time = to_datetime(shift_data[7])
+        from utility.utility import To_Datetime
+        # shift.miles_traveled = float(shift_data[0])
+        # shift.fuel_economy = float(shift_data[1])
+        # shift.vehicle_compensation = float(shift_data[2])
+        # shift.device_compensation = float(shift_data[3])
+        # shift.extra_tips_claimed = float(shift_data[4])
+        # shift.total_hours = float(shift_data[5])
+        # shift.start_time = To_Datetime(shift_data[6]).from_datetime()
+        # shift.end_time = To_Datetime(shift_data[7]).from_datetime()
+        shift.miles_traveled = shift_data[0]
+        shift.fuel_economy = shift_data[1]
+        shift.vehicle_compensation = shift_data[2]
+        shift.device_compensation = shift_data[3]
+        shift.extra_tips_claimed = shift_data[4]
+        shift.total_hours = shift_data[5]
+        shift.start_time = shift_data[6]
+        shift.end_time = shift_data[7]
 
     # delivery
     from objects.delivery import Delivery
-    if path.exists(Delivery(shift).completed_ids_file()):
-        shift.delivery_ids =\
-            Read(Delivery(shift).file_list()['completed_ids']).integers()
-        for id in shift.delivery_ids:
-            shift.deliveries.append(delivery(Delivery(shift, id)))
+    deliveries_ids_file = Delivery(shift).file_list()['completed_ids']
+    if path.exists(deliveries_ids_file):
+        shift.delivery_ids = Read(deliveries_ids_file).integers()
+        # shift.deliveries =\
+        #     [delivery(Delivery(shift, id)) for id in shift.delivery_ids]
 
     # extra stops
     from objects.extra_stop import Extra_Stop
-    if path.exists(Extra_Stop(shift, 0).file_list()['completed_ids']):
-        from processes.load import shift_extra_stop as load_extra_stop
-        shift.extra_stop_ids =\
-            Read(Extra_Stop(shift).file_list()['completed_ids']).integers()
-        for id in shift.extra_stop_ids:
-            extra_stop = Extra_Stop(shift, id)
-            shift.extra_stops.append(load_extra_stop(extra_stop))
+    extra_stop_ids_file = Extra_Stop(shift).file_list()['completed_ids']
+    if path.exists(extra_stop_ids_file):
+        shift.extra_stop_ids = Read(extra_stop_ids_file).integers()
+        shift.extra_stops = [shift_extra_stop(Extra_Stop(shift, id))
+                             for id in shift.extra_stop_ids]
 
     # carry out tips
-    if path.exists(shift.file_list()['carry_out_tips']):
-        shift.carry_out_tips = carry_out_tips(shift)
+    # if path.exists(shift.file_list()['carry_out_tips']):
+    #     shift.carry_out_tips = carry_out_tips(shift)
 
     # split
     from objects.split import Split
@@ -227,11 +233,11 @@ def split(shift):
         # todo: figure out how to handle this, shouldnt occer but idk
         pass
     else:
-        from utility.utility import to_datetime
+        from utility.utility import To_Datetime
 
         split.miles_traveled = float(split_info[0])
-        split.start_time = to_datetime(split_info[1])
-        split.start_time = to_datetime(split_info[2])
+        split.start_time = To_Datetime(split_info[1]).from_datetime()
+        split.start_time = To_Datetime(split_info[2]).from_datetime()
 
         return split
 

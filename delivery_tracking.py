@@ -1,5 +1,9 @@
 # cnsd: make way to be able take multipule deliveries on one trip
 # cnsd: add option to be able to start a second shift for the day (dif store)
+
+# todo: add shift data for 6-14. accidentally deleted it while half asleep
+# todo: need to finish ending and updating shift for 6-28. phone died
+
 from objects.shift import Shift
 from objects.split import Split
 from os import path
