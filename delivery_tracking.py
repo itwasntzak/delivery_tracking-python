@@ -5,6 +5,9 @@
 # todo: need to finish ending and updating shift for 6-28. phone died
 # todo: need to update shift from 6-30
 
+from os import chdir
+chdir('delivery_tracking')
+
 from objects.shift import Shift
 from objects.split import Split
 from os import path
