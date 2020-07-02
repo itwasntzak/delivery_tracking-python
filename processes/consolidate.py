@@ -98,20 +98,19 @@ def shift_extra_stop(extra_stop):
     file_list = extra_stop.file_list()
     # save extra stop data to a single file
     write(extra_stop.nlsv(), file_list.pop('info'))
-    # remove files from list to not be deleted
-    file_list.pop('running_id')
-    # files to not be deleted that will also be needed later
+    # files to not be deleted that will be needed later
     completed_ids = file_list.pop('completed_ids')
     directory = file_list.pop('directory')
+    running_id = file_list.pop('running_id')
     # delete indavidual data files
     for key in file_list:
         remove(file_list[key])
     # deleted directory after its empty
     rmdir(directory)
     # updated completed ids file
-    save(extra_stop.id, completed_ids, separator='\n')
+    save(extra_stop.id, completed_ids, separator=',')
     # update running id number
-    extra_stop.update_running_id()
+    write(extra_stop.id + 1, running_id)
 
 
 def delivery_extra_stop(extra_stop):
@@ -126,18 +125,18 @@ def delivery_extra_stop(extra_stop):
     file_list = extra_stop.file_list()
     # save extra stop data to a single file
     write(extra_stop.nlsv(), file_list.pop('info'))
-    # remove files from list to not be deleted
-    file_list.pop('running_id')
-    file_list.pop('start_time')    # this file wont exist when in a delivery
-    # files to not be deleted that will also be needed later
+    # this file wont exist when delivery is parent
+    file_list.pop('start_time')
+    # files to not be deleted that will be needed later
     completed_ids = file_list.pop('completed_ids')
     directory = file_list.pop('directory')
+    running_id = file_list.pop('running_id')
     # delete indavidual data files
     for key in file_list:
         remove(file_list[key])
     # deleted directory after its empty
     rmdir(directory)
     # updated completed ids file
-    save(extra_stop.id, completed_ids, separator='\n')
+    save(extra_stop.id, completed_ids, separator=',')
     # update running id number
-    extra_stop.update_running_id()
+    write(extra_stop.id + 1, running_id)

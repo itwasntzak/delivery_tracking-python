@@ -2,10 +2,10 @@
 class Shift:
     def __init__(self, id):
         from datetime import datetime
-        if isinstance(id, type(datetime.now().date())):
-            self.id = id
-        elif not isinstance(id, type(datetime.now().date())):
+        if not isinstance(id, type(datetime.now().date())):
             raise TypeError
+
+        self.id = id
 
         self.delivery_ids = []
         self.deliveries = []
@@ -37,7 +37,7 @@ class Shift:
         self.extra_stops.append(extra_stop)
 
     def csv(self):
-        '{0},{1},{2},{3},{4},{5},{6},{7}'.format(
+        return '{0},{1},{2},{3},{4},{5},{6},{7}'.format(
             self.miles_traveled, self.fuel_economy, self.vehicle_compensation,
             self.device_compensation, self.extra_tips_claimed,
             self.total_hours, self.start_time, self.end_time)

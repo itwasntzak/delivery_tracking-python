@@ -3,6 +3,7 @@
 
 # todo: add shift data for 6-14. accidentally deleted it while half asleep
 # todo: need to finish ending and updating shift for 6-28. phone died
+# todo: need to update shift from 6-30
 
 from objects.shift import Shift
 from objects.split import Split

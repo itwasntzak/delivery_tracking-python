@@ -13,7 +13,7 @@ class Order:
         if isinstance(id, int):
             self.id = id
         elif id is None:
-            self.id = id
+            self.id = 0
         elif id:
             raise TypeError(f'{id} is of type {type(id)}')
 
@@ -23,6 +23,9 @@ class Order:
 
     def csv(self):
         return f'{self.tip.csv()},{self.miles_traveled},{self.end_time}'
+
+    def display_text(self):
+        display_text = {}
 
     def file_list(self):
         from os import path
@@ -42,14 +45,3 @@ class Order:
             'miles_traveled': path.join(directory, miles_traveled),
             'tip': path.join(directory, tip)
         }
-
-    def view(self):
-        from resources.strings import Order__time_taken__display as\
-            time_display
-        from utility.utility import time_taken
-
-        return f'Order Id:\t#{self.id}\n'\
-               f'{self.tip.view()}\n'\
-               f'Miles to this order:\t{self.miles_traveled} miles\n'\
-               f'Time order was completed:\t{self.end_time}\n' +\
-               time_taken(self.parent.start_time, self.end_time, time_display)

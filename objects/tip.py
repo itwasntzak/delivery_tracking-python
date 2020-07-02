@@ -32,12 +32,12 @@ class Tip:
         else:
             return False
 
-    def view(self):
-        display_text = ''
+    def display_text(self):
+        display_text = {}
         if self.has_card:
-            display_text += f'Card tip amount:\t${self.card}\n'
+            display_text['card'] = f'Card tip amount:\t${self.card}'
         if self.has_cash:
-            display_text += f'Cash tip amount:\t${self.cash}\n'
+            display_text['cash'] = f'Cash tip amount:\t${self.cash}'
         if self.has_unknown:
-            display_text += f'Unknown tip amount:\t${self.unknown}\n'
+            display_text['unknown'] = f'Unknown tip amount:\t${self.unknown}'
         return display_text

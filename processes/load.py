@@ -57,40 +57,32 @@ def shift(shift_id):
         raise TypeError
 
     shift = Shift(shift_id)
+    shift_info_file = shift.file_list()['info']
 
-    try:
-        # shift info
-        shift_data = Read(shift.file_list()['info']).comma()
-    except FileNotFoundError:
+    if not path.exists(shift_info_file):
         # todo: need to figure out how to handle this
         # probably tell user info file doesnt exist and ask if they want to input data for it
         raise FileNotFoundError
-    else:
-        from utility.utility import To_Datetime
-        # shift.miles_traveled = float(shift_data[0])
-        # shift.fuel_economy = float(shift_data[1])
-        # shift.vehicle_compensation = float(shift_data[2])
-        # shift.device_compensation = float(shift_data[3])
-        # shift.extra_tips_claimed = float(shift_data[4])
-        # shift.total_hours = float(shift_data[5])
-        # shift.start_time = To_Datetime(shift_data[6]).from_datetime()
-        # shift.end_time = To_Datetime(shift_data[7]).from_datetime()
-        shift.miles_traveled = shift_data[0]
-        shift.fuel_economy = shift_data[1]
-        shift.vehicle_compensation = shift_data[2]
-        shift.device_compensation = shift_data[3]
-        shift.extra_tips_claimed = shift_data[4]
-        shift.total_hours = shift_data[5]
-        shift.start_time = shift_data[6]
-        shift.end_time = shift_data[7]
+
+    from utility.utility import To_Datetime
+    # shift info
+    shift_data = Read(shift_info_file).comma()
+    shift.miles_traveled = float(shift_data[0])
+    shift.fuel_economy = float(shift_data[1])
+    shift.vehicle_compensation = float(shift_data[2])
+    shift.device_compensation = float(shift_data[3])
+    shift.extra_tips_claimed = float(shift_data[4])
+    shift.total_hours = float(shift_data[5])
+    shift.start_time = To_Datetime(shift_data[6]).from_datetime()
+    shift.end_time = To_Datetime(shift_data[7]).from_datetime()
 
     # delivery
     from objects.delivery import Delivery
     deliveries_ids_file = Delivery(shift).file_list()['completed_ids']
     if path.exists(deliveries_ids_file):
         shift.delivery_ids = Read(deliveries_ids_file).integers()
-        # shift.deliveries =\
-        #     [delivery(Delivery(shift, id)) for id in shift.delivery_ids]
+        shift.deliveries =\
+            [delivery(Delivery(shift, id)) for id in shift.delivery_ids]
 
     # extra stops
     from objects.extra_stop import Extra_Stop
@@ -101,8 +93,8 @@ def shift(shift_id):
                              for id in shift.extra_stop_ids]
 
     # carry out tips
-    # if path.exists(shift.file_list()['carry_out_tips']):
-    #     shift.carry_out_tips = carry_out_tips(shift)
+    if path.exists(shift.file_list()['carry_out_tips']):
+        shift.carry_out_tips = carry_out_tips(shift)
 
     # split
     from objects.split import Split
@@ -127,31 +119,28 @@ def delivery(delivery):
         from utility.file import Read
         delivery_data = Read(delivery_file).comma()
 
-        from utility.utility import to_datetime
+        from utility.utility import To_Datetime
         delivery.miles_traveled = float(delivery_data[0])
         delivery.average_speed = int(delivery_data[1])
-        delivery.start_time = to_datetime(delivery_data[2])
-        delivery.end_time = to_datetime(delivery_data[3])
+        delivery.start_time = To_Datetime(delivery_data[2]).from_datetime()
+        delivery.end_time = To_Datetime(delivery_data[3]).from_datetime()
 
     # orders
     from objects.order import Order
-    order_ids_file = Order(delivery, 0).file_list()['completed_ids']
+    order_ids_file = Order(delivery).file_list()['completed_ids']
     if path.exists(order_ids_file):
         from utility.file import Read
         delivery.order_ids = Read(order_ids_file).integers()
-
-        for order_id in delivery.order_ids:
-            delivery.orders.append(order(delivery, order_id))
+        delivery.orders = [order(delivery, id) for id in delivery.order_ids]
 
     # extra stops
     from objects.extra_stop import Extra_Stop
-    if path.exists(Extra_Stop(delivery, 0).file_list()['completed_ids']):
+    if path.exists(Extra_Stop(delivery).file_list()['completed_ids']):
         from processes.load import delivery_extra_stop as load_extra_stop
         delivery.extra_stop_ids =\
             Read(Extra_Stop(delivery).file_list()['completed_ids']).integers()
-        for id in delivery.extra_stop_ids:
-            extra_stop = Extra_Stop(delivery, id)
-            delivery.extra_stops.append(load_extra_stop(extra_stop))
+        delivery.extra_stops = [load_extra_stop(Extra_Stop(delivery, id))
+                                for id in delivery.extra_stop_ids]
 
     return delivery
 
@@ -174,10 +163,10 @@ def order(delivery, order_id):
         order_data = Read(order_file).comma()
 
         from objects.tip import Tip
-        from utility.utility import to_datetime
+        from utility.utility import To_Datetime
         order.tip = tip(tip_data=order_data)
         order.miles_traveled = float(order_data[3])
-        order.end_time = to_datetime(order_data[4])
+        order.end_time = To_Datetime(order_data[4]).from_datetime()
         return order
 
     # else:

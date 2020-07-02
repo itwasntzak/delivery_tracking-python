@@ -1,10 +1,7 @@
-from os import chdir
-
-from input_data import get_input
-import shift
-
 
 def select_shifts():
+    from utility.user_input import User_Input
+
     while True:
         user_choice = get_input(
             '\n\nSelect a time range to calculate:\n'

@@ -87,11 +87,6 @@ class Extra_Stop:
                    f'{self.miles_traveled}\n'\
                    f'{self.end_time}'
 
-    def update_running_id(self):
-        from utility.file import write
-
-        write(self.id + 1, self.file_list()['running_id'])
-
 # todo: change extra stops from comma seperated to newline seperated
 # todo: need to write function that allows the user to change data
 # todo: need to write function that saves changes to data
