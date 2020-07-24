@@ -4,47 +4,39 @@
 # todo: add shift data for 6-14. accidentally deleted it while half asleep
 # todo: need to finish ending and updating shift for 6-28. phone died
 # todo: need to update shift from 6-30
+# todo: make unit tests for everything
+# todo: learn to unit test
+# todo: change all variable and attributes called miles_traveled to distance
 
+from menus import Shift_Tracking_Menu
 from objects.shift import Shift
-from objects.split import Split
 from os import path
-from resources.system_names import\
-    user_data_directory as user_data, shifts_directory as shifts
+from resources.system_names import data_directory, shifts_directory
 from utility.utility import now
 
-if not path.exists(user_data):
+# make directories to store user data
+shifts_path = path.join(data_directory, shifts_directory)
+if not path.exists(data_directory):
     from os import mkdir
-    mkdir(user_data)
-
-shifts_path = path.join(user_data, shifts)
+    mkdir(data_directory)
 if not path.exists(shifts_path):
     from os import mkdir
     mkdir(shifts_path)
 
-# check if shift has been completed
+# check for completed shift
 if path.exists(Shift(now().date()).file_list()['info']):
     from menus import completed_shift
     shift = completed_shift()
-
-# check if shift has started
+# check if shift has not started
 elif not path.exists(Shift(now().date()).file_list()['directory']):
     from processes.input_data import start_shift
     shift = start_shift()
-
+# load shift
 else:
     from processes.load import current_shift as load_shift
     shift = load_shift()
 
-# check if split has been started
-if path.exists(Split(shift).file_list()['start_time']):
-    # todo: probably want to add this eval to shift menu. make it not possible to enter other data while on split
-    from processes.input_data import end_split
-    shift.split = end_split(shift)
-
-else:
-    from menus import Shift_Menu
-    shift_menu = Shift_Menu(shift)
-    shift = shift_menu.return_shift()
-    while shift.shift_menu_condition:
-        shift_menu = Shift_Menu(shift)
-        shift = shift_menu.return_shift()
+# daily shift tracking menu
+menu = Shift_Tracking_Menu(shift)
+while menu.condition:
+    menu = Shift_Tracking_Menu(shift)

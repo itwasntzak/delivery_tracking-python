@@ -1,3 +1,5 @@
+# todo: change the way things are orgonized
+#           use comments to show file names, first name for class or function
 """
 resource legend:
     file/class_name__function/method_name__resource_occurrence
@@ -48,9 +50,9 @@ Tip__input_card__prompt = 'Enter card tip amount:\t$#.##\n(0 for no tip)'
 Tip__input_cash__prompt  = 'Enter cash tip amount:\t$#.##\n(0 for no tip)'
 
 #   extra stop
-Extra_Stop__location__prompt = 'Extra stop location:'
-Extra_Stop__miles_traveled__prompt = 'Extra stop miles traveled:\t#.#'
-Extra_Stop__reason__prompt = 'Reason for extra stop?'
+Extra_Stop__location__prompt = 'Extra stop location:\n'
+Extra_Stop__miles_traveled__prompt = 'Extra stop miles traveled:\t#.#\n'
+Extra_Stop__reason__prompt = 'Reason for extra stop?\n'
 Extra_Stop__time_taken__display = 'Extra stop completed in:\t'
 
 #   split
@@ -60,23 +62,44 @@ Split__start__confirmation = 'Are you sure you want to start a split?'
 
 
 # menus
-shift__prompts = {
-            'initial': 'What would you like to do?\n',
-            'delivery': ['D: Start a delivery\n', 'D: Continue delivery\n'],
-            'extra_stop': ['E: Start an extra stop\n', 'E: Continue extra stop\n'],
-            'carry_out_tip': 'C: Enter carry out tip\n',
-            'split': 'S: Start split\n',
-            'end': ['X: End shift\n', 'X: Continue ending shift\n'],
-            'info': 'I: Information on shift\n',
-            'quit': 'Q: Quit program'
+# Shift_Menu
+shift__menu__texts = {
+            'initial': '- Shift Menu -\nPlease select an option:\n',
+            'delivery': ['Start delivery\n', 'Continue delivery\n'],
+            'extra_stop': ['Start extra stop\n', 'Continue extra stop\n'],
+            'tip': 'Enter carry out tip\n',
+            'split': ['Start split\n', 'End split\n'],
+            'end': ['End shift\n', 'Continue ending shift\n'],
+            'view': 'View shift\n',
+            'quit': 'Quit program\n'
         }
-delivery__prompt =\
-    'Please select an option:\n'\
-    'O. Add new order\n'\
-    'E. Take extra stop\n'\
-    'T. View current time since start of delivery\n'\
-    'C. To complete the delivery\n'\
-    'Q. To quit the program'
+
+# Delivery_Menu
+delivery__menu__texts = {
+    'initial': '- Delivery Menu -\nPlease select an option:\n',
+    'order': ['Add new order\n', 'Continue entering order\n'],
+    'extra_stop': ['Take extra stop\n', 'Continue extra stop\n'],
+    'end': 'Complete current delivery\n',
+    'view': 'View current delivery\n',
+    'revise': 'Revise current delivery\n',
+    'back': 'Back a menu\n',
+    'quit': 'Quit program\n',
+    'time_taken': 'Current time on delivery:\t'
+}
+
+delivery__revise__text = {
+    'initial': 'Select part of delivery to revise:\n',
+    'start_time': ['Revise start time\n', 'Add start time\n'],
+    'miles_traveled': ['Revise miles traveled\n', 'Add miles traveled\n'],
+    'average_speed': ['Revise average speed\n', 'Add average speed\n'],
+    'end_time': ['Revise end time\n', 'Add end time\n'],
+    'order': ['Select or add order\n', 'Revise or add order\n', 'Add order\n'],
+    'extra_stop': ['Select an extra stop\n', 'Revise extra stop\n'],
+    'view': 'View current delivery\n',
+    'save': 'Save current delivery\n',
+    'back': 'Go back a menu\n',
+    'quit': 'Quit program\n'
+}
 
 
 # utility

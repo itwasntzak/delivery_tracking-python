@@ -10,6 +10,7 @@ resource legend:
 
 #       delivery
 
+#       Order
 Order__load__file_not_found = 'the file was not found, or does not exist'
 
 #       tip
@@ -23,8 +24,11 @@ Order__load__file_not_found = 'the file was not found, or does not exist'
 
 #       delivery
 
-Order__info_file__missing_id = 'this Order does not have an assigned id'
+#       Order
+Order__class__wrong_id_type = "order id is of type '{}', must be an integer"
+Order__class__wrong_parent_type = "parent of Order must be Delivery not '{}'"
 Order__directory__no_parent = 'this Order does not have an assigned delivery'
+Order__info_file__missing_id = 'this Order does not have an assigned id'
 
 #       tip
 # not used - Tip__input_data__wrong_parameter = 'parameter for input_data.tip must be of type Tip'

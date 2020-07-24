@@ -22,10 +22,6 @@ class Shift:
         self.vehicle_compensation = None
         self.split = None
 
-    # add a carry out tip
-    def add_carry_out_tip(self, tip):
-        self.carry_out_tips.append(tip)
-
     # add a delivery to the delivery lists
     def add_delivery(self, delivery):
         self.delivery_ids.append(delivery.id)
@@ -56,12 +52,12 @@ class Shift:
             Shift__fuel_economy as fuel_economy,\
             Shift__total_hours as total_hours,\
             Shift__vehical_compensation as vehical_compensation,\
-            user_data_directory as data_directory
+            data_directory
 
         directory = path.join(data_directory, shifts_directory, f'{self.id}')
 
         return {
-            'carry_out_tips': path.join(directory, carry_out_tip),
+            'tips': path.join(directory, carry_out_tip),
             'completed_ids': path.join(data_directory, completed_ids),
             'device_compensation': path.join(directory, device_compensation),
             'directory': directory,
@@ -76,89 +72,110 @@ class Shift:
         }
 
     def remove_id_from_file(self):
-        # todo: this needs to be rewritten, either with regex or the new file.Read class
-        temp_id_list = read(self.shift_ids_path).split(',')
-        id_list = []
-        for id in id_list:
-            if id != str(self.id):
-                id_list.append(id)
+        from os import remove
+        from utility.file import Read, write
+        from utility.utility import To_Datetime
+
+        ids_file  = self.file_list()['completed_ids']
+
+        id_list = [id for id in Read(ids_file).comma() if id != f'{self.id}']
         comma_number = len(id_list) - 1
-        new_ids_list = ""
+
+        new_ids_list = ''
         for value in range(comma_number):
             new_ids_list += id_list[value] + ','
-        new_ids_list += id_list[comma_number + 1]
-        if len(id_list) == 0:
-            remove(self.shift_ids_path)
-        elif len(id_list) > 0:
-            write_data(self.shift_ids_path, new_ids_list)
+        new_ids_list += id_list[-1]
 
-    # methods for analyzing data
-    def all_orders(self):
-        all_orders = []
-        for delivery in self.deliveries:
-            for order in delivery.orders:
-                all_orders.append(order)
-        return all_orders
+        if len(id_list) == 0:
+            remove(ids_file)
+        elif len(id_list) > 0:
+            write(new_ids_list, ids_file)
+
+    def view(self):
+        from datetime import datetime
+
+        start_time = self.start_time.strftime('%I:%M:%S %p')
+
+        view_parts = {
+            'id': f'Shift date:\t{self.id}',
+            'start_time': f'Shift was started at:\t{start_time}',
+            'deliveries': f'Number of deliveries:\t{len(self.deliveries)}'
+        }
+
+        if isinstance(self.end_time, datetime):
+            end_time = self.end_time.strftime('%I:%M:%S %p')
+            view_parts['end_time'] = f'Shift was ended at:\t{end_time}'
+
+        if isinstance(self.device_compensation, float)\
+                  and self.device_compensation > 0.0:
+            view_parts['device_comp'] =\
+                f'Compensation for use of device\t${self.device_compensation}'
+
+        if isinstance(self.extra_tips_claimed, float)\
+                  and self.extra_tips_claimed > 0.0:
+            view_parts['extra_tips_claimed'] =\
+                f'Extra tips reported for taxes:\t${self.extra_tips_claimed}'
+
+        if isinstance(self.fuel_economy, float) and self.fuel_economy > 0.0:
+            view_parts['fuel_economy'] =\
+                f'Average fuel economy:\t{self.fuel_economy} mpg'
+
+        if isinstance(self.miles_traveled, float)\
+                  and self.miles_traveled > 0.0:
+            view_parts['distance']  =\
+                f'Total distance traveled:\t{self.miles_traveled} miles'
+
+        if isinstance(self.total_hours, float) and self.total_hours > 0.0:
+            view_parts['total_hours'] =\
+                f'Work recorded hours:\t{self.total_hours} hours'
+
+        if isinstance(self.vehicle_compensation, float)\
+                  and self.vehicle_compensation > 0.0:
+            view_parts['vehicle_comp'] = 'Amount paid for vehicle usage:\t'\
+                f'${self.vehicle_compensation}'
+
+        if len(self.carry_out_tips) > 0:
+            tips_list = [tip.total_amount() for tip in self.carry_out_tips]
+            view_parts['carry_out_tips'] =\
+                f'Total made in carry out tips:\t${sum(tips_list)}'
+
+        if len(self.extra_stops) > 0:
+            view_parts['extra_stops'] =\
+                f'Number of extra stops:\t{len(self.extra_stops)}'
+        
+        return view_parts
 
     def all_tips(self):
         tips = []
         for delivery in self.deliveries:
             for order in delivery.orders:
-                try:
-                    for tip in order.tip:
-                        tips.append(tip)
-                except TypeError:
-                    tips.append(order.tip)
+                tips.append(order.tip.total_amount())
+        
         for tip in self.carry_out_tips:
-            tips.append(tip[0])
+            tips.append(tip.total_amount())
+
         return tips
-
+    
     def card_tips(self):
-        card_tips = []
+        tips = []
         for delivery in self.deliveries:
             for order in delivery.orders:
-                try:
-                    index_counter = 0
-                    for tip in order.tip:
-                        if order.tip_type[index_counter] == 1:
-                            card_tips.append(tip)
-                        elif order.tip_type in (0, 2):
-                            pass
-                        index_counter += 1
-                except TypeError:
-                    if order.tip_type == 1:
-                        card_tips.append(order.tip)
-                    elif order.tip_type in (0, 2):
-                        pass
+                tips.append(order.tip.card)
+        
         for tip in self.carry_out_tips:
-            if tip[1] == 1:
-                card_tips.append(tip[0])
-            elif tip[1] == 2:
-                pass
-        return card_tips
+            tips.append(tip.card)
 
+        return tips
+    
     def cash_tips(self):
-        cash_tips = []
+        tips = []
         for delivery in self.deliveries:
             for order in delivery.orders:
-                try:
-                    index_counter = 0
-                    for tip in order.tip:
-                        if order.tip_type[index_counter] == 2:
-                            cash_tips.append(tip)
-                        elif order.tip_type in (0, 1):
-                            pass
-                        index_counter += 1
-                except TypeError:
-                    if order.tip_type == 2:
-                        cash_tips.append(order.tip)
-                    elif order.tip_type in (0, 1):
-                        pass
+                tips.append(order.tip.cash)
+        
         for tip in self.carry_out_tips:
-            if tip[1] == 2:
-                cash_tips.append(tip[0])
-            elif tip[1] == 1:
-                pass
-        return cash_tips
+            tips.append(tip.cash)
+
+        return tips
 
 # todo: need to write function that allows the user to change data
