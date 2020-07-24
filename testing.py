@@ -14,21 +14,21 @@ string_ids = Read(Shift(now().date()).file_list()['completed_ids']).comma()
 shift_ids = [To_Datetime(id).from_date() for id in string_ids]
 shifts = [load_shift(id.date()) for id in shift_ids]
 
-shift_id = 5
+# shift_id = 5
+for shift_id in range(len(shift_ids)):
+    print(view_shift(shifts[shift_id]))
 
-print(view_shift(shifts[shift_id]))
+    if isinstance(shifts[shift_id].split, Split):
+        print(view_split(shifts[shift_id].split))
 
-if isinstance(shifts[shift_id].split, Split):
-    print(view_split(shifts[shift_id].split))
+    for delivery_id in shifts[shift_id].delivery_ids:
+        print(view_delivery(shifts[shift_id].deliveries[delivery_id]))
 
-for delivery_id in shifts[shift_id].delivery_ids:
-    print(view_delivery(shifts[shift_id].deliveries[delivery_id]))
+        for order_id in range(len(shifts[shift_id].deliveries[delivery_id].orders)):
+            print(view_order(shifts[shift_id].deliveries[delivery_id].orders[order_id]))
 
-    for order_id in range(len(shifts[shift_id].deliveries[delivery_id].orders)):
-        print(view_order(shifts[shift_id].deliveries[delivery_id].orders[order_id]))
+        for extra_stop_id in range(len(shifts[shift_id].deliveries[delivery_id].extra_stops)):
+            print(view_extra_stop(shifts[shift_id].deliveries[delivery_id].extra_stops[extra_stop_id]))
 
-    for extra_stop_id in range(len(shifts[shift_id].deliveries[delivery_id].extra_stops)):
-        print(view_extra_stop(shifts[shift_id].deliveries[delivery_id].extra_stops[extra_stop_id]))
-
-for extra_stop_id in range(len(shifts[shift_id].extra_stops)):
-    print(view_extra_stop(shifts[shift_id].extra_stops[extra_stop_id]))
+    for extra_stop_id in range(len(shifts[shift_id].extra_stops)):
+        print(view_extra_stop(shifts[shift_id].extra_stops[extra_stop_id]))

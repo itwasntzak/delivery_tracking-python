@@ -54,7 +54,8 @@ class Shift:
             Shift__vehical_compensation as vehical_compensation,\
             data_directory
 
-        directory = path.join(data_directory, shifts_directory, f'{self.id}')
+        directory =\
+            path.join(data_directory, shifts_directory, f'{self.id}')
 
         return {
             'tips': path.join(directory, carry_out_tip),

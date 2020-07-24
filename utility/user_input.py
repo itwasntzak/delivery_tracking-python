@@ -173,7 +173,7 @@ class User_Input():
     def money(self, succeed=None):
         money = decimal(self.prompt, '$', 2)
         if isinstance(succeed, str):
-            while not confirmation(money, '$', succeed):
+            while not confirmation(money, '$', succeed=succeed):
                 money = decimal(self.prompt, '$', 2)
         elif not succeed:
             while not confirmation(money, '$'):
@@ -185,15 +185,19 @@ class User_Input():
 
     # shift
     def fuel_economy(self):
+        from resources.strings import User_Input__fuel_economy__succeed as\
+            succeed
         fuel_economy = decimal(self.prompt)
-        while not confirmation(fuel_economy, ' mpg'):
+        while not confirmation(fuel_economy, succeed=succeed):
             fuel_economy = decimal(self.prompt)
 
         return fuel_economy
     
     def total_hours(self):
+        from resources.strings import User_Input__total_hours__succeed as\
+            succeed
         total_hours = decimal(self.prompt)
-        while not confirmation(total_hours, ' hours worked'):
+        while not confirmation(total_hours, succeed=succeed):
             total_hours = decimal(self.prompt)
         
         return total_hours

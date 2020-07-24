@@ -7,6 +7,7 @@ todo: thinking should change to storing indavidual data in dir namd after
 
 
 def end_shift(shift):
+    # todo: current working spot, top priority, make sure this works as inteded
     # get list of files
     file_list = shift.file_list()
 

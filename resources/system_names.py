@@ -5,6 +5,7 @@ resource legend:
 """
 
 # directory names
+parent_directory = 'delivery_tracking'
 data_directory = 'data'
 shifts_directory = 'shifts'
 delivery_directory = 'delivery'

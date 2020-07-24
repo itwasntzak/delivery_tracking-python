@@ -54,6 +54,7 @@ def shift(shift_id):
         # todo: write error message for this
         raise TypeError
 
+    print(shift_id)
     shift = Shift(shift_id)
     shift_info_file = shift.file_list()['info']
 
