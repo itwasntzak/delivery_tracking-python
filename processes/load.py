@@ -21,8 +21,7 @@ def current_shift():
     if path.exists(Delivery(shift).file_list()['completed_ids']):
         shift.delivery_ids =\
             Read(Delivery(shift).file_list()['completed_ids']).integers()
-        for delivery_id in shift.delivery_ids:
-            shift.deliveries.append(delivery(Delivery(shift, delivery_id)))
+        shift.deliveries = [delivery(shift, id) for id in shift.delivery_ids]
 
     # extra stops
     from objects.extra_stop import Extra_Stop
@@ -30,12 +29,11 @@ def current_shift():
         from processes.load import shift_extra_stop as load_extra_stop
         shift.extra_stop_ids =\
             Read(Extra_Stop(shift).file_list()['completed_ids']).integers()
-        for id in shift.extra_stop_ids:
-            extra_stop = Extra_Stop(shift, id)
-            shift.extra_stops.append(load_extra_stop(extra_stop))
+        shift.extra_stops =\
+            [load_extra_stop(shift, id) for id in shift.extra_stop_ids]
 
     # carry out tips
-    if path.exists(file_list['carry_out_tips']):
+    if path.exists(file_list['tips']):
         shift.carry_out_tips = carry_out_tips(shift)
 
     # split
@@ -56,6 +54,7 @@ def shift(shift_id):
         # todo: write error message for this
         raise TypeError
 
+    print(shift_id)
     shift = Shift(shift_id)
     shift_info_file = shift.file_list()['info']
 
@@ -81,19 +80,18 @@ def shift(shift_id):
     deliveries_ids_file = Delivery(shift).file_list()['completed_ids']
     if path.exists(deliveries_ids_file):
         shift.delivery_ids = Read(deliveries_ids_file).integers()
-        shift.deliveries =\
-            [delivery(Delivery(shift, id)) for id in shift.delivery_ids]
+        shift.deliveries = [delivery(shift, id) for id in shift.delivery_ids]
 
     # extra stops
     from objects.extra_stop import Extra_Stop
     extra_stop_ids_file = Extra_Stop(shift).file_list()['completed_ids']
     if path.exists(extra_stop_ids_file):
         shift.extra_stop_ids = Read(extra_stop_ids_file).integers()
-        shift.extra_stops = [shift_extra_stop(Extra_Stop(shift, id))
-                             for id in shift.extra_stop_ids]
+        shift.extra_stops =\
+            [shift_extra_stop(shift, id) for id in shift.extra_stop_ids]
 
     # carry out tips
-    if path.exists(shift.file_list()['carry_out_tips']):
+    if path.exists(shift.file_list()['tips']):
         shift.carry_out_tips = carry_out_tips(shift)
 
     # split
@@ -104,14 +102,16 @@ def shift(shift_id):
     return shift
 
 
-def delivery(delivery):
-    from objects.delivery import Delivery
-    if not isinstance(delivery, Delivery):
+def delivery(shift, id):
+    from objects.shift import Shift
+    if not isinstance(shift, Shift):
         # todo: need to write error message
         raise TypeError
 
+    from objects.delivery import Delivery
     from os import path
 
+    delivery = Delivery(shift, id)
     delivery_file = delivery.file_list()['info']
 
     # delivery info
@@ -139,13 +139,13 @@ def delivery(delivery):
         from processes.load import delivery_extra_stop as load_extra_stop
         delivery.extra_stop_ids =\
             Read(Extra_Stop(delivery).file_list()['completed_ids']).integers()
-        delivery.extra_stops = [load_extra_stop(Extra_Stop(delivery, id))
-                                for id in delivery.extra_stop_ids]
+        delivery.extra_stops =\
+            [load_extra_stop(delivery, id) for id in delivery.extra_stop_ids]
 
     return delivery
 
 
-def order(delivery, order_id):
+def order(delivery, id):
     from objects.delivery import Delivery
     if not isinstance(delivery, Delivery):
         # todo: need to fix error message for taking delivery
@@ -154,7 +154,7 @@ def order(delivery, order_id):
         raise TypeError(error_message)
 
     from objects.order import Order
-    order = Order(delivery, order_id)
+    order = Order(delivery, id)
     order_file = order.file_list()['info']
 
     from os import path
@@ -203,7 +203,7 @@ def carry_out_tips(shift):
     from utility.file import Read
 
     carry_out_tips = []
-    temp_carry_out_tips = Read(shift.file_list()['carry_out_tips']).newline()
+    temp_carry_out_tips = Read(shift.file_list()['tips']).newline()
     for tip_data in temp_carry_out_tips:
         carry_out_tips.append(tip(tip_data=tip_data.split(',')))
 
@@ -226,39 +226,47 @@ def split(shift):
 
         split.miles_traveled = float(split_info[0])
         split.start_time = To_Datetime(split_info[1]).from_datetime()
-        split.start_time = To_Datetime(split_info[2]).from_datetime()
+        split.end_time = To_Datetime(split_info[2]).from_datetime()
 
         return split
 
 
-def shift_extra_stop(extra_stop):
+def shift_extra_stop(shift, id):
+    from objects.extra_stop import Extra_Stop
     from utility.file import Read
+
+    extra_stop = Extra_Stop(shift, id)
     try:
         extra_stop_data = Read(extra_stop.file_list()['info']).newline()
     except FileNotFoundError:
         # todo: need to figure out how to handle this
         pass
     else:
+        from utility.utility import To_Datetime
         extra_stop.location = extra_stop_data[0]
         extra_stop.reason = extra_stop_data[1]
-        extra_stop.miles_traveled = extra_stop_data[2]
-        extra_stop.start_time = extra_stop_data[3]
-        extra_stop.end_time = extra_stop_data[4]
+        extra_stop.miles_traveled = float(extra_stop_data[2])
+        extra_stop.start_time = To_Datetime(extra_stop_data[3]).from_datetime()
+        extra_stop.end_time = To_Datetime(extra_stop_data[4]).from_datetime()
 
         return extra_stop
 
 
-def delivery_extra_stop(extra_stop):
+def delivery_extra_stop(delivery, id):
+    from objects.extra_stop import Extra_Stop
     from utility.file import Read
+
+    extra_stop = Extra_Stop(delivery, id)
     try:
         extra_stop_data = Read(extra_stop.file_list()['info']).newline()
     except FileNotFoundError:
         # todo: need to figure out how to handle this
         pass
     else:
+        from utility.utility import To_Datetime
         extra_stop.location = extra_stop_data[0]
         extra_stop.reason = extra_stop_data[1]
-        extra_stop.miles_traveled = extra_stop_data[2]
-        extra_stop.end_time = extra_stop_data[3]
+        extra_stop.miles_traveled = float(extra_stop_data[2])
+        extra_stop.end_time = To_Datetime(extra_stop_data[3]).from_datetime()
 
         return extra_stop

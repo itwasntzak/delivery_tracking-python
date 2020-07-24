@@ -3,10 +3,9 @@ class Order:
     def __init__(self, delivery, id=None):
         from objects.delivery import Delivery
         if not isinstance(delivery, Delivery):
-            # todo: move this error message to resources, use %s in place of {}
-            error_message =\
-                f"parent of Order must be Delivery not '{type(delivery)}'"
-            raise TypeError(error_message)
+            from resources.error_messages import\
+                Order__class__wrong_parent_type as error_message
+            raise TypeError(error_message.format(type(delivery)))
 
         self.parent = delivery
 
@@ -15,7 +14,9 @@ class Order:
         elif id is None:
             self.id = 0
         elif id:
-            raise TypeError(f'{id} is of type {type(id)}')
+            from resources.error_messages import\
+                Order__class__wrong_id_type as error_message
+            raise TypeError(error_message.format(type(id)))
 
         self.tip = None
         self.miles_traveled = None
@@ -23,9 +24,6 @@ class Order:
 
     def csv(self):
         return f'{self.tip.csv()},{self.miles_traveled},{self.end_time}'
-
-    def display_text(self):
-        display_text = {}
 
     def file_list(self):
         from os import path
@@ -45,3 +43,23 @@ class Order:
             'miles_traveled': path.join(directory, miles_traveled),
             'tip': path.join(directory, tip)
         }
+
+    def view(self):
+        formated_time = self.end_time.strftime('%I:%M:%S %p')
+
+        view_parts = {
+            'id': f'Order I.D. #:\t{self.id}',
+            'distance': f'Distance to address:\t{self.miles_traveled} miles',
+            'end_time': f'Completed at:\t{formated_time}'
+        }
+
+        tip_parts = self.tip.view()
+
+        if 'card' in tip_parts.keys() and self.tip.card != 0.0:
+            view_parts['card'] = f'Card tip:\t${self.tip.card}'
+        if 'cash' in tip_parts.keys() and self.tip.cash != 0.0:
+            view_parts['cash'] = f'Cash tip:\t${self.tip.cash}'
+        if 'unknown' in tip_parts.keys() and self.tip.unknown != 0.0:
+            view_parts['unknown'] = f'Unknown tip:\t${self.tip.unknown}'
+
+        return view_parts

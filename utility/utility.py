@@ -26,7 +26,7 @@ def to_money(value):
 # todo: func cacluates len of strings, force everything to same screen length
 def time_taken(start_time, end_time, prompt):
     time_diff = end_time - start_time
-    print(f"\n{prompt}\t{time_diff}")
+    return f"\n{prompt}\t{time_diff}"
 
 
 def enter_to_continue(prompt):

@@ -7,6 +7,7 @@ todo: thinking should change to storing indavidual data in dir namd after
 
 
 def end_shift(shift):
+    # todo: current working spot, top priority, make sure this works as inteded
     # get list of files
     file_list = shift.file_list()
 
@@ -38,14 +39,13 @@ def end_shift(shift):
         # load
         shift.miles_traveled = Read(file_list['miles_traveled']).floats()
 
-    # todo: need to move all of these use inputs into the class
     # fuel economy
     if not path.exists(file_list['fuel_economy']):
         from resources.strings import Shift__fuel_economy__prompt as prompt
         from utility.file import write
-        from utility.user_input import decimal
+        from utility.user_input import User_Input
         # input and save
-        shift.fuel_economy = decimal(prompt)
+        shift.fuel_economy = User_Input(prompt).fuel_economy()
         write(shift.fuel_economy, file_list['fuel_economy'])
 
     else:
@@ -58,9 +58,9 @@ def end_shift(shift):
         from resources.strings import Shift__vehical_compensation__prompt as\
             prompt
         from utility.file import write
-        from utility.user_input import money
+        from utility.user_input import User_Input
         # input and save
-        shift.vehical_complensation = money(prompt)
+        shift.vehical_complensation = User_Input(prompt).money(' vehical compensation')
         write(shift.vehical_complensation, file_list['vehical_compensation'])
 
     else:
@@ -74,9 +74,9 @@ def end_shift(shift):
         from resources.strings import Shift__device_compensation__prompt as\
             promp
         from utility.file import write
-        from utility.user_input import money
+        from utility.user_input import User_Input
         # input and save
-        shift.device_compensation = money(promp)
+        shift.device_compensation = User_Input(promp).money(' device compensation')
         write(shift.device_compensation, file_list['device_compensation'])
 
     else:
@@ -85,13 +85,13 @@ def end_shift(shift):
         shift.device_compensation =\
             Read(file_list['device_compensation']).floats()
 
-    # total hours worked
+    # total hours
     if not path.exists(file_list['total_hours']):
         from resources.strings import Shift__total_hours__prompt as prompt
         from utility.file import write
-        from utility.user_input import decimal
+        from utility.user_input import User_Input
         # input and save
-        shift.total_hours = decimal(prompt)
+        shift.total_hours = User_Input(prompt).total_hours()
         write(shift.total_hours, file_list['total_hours'])
 
     else:
@@ -104,9 +104,9 @@ def end_shift(shift):
         from resources.strings import Shift__extra_tips_claimed__prompt as\
             prompt
         from utility.file import write
-        from utility.user_input import money
+        from utility.user_input import User_Input
         # input and save
-        shift.extra_tips_claimed = money(prompt)
+        shift.extra_tips_claimed = User_Input(prompt).money(' extra claimed for taxes')
         write(shift.extra_tips_claimed, file_list['extra_tips_claimed'])
 
     else:
@@ -145,128 +145,24 @@ def start_shift():
     return shift
 
 
-def end_delivery(delivery):
-    from os import path
-
-    from objects.delivery import Delivery
-    if not isinstance(delivery, Delivery):
-        # todo: need to write error message
-        raise TypeError
-
-    # get list of files and directory for delivery
-    file_list = delivery.file_list()
-
-    # miles traveled
-    if not path.exists(file_list['miles_traveled']):
-        from resources.strings import Delivery__miles_traveled_prompt as\
-            prompt
-        from utility.file import write
-        from utility.user_input import User_Input
-        # input and save miles traveled
-        delivery.miles_traveled =\
-            User_Input(prompt).miles_traveled()
-        write(delivery.miles_traveled, file_list['miles_traveled'])
-    else:
-        from utility.file import Read
-        # load miles traveled
-        delivery.miles_traveled =\
-            Read(file_list['miles_traveled']).floats()
-
-    # average speed
-    if not path.exists(file_list['average_speed']):
+class Input_Delivery:
+    def average_speed(self):
         from resources.strings import Delivery__average_speed__prompt as\
             prompt
-        from utility.file import write
         from utility.user_input import User_Input
-        # input and save average speed
-        delivery.average_speed =\
-            User_Input(prompt).average_speed()
-        write(delivery.average_speed, file_list['average_speed'])
-    else:
-        from utility.file import Read
-        # load average speed
-        delivery.average_speed =\
-            Read(file_list['average_speed']).integer()
+        # input average speed
+        return User_Input(prompt).average_speed()
 
-    # end time
-    if not path.exists(file_list['end_time']):
-        from utility.file import write
+    def distance(self):
+        from resources.strings import Delivery__miles_traveled_prompt as\
+            prompt
+        from utility.user_input import User_Input
+        # input distance traveled
+        return User_Input(prompt).miles_traveled()
+    
+    def time(self):
         from utility.utility import now
-        # set and save end time
-        delivery.end_time = now()
-        write(delivery.end_time, file_list['end_time'])
-    else:
-        from utility.file import Read
-        # load end time
-        delivery.end_time = Read(file_list['end_time']).datetimes()
-
-    # consolidate all delivery data to one file
-    from processes.consolidate import delivery as\
-        consolidate_delivery
-    consolidate_delivery(delivery)
-
-    # display time taken since starting delivery
-    from resources.strings import Delivery__time_taken__display as\
-        time_take_display
-    from utility.utility import time_taken
-    time_taken(delivery.start_time, delivery.end_time, time_take_display)
-
-    # return completed delivery
-    return delivery
-
-
-def start_delivery(shift):
-    from os import path
-
-    from objects.shift import Shift
-    if not isinstance(shift, Shift):
-        # todo: need to write error message
-        raise TypeError
-
-    # create delivery instance
-    from objects.delivery import Delivery
-    delivery = Delivery(shift)
-    # get list of files and directory for delivery
-    file_list = delivery.file_list()
-    # create directory to store files
-    if not path.exists(file_list['directory']):
-        from os import mkdir
-        mkdir(file_list['directory'])
-
-    # start time
-    if not path.exists(file_list['start_time']):
-        from utility.file import write
-        from utility.utility import now
-        # set and save start time for delivery
-        delivery.start_time = now()
-        write(delivery.start_time, file_list['start_time'])
-    else:
-        from utility.file import Read
-        # load start time
-        delivery.start_time = Read(file_list['start_time']).datetimes()
-
-    # load orders
-    from objects.order import Order
-    if path.exists(Order(delivery).file_list()['completed_ids']):
-        from processes.load import order as load_order
-        from utility.file import Read
-        delivery.order_ids =\
-            Read(Order(delivery).file_list()['completed_ids']).integers()
-        for id in delivery.order_ids:
-            delivery.orders.append(load_order(delivery, id))
-
-    # load extra stops
-    from objects.extra_stop import Extra_Stop
-    if path.exists(Extra_Stop(delivery, 0).file_list()['completed_ids']):
-        from processes.load import delivery_extra_stop as load_extra_stop
-        from utility.file import Read
-        delivery.extra_stop_ids =\
-            Read(Extra_Stop(delivery).file_list()['completed_ids']).integers()
-        for id in delivery.extra_stop_ids:
-            extra_stop = Extra_Stop(delivery, id)
-            delivery.extra_stops.append(load_extra_stop(extra_stop))
-
-    return delivery
+        return now()
 
 
 def order(delivery):
@@ -450,6 +346,9 @@ def extra_stop(extra_stop):
 
     file_list = extra_stop.file_list()
 
+    # id
+    extra_stop.assign_id()
+
     # location
     if not path.exists(file_list['location']):
         from resources.strings import Extra_Stop__location__prompt as prompt
@@ -523,8 +422,6 @@ def shift_extra_stop(shift):
         time_taken_display
     from utility.utility import time_taken
 
-    # todo: delivery_extra_stop: need add id assignment
-
     extra_stop_instance = Extra_Stop(shift)
     file_list = extra_stop_instance.file_list()
 
@@ -572,14 +469,13 @@ def delivery_extra_stop(delivery):
         time_taken_display
     from utility.utility import time_taken
 
-    # todo: delivery_extra_stop: need add id assignment
-
     extra_stop_instance = Extra_Stop(delivery)
+    file_list = extra_stop_instance.file_list()
 
     # directory
-    if not path.exists(extra_stop_instance.file_list()['directory']):
+    if not path.exists(file_list['directory']):
         from os import mkdir
-        mkdir(extra_stop_instance.file_list()['directory'])
+        mkdir(file_list['directory'])
 
     extra_stop_instance = extra_stop(extra_stop_instance)
 

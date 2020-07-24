@@ -14,6 +14,8 @@ class Delivery:
         elif id:
             raise TypeError
 
+        self.start_time = None
+        self.end_time = None
         self.miles_traveled = None
         self.average_speed = None
         self.order_ids = []
@@ -64,31 +66,57 @@ class Delivery:
             'miles_traveled': path.join(directory, miles_traveled),
             'start_time': path.join(directory, start_time)
         }
+    
+    def view(self):
+        from datetime import datetime
 
-    def card_tips(self):
-        card_tips = []
-        for order in self.orders:
-            if order.tip.has_card:
-                card_tips.append(order.tip.card)
-        return card_tips
+        view_parts = {'id': f'Delivery #:\t{self.id + 1}'}
 
-    def cash_tips(self):
-        cash_tips = []
-        for order in self.orders:
-            if order.tip.has_cash:
-                cash_tips.append(order.tip.cash)
-        return cash_tips
+        if isinstance(self.start_time, datetime) and\
+                isinstance(self.end_time, datetime):
+            from utility.utility import time_taken
+            view_parts['time_taken'] =\
+                time_taken(self.start_time, self.end_time,
+                           'Total time taken:\t')
 
-    def total_tips(self):
-        tips = []
-        for order in self.orders:
-            if order.tip.has_card:
-                tips.append(order.tip.card)
-            if order.tip.has_cash:
-                tips.append(order.tip.cash)
-            if order.tip.has_unknown:
-                tips.append(order.tip.unknown)
-        return tips
+        if isinstance(self.start_time, datetime):
+            start_time = self.start_time.strftime('%I:%M:%S %p')
+            view_parts['start_time'] = f'Started at:\t{start_time}'
+
+        view_parts['order_quantity'] = f'Number of orders:\t{len(self.orders)}'
+
+        temp_string = 'Order I.D. #{}:\t'
+        if len(self.order_ids) == 1:
+            temp_string = temp_string.format('')
+            temp_string += f'{self.order_ids[0]}'
+            view_parts['order_ids'] = temp_string
+        elif len(self.order_ids) > 1:
+            temp_string = temp_string.format("'s")
+            for value in range(len(self.order_ids) - 1):
+                    index = value
+                    id = self.order_ids[index]
+                    temp_string += f'{id}, '
+            index += 1
+            id = self.order_ids[index]
+            temp_string += f'{id}'
+            view_parts['order_ids'] = temp_string
+
+        if isinstance(self.miles_traveled, float)\
+                  and self.miles_traveled > 0.0:
+            view_parts['distance'] =\
+                f'Total distance traveled for delivery:\t{self.miles_traveled} miles'
+
+        if isinstance(self.average_speed, int) and self.average_speed > 0:
+            view_parts['average_speed'] = f'Average speed for delivery:\t{self.average_speed} mph'
+
+        if isinstance(self.end_time, datetime):
+            end_time = self.end_time.strftime('%I:%M:%S %p')
+            view_parts['end_time'] = f'Completed at:\t{end_time}'
+        
+        if len(self.extra_stops) > 0:
+            view_parts['extra_stops'] = f'Number of extra stops:\t{len(self.extra_stops)}'
+        
+        return view_parts
 
 # todo: write methods to change data when a delivery is in progress as well as completed
 # todo: write method that allows the user selecte data to change

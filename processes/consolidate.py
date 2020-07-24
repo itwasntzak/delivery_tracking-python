@@ -11,7 +11,7 @@ def shift(shift):
     # save data to one file
     write(shift.csv(), file_list.pop('info'))
     # remove file from dict to not delete
-    file_list.pop('carry_out_tips')
+    file_list.pop('tips')
     file_list.pop('directory')
     completed_ids = file_list.pop('completed_ids')
     # delete indavidual files

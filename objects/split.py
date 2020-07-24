@@ -29,3 +29,19 @@ class Split:
             'miles_traveled': path.join(directory, miles_traveled),
             'start_time': path.join(directory, start_time)
         }
+
+    def view(self):
+        from datetime import datetime
+
+        start_time = self.start_time.strftime('%I:%M:%S %p')
+        view_parts = {'start_time': f'Split was started at:\t{start_time}'}
+
+        if isinstance(self.miles_traveled, float):
+            view_parts['distance'] =\
+                f'Miles traveled on split:\t{self.miles_traveled} miles'
+
+        if isinstance(self.end_time, datetime):
+            end_time = self.end_time.strftime('%I:%M:%S %p')
+            view_parts['end_time'] = f'Split was ended at:\t{end_time}'
+        
+        return view_parts

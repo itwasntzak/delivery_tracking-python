@@ -1,6 +1,5 @@
 
 class Extra_Stop:
-    # todo: need to update all existing shifts with newline sep
     def __init__(self, parent, id=None):
         from objects.delivery import Delivery
         from objects.shift import Shift
@@ -51,7 +50,7 @@ class Extra_Stop:
             Extra_Stop__info as info_file,\
             Extra_Stop__location as location, Extra_Stop__reason as reason,\
             Extra_Stop__running_id as running_id,\
-            shifts_directory, user_data_directory as data_directory
+            shifts_directory, data_directory
         from utility.utility import now
 
         parent_directory = self.parent.file_list()['directory']
@@ -87,6 +86,23 @@ class Extra_Stop:
                    f'{self.miles_traveled}\n'\
                    f'{self.end_time}'
 
-# todo: change extra stops from comma seperated to newline seperated
+    def view(self):
+        from datetime import datetime
+
+        end_time = self.end_time.strftime('%I:%M:%S %p')
+
+        view_parts = {
+            'id': f'Extra stop id #:\t{self.id + 1}',
+            'location': f'Location:\t{self.location.capitalize()}',
+            'reason': f'Reason:\t{self.reason.capitalize()}',
+            'distance': f'Distance to extra stop:\t{self.miles_traveled} miles',
+            'end_time': f'Extra stop was completed at:\t{end_time}'
+        }
+
+        if isinstance(self.start_time, datetime):
+            view_parts['start_time'] = self.start_time.strftime('%I:%M:%S %p')
+        
+        return view_parts
+
 # todo: need to write function that allows the user to change data
 # todo: need to write function that saves changes to data

@@ -7,17 +7,22 @@ def confirmation(data, preced=None, succeed=None):
     preced, succeed = strings to be displayed respectively around data
     """
     prompt = ''
-    if not re.match('[\n]{1,1}', f'{data}'):
+    if not re.match('^[\n]{1,1}', f'{data}'):
         prompt += '\n'
-    if preced is not None and succeed is not None:
+
+    if preced and succeed:
         prompt += f'{preced}{data}{succeed}'
-    elif preced is not None:
+    elif preced:
         prompt += f'{preced}{data}'
-    elif succeed is not None:
+    elif succeed:
         prompt += f'{data}{succeed}'
     else:
         prompt += f'{data}'
-    prompt += '\nIs this correct?\t[Y/N]'
+
+    if prompt[-1] != '\n':
+        prompt += '\n'
+
+    prompt += 'Is this correct?\t[Y/N]'
 
     user_choice = text(prompt, permit='[yYnN]{1,1}')
 
@@ -65,20 +70,6 @@ def integer(prompt, preced=None):
             continue
         else:
             return user_input
-
-
-def money(prompt, succeed=None):
-    money = decimal(prompt, '$', 2)
-    if isinstance(succeed, str):
-        while not confirmation(money, '$', succeed):
-            money = decimal(prompt, '$', 2)
-    elif not succeed:
-        while not confirmation(money, '$'):
-            money = decimal(prompt, '$', 2)
-    elif succeed:
-        raise TypeError('succeed must be able to be converted to string')
-
-    return money
 
 
 def text(prompt, preced=None, alpha_only=False, forbid=None, permit=None):
@@ -144,10 +135,23 @@ def text(prompt, preced=None, alpha_only=False, forbid=None, permit=None):
     return user_input
 
 
+def match_input(prompt, pattern):
+    import re
+    user_input = input(prompt)
+    while not re.match(pattern, user_input):
+        user_input = input(prompt)
+    else:
+        return user_input
+
+
 def preceded_input(prompt, preced=None):
-    if not re.match('[\n]{1,1}', f'{prompt}'):
+    if not re.match('^[\n]{1,1}', prompt):
         prompt = f'\n{prompt}'
-    print(prompt)
+    if prompt[-1] != '\n':
+        prompt += '\n'
+
+    print(prompt, end='')
+
     if preced:
         return input(f'{preced}')
     return input()
@@ -158,12 +162,6 @@ class User_Input():
         self.prompt = prompt
 
     # general
-    def id(self):
-        id = integer(self.prompt, '#')
-        while not confirmation(id, 'Id is #'):
-            id = integer(self.prompt, '#')
-        return id
-
     def miles_traveled(self):
         from resources.strings import User_Input__miles_traveled__succeed as\
             succeed
@@ -171,6 +169,38 @@ class User_Input():
         while not confirmation(miles_traveled, succeed=succeed):
             miles_traveled = decimal(self.prompt)
         return miles_traveled
+
+    def money(self, succeed=None):
+        money = decimal(self.prompt, '$', 2)
+        if isinstance(succeed, str):
+            while not confirmation(money, '$', succeed=succeed):
+                money = decimal(self.prompt, '$', 2)
+        elif not succeed:
+            while not confirmation(money, '$'):
+                money = decimal(self.prompt, '$', 2)
+        elif succeed:
+            raise TypeError('succeed must be able to be converted to string')
+
+        return money
+
+    # shift
+    def fuel_economy(self):
+        from resources.strings import User_Input__fuel_economy__succeed as\
+            succeed
+        fuel_economy = decimal(self.prompt)
+        while not confirmation(fuel_economy, succeed=succeed):
+            fuel_economy = decimal(self.prompt)
+
+        return fuel_economy
+    
+    def total_hours(self):
+        from resources.strings import User_Input__total_hours__succeed as\
+            succeed
+        total_hours = decimal(self.prompt)
+        while not confirmation(total_hours, succeed=succeed):
+            total_hours = decimal(self.prompt)
+        
+        return total_hours
 
     # delivery
     def average_speed(self):
@@ -181,19 +211,27 @@ class User_Input():
             average_speed = integer(self.prompt)
         return average_speed
 
+    # order
+    def id(self):
+        id = integer(self.prompt, '#')
+        while not confirmation(id, 'Id is #'):
+            id = integer(self.prompt, '#')
+        return id
+
+
     # tip
     def card_tip(self):
         from resources.strings import User_Input__card_tip__succeed as succeed
-        return money(self.prompt, succeed=succeed)
+        return self.money(succeed)
 
     def cash_tip(self):
         from resources.strings import User_Input__cash_tip__succeed as succeed
-        return money(self.prompt, succeed=succeed)
+        return self.money(succeed)
 
     def unknown_tip(self):
         from resources.strings import User_Input__unknown_tip__succeed as\
             succeed
-        return money(self.prompt, succeed=succeed)
+        return self.money(succeed)
 
     # extra stop
     def location(self):
@@ -209,45 +247,3 @@ class User_Input():
             reason = text(self.prompt)
 
         return reason
-
-
-
-# OLD
-def input_data(prompt_1, input_type_1,
-               prompt_2, input_type_2,
-               option_1, option_2,
-               symbol='', word=''):
-    while True:
-        data = get_input(
-            prompt=prompt_1, kind=input_type_1)
-        while True:
-            data_2 = get_input(
-                prompt=f'\n{symbol}{data}{word}\n'
-                       f'{prompt_2}\n',
-                kind=input_type_2)
-            if data_2 in option_1:
-                return data
-            elif data_2 in option_2:
-                break
-            else:
-                print('\nInvalid input...')
-
-
-def get_input(prompt, kind):
-    while True:
-        try:
-            data = input(prompt)
-            if kind == str and (data.isalpha()
-                                or ' ' in data or ',' in data
-                                or '&' in data or '_' in data):
-                return str(data)
-            elif kind == int and data.isdecimal():
-                return int(data)
-            elif kind == float and (data.isdecimal() or '.' in data):
-                return float(data)
-        except TypeError:
-            print('\nInvalid input...')
-        except ValueError:
-            print('\nInvalid input...')
-        else:
-            print('\nInvalid input...')
