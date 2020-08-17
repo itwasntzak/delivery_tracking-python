@@ -138,14 +138,14 @@ def text(prompt, preced=None, alpha_only=False, forbid=None, permit=None):
 def match_input(prompt, pattern):
     import re
     user_input = input(prompt)
-    while not re.match(pattern, user_input):
+    while not re.match(pattern, user_input, flags=re.IGNORECASE):
         user_input = input(prompt)
     else:
         return user_input
 
 
 def preceded_input(prompt, preced=None):
-    if not re.match('^[\n]{1,1}', prompt):
+    if not re.match('^[\n]$', prompt):
         prompt = f'\n{prompt}'
     if prompt[-1] != '\n':
         prompt += '\n'

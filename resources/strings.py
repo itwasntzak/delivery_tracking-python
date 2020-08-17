@@ -4,6 +4,8 @@
 resource legend:
     file/class_name__function/method_name__resource_occurrence
     file/class_name__resource_occurrence
+thoughts on new ways
+    group by files,
 """
 # objects
 #   shift
@@ -61,7 +63,6 @@ Split__start__enter_to_continue = 'Split has been started.'
 Split__start__confirmation = 'Are you sure you want to start a split?'
 
 
-# menus
 # Shift_Menu
 shift__menu__texts = {
             'initial': '- Shift Menu -\nPlease select an option:\n',
@@ -72,10 +73,27 @@ shift__menu__texts = {
             'end': ['End shift\n', 'Continue ending shift\n'],
             'view': 'View shift\n',
             'quit': 'Quit program\n'
-        }
+}
+
+shift__revise__text = {
+    'initial': 'Select part of the shfit to revise:\n',
+    'start_time': ['Revise start time\n', 'Add start time\n'],
+    'end_time': ['Revise end time\n', 'Add end time\n'],
+    'total_hours': ['Revise total hour\n', 'Add total hour\n'],
+    'distance': ['Revise miles traveled\n', 'Add miles traveled\n'],
+    'fuel_economy': ['Revise fuel economy\n', 'Add fuel economy\n'],
+    'vehical_comp': ['Revise mileage\n', 'Add mileage\n'],
+    'device_comp': ['Revise device useage paid\n', 'Add device useage paid\n'],
+    'extra_tips': ['Revise extra tips claimed\n', 'Add extra tips claimed\n'],
+    'total_in_hand': ['Revise total money in hand\n', 'Add total money in hand\n'],
+    'delivery': ['Select a delivery\n', 'Revise delivery\n', 'Add a delivery\n'],
+    'extra_stop': ['Select a extra stop\n', 'Revise extra stop\n'],
+    'view': 'View current shift\n',
+    'back': 'Go back a menu\n'
+}
 
 # Delivery_Menu
-delivery__menu__texts = {
+delivery__menu = {
     'initial': '- Delivery Menu -\nPlease select an option:\n',
     'order': ['Add new order\n', 'Continue entering order\n'],
     'extra_stop': ['Take extra stop\n', 'Continue extra stop\n'],
@@ -84,23 +102,55 @@ delivery__menu__texts = {
     'revise': 'Revise current delivery\n',
     'back': 'Back a menu\n',
     'quit': 'Quit program\n',
-    'time_taken': 'Current time on delivery:\t'
+    'current_duration': 'Current time on delivery:\t',
+    'total_duration': 'Total time on delivery:\t'
 }
 
-delivery__revise__text = {
-    'initial': 'Select part of delivery to revise:\n',
+delivery__select = {
+    'initial': 'There are {} number of deliveries\n',
+    'prompt': 'Enter the ID of the delivery you want to select:\n'\
+              '(B to go back)\n'
+}
+
+delivery__revise = {
+    'initial': 'Select part of the delivery to revise:\n',
     'start_time': ['Revise start time\n', 'Add start time\n'],
     'miles_traveled': ['Revise miles traveled\n', 'Add miles traveled\n'],
     'average_speed': ['Revise average speed\n', 'Add average speed\n'],
     'end_time': ['Revise end time\n', 'Add end time\n'],
-    'order': ['Select or add order\n', 'Revise or add order\n', 'Add order\n'],
+    'order': ['Select an order\n', 'Revise order\n', 'Add order\n'],
     'extra_stop': ['Select an extra stop\n', 'Revise extra stop\n'],
     'view': 'View current delivery\n',
-    'save': 'Save current delivery\n',
     'back': 'Go back a menu\n',
-    'quit': 'Quit program\n'
 }
 
+order__select = {
+    'initial': 'Order IDs:\n',
+    'prompt': ['Enter an above ID to select an order:\n'\
+               '(B to go back)\n',
+               'Enter the ID of the order you want to select:\n'\
+               '(B to go back)\n'],
+    'no_match': "The entered number doesn't match a order ID\n",
+    'confirmation': 'Select order with ID #\n'
+}
+
+carry_out_tip__select = {
+    'initial': 'Carry out tips:\n',
+    'prompt': 'Enter a number to select a tip:\n'\
+              '(B to go back)\n',
+    'no_option': 'There are no carry out tips\n',
+    'no_match': "That number doesn't match an option\n",
+    'confirmation': 'Tip option: {}\n'
+}
+
+extra_stop__select = {
+    'initial': 'Extra Stops:\n',
+    'display': 'Extra stop #{}, Location: {}\n',
+    'prmopt': 'Enter an ID number to select an extra stop:\n'\
+              '(B to go back)\n',
+    'no_match': 'Please enter one of the ID numbers above\n',
+    'no_option': 'There are no extra stops for this {}\n'
+}
 
 # utility
 #   user input

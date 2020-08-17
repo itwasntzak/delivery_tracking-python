@@ -42,10 +42,10 @@ def delivery(delivery):
 
     delivery_parts = delivery.view()
 
-    string = f"{delivery_parts['id']}"
+    string = f"{delivery_parts['id']}\n"
 
-    if 'time_taken' in delivery_parts.keys():
-        string += f"{delivery_parts['time_taken']}\n"
+    if 'total_duration' in delivery_parts.keys():
+        string += f"{delivery_parts['total_duration']}\n"
 
     if 'start_time' in delivery_parts.keys():
         string += f"{delivery_parts['start_time']}\n"

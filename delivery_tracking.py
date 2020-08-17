@@ -2,6 +2,7 @@
 # cnsd: add option to be able to start a second shift for the day (dif store)
 
 # todo: change all variable and attributes called miles_traveled to distance
+# todo: change any saved time to just time and remove the date. add To_Datetime().from_time()
 # todo: make unit tests for everything
 # todo: learn to unit test
 
@@ -44,6 +45,6 @@ else:
     shift = load_shift()
 
 # daily shift tracking menu
-menu = Shift_Tracking_Menu(shift)
+menu = Shift_Tracking(shift)
 while menu.condition:
-    menu = Shift_Tracking_Menu(shift)
+    menu = Shift_Tracking(menu.shift)

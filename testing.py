@@ -1,9 +1,8 @@
-from objects.shift import Shift
-from objects.split import Split
+from objects import Shift, Split
 from processes.load import shift as load_shift
 from utility.file import Read
 from utility.utility import now, To_Datetime
-from view_objects import\
+from processes.view import\
     shift as view_shift,\
     delivery as view_delivery,\
     order as view_order,\
