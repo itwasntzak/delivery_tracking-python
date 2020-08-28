@@ -1,6 +1,6 @@
 
-def shift(shift):
-    from objects.shift import Shift
+def consolidate_shift(shift):
+    from objects import Shift
     if not isinstance(shift, Shift):
         raise TypeError
 
@@ -21,8 +21,8 @@ def shift(shift):
     save(shift.id, completed_ids, separator=',')
 
 
-def delivery(delivery):
-    from objects.delivery import Delivery
+def consolidate_delivery(delivery):
+    from objects import Delivery
     if not isinstance(delivery, Delivery):
         # todo: need to write error message for this
         raise TypeError
@@ -43,8 +43,8 @@ def delivery(delivery):
     save(delivery.id, completed_ids, separator=',')
 
 
-def order(order):
-    from objects.order import Order
+def consolidate_order(order):
+    from objects import Order
     if not isinstance(order, Order):
         from resources.error_messages import\
             consolidate__order__wrong_parameter as error_messages
@@ -67,8 +67,8 @@ def order(order):
     save(order.id, completed_ids, separator=',')
 
 
-def split(split):
-    from objects.split import Split
+def consolidate_split(split):
+    from objects import Split
     if not isinstance(split, Split):
         raise TypeError
 
@@ -86,8 +86,8 @@ def split(split):
     rmdir(directory)
 
 
-def shift_extra_stop(extra_stop):
-    from objects.extra_stop import Extra_Stop
+def consolidate_extra_stop(extra_stop):
+    from objects import Extra_Stop, Shift
     if not isinstance(extra_stop, Extra_Stop):
         raise TypeError
 
@@ -98,6 +98,8 @@ def shift_extra_stop(extra_stop):
     file_list = extra_stop.file_list()
     # save extra stop data to a single file
     write(extra_stop.nlsv(), file_list.pop('info'))
+    # this file wont exist if the extra stop is delivery
+    start_time_file = file_list.pop('start_time')
     # files to not be deleted that will be needed later
     completed_ids = file_list.pop('completed_ids')
     directory = file_list.pop('directory')
@@ -105,35 +107,8 @@ def shift_extra_stop(extra_stop):
     # delete indavidual data files
     for key in file_list:
         remove(file_list[key])
-    # deleted directory after its empty
-    rmdir(directory)
-    # updated completed ids file
-    save(extra_stop.id, completed_ids, separator=',')
-    # update running id number
-    write(extra_stop.id + 1, running_id)
-
-
-def delivery_extra_stop(extra_stop):
-    from objects.extra_stop import Extra_Stop
-    if not isinstance(extra_stop, Extra_Stop):
-        raise TypeError
-
-    from os import remove, rmdir
-    from utility.file import write, save
-
-    # get list of files
-    file_list = extra_stop.file_list()
-    # save extra stop data to a single file
-    write(extra_stop.nlsv(), file_list.pop('info'))
-    # this file wont exist when delivery is parent
-    file_list.pop('start_time')
-    # files to not be deleted that will be needed later
-    completed_ids = file_list.pop('completed_ids')
-    directory = file_list.pop('directory')
-    running_id = file_list.pop('running_id')
-    # delete indavidual data files
-    for key in file_list:
-        remove(file_list[key])
+    if isinstance(extra_stop.parent, Shift):
+        remove(start_time_file)
     # deleted directory after its empty
     rmdir(directory)
     # updated completed ids file

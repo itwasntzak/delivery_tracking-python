@@ -57,9 +57,7 @@ class Read():
     def newline(self):
         newline_list = []
         for data in self.data.split('\n'):
-            if data == '':
-                pass
-            else:
+            if data != '':
                 newline_list.append(data)
 
         return newline_list

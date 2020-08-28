@@ -3,3 +3,5 @@ brain/
 .vscode/
 ide_tools
 *.pyc
+my_data
+unittest.bat

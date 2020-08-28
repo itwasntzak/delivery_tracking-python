@@ -24,7 +24,7 @@ Shift__overwritten__confirmation = 'Shift has been overwriten!'
 Shift__overwrite__prompt = 'Are you sure you want to overwrite the completed shift?'
 Shift__start__enter_to_continue__display = 'Shift has been started!'
 Shift__total_hours__prompt = 'Enter total hours worked:\t#.## hours'
-Shift__vehical_compensation__prompt = 'Amount of vehicle compensation paid:\t$#.##'
+Shift__vehicle_compensation__prompt = 'Amount of vehicle compensation paid:\t$#.##'
 
 #   delivery
 Delivery__average_speed__prompt = 'Enter the average speed for this delivery:\t##'
@@ -82,7 +82,7 @@ shift__revise__text = {
     'total_hours': ['Revise total hour\n', 'Add total hour\n'],
     'distance': ['Revise miles traveled\n', 'Add miles traveled\n'],
     'fuel_economy': ['Revise fuel economy\n', 'Add fuel economy\n'],
-    'vehical_comp': ['Revise mileage\n', 'Add mileage\n'],
+    'vehicle_comp': ['Revise mileage\n', 'Add mileage\n'],
     'device_comp': ['Revise device useage paid\n', 'Add device useage paid\n'],
     'extra_tips': ['Revise extra tips claimed\n', 'Add extra tips claimed\n'],
     'total_in_hand': ['Revise total money in hand\n', 'Add total money in hand\n'],

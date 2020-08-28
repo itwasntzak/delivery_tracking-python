@@ -22,20 +22,6 @@ class Shift:
         self.extra_tips_claimed = None
         self.split = None
 
-    def add_delivery(self, delivery):
-        if not isinstance(delivery, Delivery):
-            raise TypeError
-
-        self.delivery_ids.append(delivery.id)
-        self.deliveries.append(delivery)
-
-    def add_extra_stop(self, extra_stop):
-        if not isinstance(extra_stop, Extra_Stop):
-            raise TypeError
-
-        self.extra_stop_ids.append(extra_stop.id)
-        self.extra_stops.append(extra_stop)
-
     def csv(self):
         return '{0},{1},{2},{3},{4},{5},{6},{7}'.format(
             self.miles_traveled, self.fuel_economy, self.vehicle_compensation,
@@ -55,7 +41,7 @@ class Shift:
             Shift__extra_tips_claimed as extra_claimed,\
             Shift__fuel_economy as fuel_economy,\
             Shift__total_hours as total_hours,\
-            Shift__vehical_compensation as vehical_compensation,\
+            Shift__vehicle_compensation as vehicle_compensation,\
             data_directory
 
         directory =\
@@ -73,61 +59,8 @@ class Shift:
             'miles_traveled': path.join(directory, miles_traveled),
             'start_time': path.join(directory, start_time),
             'total_hours': path.join(directory, total_hours),
-            'vehical_compensation': path.join(directory, vehical_compensation)
+            'vehicle_compensation': path.join(directory, vehicle_compensation)
         }
-
-    def input_device_compensation(self):
-        from resources.strings import Shift__device_compensation__prompt as\
-                prompt
-        from utility.user_input import User_Input
-        self.device_compensation = User_Input(prompt).money(' device compensation')
-    
-    def input_extra_tips_claimed(self):
-        from resources.strings import Shift__extra_tips_claimed__prompt as\
-                prompt
-        from utility.user_input import User_Input
-        self.extra_tips_claimed = User_Input(prompt).money(' extra claimed for taxes')
-
-    def input_fuel_economy(self):
-        from resources.strings import Shift__fuel_economy__prompt as prompt
-        from utility.user_input import User_Input
-        self.fuel_economy = User_Input(prompt).fuel_economy()
-
-    def input_miles_traveled(self):
-        from resources.strings import Shift__miles_traveled__prompt as prompt
-        from utility.user_input import User_Input
-        self.miles_traveled = User_Input(prompt).miles_traveled()
-    
-    def input_total_hours(self):
-        from resources.strings import Shift__total_hours__prompt as prompt
-        from utility.user_input import User_Input
-        self.total_hours = User_Input(prompt).total_hours()
-    
-    def input_vehical_compensation(self):
-        from resources.strings import Shift__vehical_compensation__prompt as\
-                prompt
-        from utility.user_input import User_Input
-        self.vehical_compensation = User_Input(prompt).money(' vehical compensation')
-
-    def remove_id_from_file(self):
-        from os import remove
-        from utility.file import Read, write
-        from utility.utility import To_Datetime
-
-        ids_file  = self.file_list()['completed_ids']
-
-        id_list = [id for id in Read(ids_file).comma() if id != f'{self.id}']
-        comma_number = len(id_list) - 1
-
-        new_ids_list = ''
-        for value in range(comma_number):
-            new_ids_list += id_list[value] + ','
-        new_ids_list += id_list[-1]
-
-        if len(id_list) == 0:
-            remove(ids_file)
-        elif len(id_list) > 0:
-            write(new_ids_list, ids_file)
 
     def view(self):
         from datetime import datetime
@@ -187,10 +120,10 @@ class Shift:
         tips = []
         for delivery in self.deliveries:
             for order in delivery.orders:
-                tips.append(order.tip.total_amount())
+                tips.append(order.tip)
         
         for tip in self.carry_out_tips:
-            tips.append(tip.total_amount())
+            tips.append(tip)
 
         return tips
     
@@ -198,10 +131,12 @@ class Shift:
         tips = []
         for delivery in self.deliveries:
             for order in delivery.orders:
-                tips.append(order.tip.card)
+                if order.tip.card != 0.0:
+                    tips.append(order.tip)
         
         for tip in self.carry_out_tips:
-            tips.append(tip.card)
+            if tip.card != 0.0:
+                tips.append(tip)
 
         return tips
     
@@ -209,12 +144,106 @@ class Shift:
         tips = []
         for delivery in self.deliveries:
             for order in delivery.orders:
-                tips.append(order.tip.cash)
+                if order.tip.cash != 0.0:
+                    tips.append(order.tip)
         
         for tip in self.carry_out_tips:
-            tips.append(tip.cash)
+            if tip.cash != 0.0:
+                tips.append(tip)
 
         return tips
+
+    def add_delivery(self, delivery):
+        if not isinstance(delivery, Delivery):
+            raise TypeError
+
+        self.delivery_ids.append(delivery.id)
+        self.deliveries.append(delivery)
+
+    def add_extra_stop(self, extra_stop):
+        if not isinstance(extra_stop, Extra_Stop):
+            raise TypeError
+
+        self.extra_stop_ids.append(extra_stop.id)
+        self.extra_stops.append(extra_stop)
+
+    def input_device_compensation(self):
+        from resources.strings import Shift__device_compensation__prompt as\
+                prompt
+        from utility.user_input import User_Input
+        self.device_compensation = User_Input(prompt).money(' device compensation')
+    
+    def input_extra_tips_claimed(self):
+        from resources.strings import Shift__extra_tips_claimed__prompt as\
+                prompt
+        from utility.user_input import User_Input
+        self.extra_tips_claimed = User_Input(prompt).money(' extra claimed for taxes')
+
+    def input_fuel_economy(self):
+        from resources.strings import Shift__fuel_economy__prompt as prompt
+        from utility.user_input import User_Input
+        self.fuel_economy = User_Input(prompt).fuel_economy()
+
+    def input_miles_traveled(self):
+        from resources.strings import Shift__miles_traveled__prompt as prompt
+        from utility.user_input import User_Input
+        self.miles_traveled = User_Input(prompt).miles_traveled()
+    
+    def input_total_hours(self):
+        from resources.strings import Shift__total_hours__prompt as prompt
+        from utility.user_input import User_Input
+        self.total_hours = User_Input(prompt).total_hours()
+    
+    def input_vehicle_compensation(self):
+        from resources.strings import Shift__vehicle_compensation__prompt as\
+                prompt
+        from utility.user_input import User_Input
+        self.vehicle_compensation = User_Input(prompt).money(' vehicle compensation')
+
+    def set_end_time(self):
+        from datetime import datetime
+        self.end_time = datetime.now()
+
+    def set_start_time(self):
+        from datetime import datetime
+        self.start_time = datetime.now()
+
+    def end(self):
+        from processes.track import end_shift
+        self = end_shift(self)
+
+    def load_completed(self):
+        from processes.load import load_completed_shift
+        self = load_completed_shift(self)
+
+    def load_current(self):
+        from processes.load import load_current_shift
+        self = load_current_shift(self)
+
+    def start(self):
+        from processes.track import start_shift
+        self = start_shift(self)
+
+    def remove_id_from_file(self):
+        # todo: this needs to be tested and reworked
+        from os import remove
+        from utility.file import Read, write
+        from utility.utility import To_Datetime
+
+        ids_file  = self.file_list()['completed_ids']
+
+        id_list = [id for id in Read(ids_file).comma() if id != f'{self.id}']
+        comma_number = len(id_list) - 1
+
+        new_ids_list = ''
+        for value in range(comma_number):
+            new_ids_list += id_list[value] + ','
+        new_ids_list += id_list[-1]
+
+        if len(id_list) == 0:
+            remove(ids_file)
+        elif len(id_list) > 0:
+            write(new_ids_list, ids_file)
 
 
 class Delivery:
@@ -239,20 +268,6 @@ class Delivery:
         self.orders = []
         self.extra_stop_ids = []
         self.extra_stops = []
-
-    def add_extra_stop(self, extra_stop):
-        if isinstance(extra_stop, Extra_Stop):
-            self.extra_stop_ids.append(extra_stop.id)
-            self.extra_stops.append(extra_stop)
-        else:
-            raise TypeError
-
-    def add_order(self, order):
-        if not isinstance(order, Order):
-            raise TypeError(f'{order} is of type {type(order)}')
-
-        self.order_ids.append(order.id)
-        self.orders.append(order)
 
     def csv(self):
         return f'{self.miles_traveled},{self.average_speed},'\
@@ -280,26 +295,6 @@ class Delivery:
             'miles_traveled': path.join(directory, miles_traveled),
             'start_time': path.join(directory, start_time)
         }
-
-    def input_average_speed(self):
-        from resources.strings import Delivery__average_speed__prompt as\
-            prompt
-        from utility.user_input import User_Input
-        self.average_speed = User_Input(prompt).average_speed()
-
-    def input_distance(self):
-        from resources.strings import Delivery__miles_traveled_prompt as\
-            prompt
-        from utility.user_input import User_Input
-        self.miles_traveled = User_Input(prompt).miles_traveled()
-    
-    def input_end_time(self):
-        from utility.utility import now
-        self.end_time = now()
-    
-    def input_start_time(self):
-        from utility.utility import now
-        self.start_time = now()
 
     def view(self):
         from datetime import datetime
@@ -354,13 +349,54 @@ class Delivery:
         
         return view_parts
 
+    def add_extra_stop(self, extra_stop):
+        if isinstance(extra_stop, Extra_Stop):
+            self.extra_stop_ids.append(extra_stop.id)
+            self.extra_stops.append(extra_stop)
+        else:
+            raise TypeError
+
+    def add_order(self, order):
+        if not isinstance(order, Order):
+            raise TypeError(f'{order} is of type {type(order)}')
+
+        self.order_ids.append(order.id)
+        self.orders.append(order)
+
+    def input_average_speed(self):
+        from resources.strings import Delivery__average_speed__prompt as\
+            prompt
+        from utility.user_input import User_Input
+        self.average_speed = User_Input(prompt).average_speed()
+
+    def input_distance(self):
+        from resources.strings import Delivery__miles_traveled_prompt as\
+            prompt
+        from utility.user_input import User_Input
+        self.miles_traveled = User_Input(prompt).miles_traveled()
+
+    def set_end_time(self):
+        from utility.utility import now
+        self.end_time = now()
+
+    def set_start_time(self):
+        from utility.utility import now
+        self.start_time = now()
+
+    def end(self):
+        from processes.track import end_delivery
+        self = end_delivery(self)
+
+    def start(self):
+        from processes.track import start_delivery
+        self = start_delivery(self)
+
 
 class Order:
     def __init__(self, delivery, id=None):
         if not isinstance(delivery, Delivery):
-            from resources.error_messages import\
-                Order__class__wrong_parent_type as error_message
-            raise TypeError(error_message.format(type(delivery)))
+            from resources.error_messages import Order__class__wrong_parent_type
+            raise TypeError(Order__class__wrong_parent_type.format(type(delivery)))
 
         self.parent = delivery
 
@@ -369,9 +405,8 @@ class Order:
         elif id is None:
             self.id = 0
         elif id:
-            from resources.error_messages import\
-                Order__class__wrong_id_type as error_message
-            raise TypeError(error_message.format(type(id)))
+            from resources.error_messages import Order__class__wrong_id_type
+            raise TypeError(Order__class__wrong_id_type.format(type(id)))
 
         self.tip = None
         self.miles_traveled = None
@@ -379,24 +414,6 @@ class Order:
 
     def csv(self):
         return f'{self.tip.csv()},{self.miles_traveled},{self.end_time}'
-
-    def input_end_time(self):
-        from utility.utility import now
-        self.end_time = now()
-
-    def input_id(self):
-        from resources.strings import Order__input_id__prompt as prompt
-        from utility.user_input import User_Input
-        self.id = User_Input(prompt).id()
-
-    def input_miles_traveled(self):
-        from resources.strings import Order__input_miles_traveled__prompt as\
-            prompt
-        from utility.user_input import User_Input
-        self.miles_traveled = User_Input(prompt).miles_traveled()
-
-    def input_tip(self):
-        self.tip = Tip().input()
 
     def file_list(self):
         from os import path
@@ -437,6 +454,40 @@ class Order:
 
         return view_parts
 
+    def input_id(self):
+        from resources.strings import Order__input_id__prompt as prompt
+        from utility.user_input import User_Input
+        self.id = User_Input(prompt).id()
+
+    def input_miles_traveled(self):
+        from resources.strings import Order__input_miles_traveled__prompt as\
+            prompt
+        from utility.user_input import User_Input
+        self.miles_traveled = User_Input(prompt).miles_traveled()
+
+    def input_tip(self):
+        self.tip = Tip().input()
+
+    def set_end_time(self):
+        from utility.utility import now
+        self.end_time = now()
+
+    def set_start_time(self):
+        from utility.utility import now
+        self.start_time = now()
+
+    def load_completed(self):
+        from processes.load import load_completed_order
+        self = load_completed_order(self)
+
+    def load_current(self):
+        from processes.load import load_current_order
+        self = load_current_order(self)
+
+    def track(self):
+        from processes.track import track_order
+        self = track_order(self)
+
 
 class Tip:
     def __init__(self, card=0.0, cash=0.0, unknown=0.0):
@@ -464,15 +515,6 @@ class Tip:
 
     def csv(self):
         return f'{self.card},{self.cash},{self.unknown}'
-    
-    def input(self):
-        from resources.strings import\
-            Tip__input_card__prompt as card_prompt,\
-            Tip__input_cash__prompt as cash_prompt
-        from utility.user_input import User_Input
-
-        self.card = User_Input(card_prompt).card_tip()
-        self.cash = User_Input(cash_prompt).cash_tip()
 
     def total_amount(self):
         return self.card + self.cash + self.unknown
@@ -488,34 +530,29 @@ class Tip:
             view_parts['unknown'] = f'Unknown tip amount:\t${self.unknown}'
 
         return view_parts
+    
+    def input(self):
+        from resources.strings import\
+            Tip__input_card__prompt as card_prompt,\
+            Tip__input_cash__prompt as cash_prompt
+        from utility.user_input import User_Input
+
+        self.card = User_Input(card_prompt).card_tip()
+        self.cash = User_Input(cash_prompt).cash_tip()
 
 
 class Split:
     def __init__(self, shift):
-        if isinstance(shift, Shift):
-            self.parent = shift
-        else:
+        if not isinstance(shift, Shift):
             raise TypeError
 
+        self.parent = shift
         self.start_time = None
         self.end_time = None
         self.miles_traveled = None
 
     def csv(self):
         return f'{self.miles_traveled},{self.start_time},{self.end_time}'
-
-    def input_end_time(self):
-        from utility.utility import now
-        self.end_time = now()
-    
-    def input_miles_traveled(self):
-        from utility.user_input import User_Input
-        # todo: need to write prompt for miles traveled and put it in resoursces file
-        self.miles_traveled = User_Input('enter miles traveled').miles_traveled()
-
-    def input_start_time(self):
-        from utility.utility import now
-        self.start_time = now()
 
     def file_list(self):
         from os import path
@@ -549,6 +586,35 @@ class Split:
         
         return view_parts
 
+    def input_miles_traveled(self):
+        from utility.user_input import User_Input
+        # todo: need to write prompt for miles traveled and put it in resoursces file
+        self.miles_traveled = User_Input('enter miles traveled').miles_traveled()
+
+    def set_end_time(self):
+        from utility.utility import now
+        self.end_time = now()
+
+    def set_start_time(self):
+        from utility.utility import now
+        self.start_time = now()
+
+    def end(self):
+        from processes.track import end_split
+        self = end_split(self)
+
+    def load_completed(self):
+        from processes.load import load_completed_extra_stop
+        self = load_completed_extra_stop(self)
+
+    def load_current(self):
+        from processes.load import load_current_extra_stop
+        self = load_current_extra_stop(self)
+
+    def start(self):
+        from processes.track import start_split
+        self = start_split(self)
+
 
 class Extra_Stop:
     def __init__(self, parent, id=None):
@@ -570,17 +636,6 @@ class Extra_Stop:
         self.start_time = None
         self.end_time = None
 
-    def assign_id(self):
-        from os import path
-
-        self.id = 0
-
-        if path.exists(self.file_list()['running_id']):
-            from utility.file import Read
-            self.id = Read(self.file_list()['running_id']).integer()
-
-        return self
-
     def csv(self):
         if isinstance(self.parent, Shift):
             return f'{self.location},{self.reason},{self.miles_traveled},'\
@@ -588,27 +643,6 @@ class Extra_Stop:
         elif isinstance(self.parent, Delivery):
             return f'{self.location},{self.reason},{self.miles_traveled},'\
                    f'{self.end_time}'
-
-    def input_end_time(self):
-        from utility.utility import now
-        self.end_time = now()
-
-    def input_location(self):
-        from resources.strings import Extra_Stop__location__prompt as prompt
-        self.location = User_Input(prompt).location()
-    
-    def input_reason(self):
-        from resources.strings import Extra_Stop__reason__prompt as prompt
-        self.reason = User_Input(prompt).reason()
-    
-    def input_miles_traveled(self):
-        from resources.strings import Extra_Stop__miles_traveled__prompt as\
-            prompt
-        self.miles_traveled = User_Input(prompt).miles_traveled()
-    
-    def input_start_time(self):
-        from utility.utility import now
-        self.start_time = now()
 
     def file_list(self):
         from os import path
@@ -669,3 +703,50 @@ class Extra_Stop:
             view_parts['start_time'] = self.start_time.strftime('%I:%M:%S %p')
         
         return view_parts
+
+    def assign_id(self):
+        from os import path
+
+        self.id = 0
+
+        if path.exists(self.file_list()['running_id']):
+            from utility.file import Read
+            self.id = Read(self.file_list()['running_id']).integer()
+
+        return self
+
+    def input_location(self):
+        from resources.strings import Extra_Stop__location__prompt as prompt
+        from utility.user_input import User_Input
+        self.location = User_Input(prompt).location()
+    
+    def input_reason(self):
+        from resources.strings import Extra_Stop__reason__prompt as prompt
+        from utility.user_input import User_Input
+        self.reason = User_Input(prompt).reason()
+    
+    def input_miles_traveled(self):
+        from resources.strings import Extra_Stop__miles_traveled__prompt as\
+            prompt
+        from utility.user_input import User_Input
+        self.miles_traveled = User_Input(prompt).miles_traveled()
+
+    def set_end_time(self):
+        from utility.utility import now
+        self.end_time = now()
+
+    def set_start_time(self):
+        from utility.utility import now
+        self.start_time = now()
+
+    def load_completed(self):
+        from processes.load import load_completed_extra_stop
+        self = load_completed_extra_stop(self)
+
+    def load_current(self):
+        from processes.load import load_current_extra_stop
+        self = load_current_extra_stop(self)
+
+    def track(self):
+        from processes.track import track_extra_stop
+        self = track_extra_stop(self)

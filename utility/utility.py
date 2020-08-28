@@ -15,6 +15,7 @@ class To_Datetime:
         return datetime.datetime.strptime(self.string, '%Y-%m-%d')
 
     def from_datetime(self):
+        # this doesn't work when time ends with .000 because it doesnt write thaat part
         import datetime
         return datetime.datetime.strptime(self.string, '%Y-%m-%d %H:%M:%S.%f')
 

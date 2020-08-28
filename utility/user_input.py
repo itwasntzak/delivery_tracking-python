@@ -7,7 +7,7 @@ def confirmation(data, preced=None, succeed=None):
     preced, succeed = strings to be displayed respectively around data
     """
     prompt = ''
-    if not re.match('^[\n]{1,1}', f'{data}'):
+    if data[0] != '\n':
         prompt += '\n'
 
     if preced and succeed:
@@ -24,11 +24,11 @@ def confirmation(data, preced=None, succeed=None):
 
     prompt += 'Is this correct?\t[Y/N]'
 
-    user_choice = text(prompt, permit='[yYnN]{1,1}')
+    user_choice = match_input(prompt, '^[yn]$')
 
-    if re.match('[yY]{1,1}', user_choice):
+    if re.match('[y]', user_choice, flags=re.IGNORECASE):
         return True
-    elif re.match('[nN]{1,1}', user_choice):
+    elif re.match('[n]', user_choice, flags=re.IGNORECASE):
         return False
     else:
         # this should never ever occur, but to be safe

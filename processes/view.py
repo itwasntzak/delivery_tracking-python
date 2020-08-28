@@ -1,7 +1,8 @@
-# todo: move this into processes folders, refactor
 
-def shift(shift):
-    from objects.shift import Shift
+# todo: need to update all of these to classes be able to generate different views
+
+def view_shift(shift):
+    from objects import Shift
     if not isinstance(shift, Shift):
         raise TypeError
 
@@ -35,8 +36,8 @@ def shift(shift):
     return string
 
 
-def delivery(delivery):
-    from objects.delivery import Delivery
+def view_delivery(delivery):
+    from objects import Delivery
     if not isinstance(delivery, Delivery):
         raise TypeError
 
@@ -71,8 +72,8 @@ def delivery(delivery):
     return string
 
 
-def order(order):
-    from objects.order import Order
+def view_order(order):
+    from objects import Order
     if not isinstance(order, Order):
         raise TypeError
 
@@ -94,8 +95,8 @@ def order(order):
     return string
 
 
-def split(split):
-    from objects.split import Split
+def view_split(split):
+    from objects import Split
     if not isinstance(split, Split):
         raise TypeError
 
@@ -112,8 +113,8 @@ def split(split):
     return string
 
 
-def extra_stop(extra_stop):
-    from objects.extra_stop import Extra_Stop
+def view_extra_stop(extra_stop):
+    from objects import Extra_Stop
     if not isinstance(extra_stop, Extra_Stop):
         raise TypeError(f'{type(extra_stop)}')
 
