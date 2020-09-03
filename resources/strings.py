@@ -93,7 +93,7 @@ shift__revise__text = {
 }
 
 # Delivery_Menu
-delivery__menu = {
+delivery__menu__texts = {
     'initial': '- Delivery Menu -\nPlease select an option:\n',
     'order': ['Add new order\n', 'Continue entering order\n'],
     'extra_stop': ['Take extra stop\n', 'Continue extra stop\n'],
@@ -146,7 +146,7 @@ carry_out_tip__select = {
 extra_stop__select = {
     'initial': 'Extra Stops:\n',
     'display': 'Extra stop #{}, Location: {}\n',
-    'prmopt': 'Enter an ID number to select an extra stop:\n'\
+    'prompt': 'Enter an ID number to select an extra stop:\n'\
               '(B to go back)\n',
     'no_match': 'Please enter one of the ID numbers above\n',
     'no_option': 'There are no extra stops for this {}\n'

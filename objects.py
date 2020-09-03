@@ -305,7 +305,7 @@ class Delivery:
                 isinstance(self.end_time, datetime):
             from resources.strings import delivery__menu__texts as display_text
             from utility.utility import time_taken
-            view_parts['time_taken'] =\
+            view_parts['total_duration'] =\
                 time_taken(self.start_time,
                            self.end_time,
                            display_text['total_duration'])

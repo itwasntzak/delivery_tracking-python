@@ -73,6 +73,7 @@ def view_delivery(delivery):
 
 
 def view_order(order):
+    # todo: these need to add conditionals for end time or distance for older shifts
     from objects import Order
     if not isinstance(order, Order):
         raise TypeError
@@ -114,6 +115,7 @@ def view_split(split):
 
 
 def view_extra_stop(extra_stop):
+    # todo: need to add test for start time view part for shift extra stops
     from objects import Extra_Stop
     if not isinstance(extra_stop, Extra_Stop):
         raise TypeError(f'{type(extra_stop)}')
