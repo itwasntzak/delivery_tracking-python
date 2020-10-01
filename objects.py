@@ -168,37 +168,55 @@ class Shift:
         self.extra_stops.append(extra_stop)
 
     def input_device_compensation(self):
-        from resources.strings import Shift__device_compensation__prompt as\
-                prompt
+        from resources.strings import Shift__device_compensation__prompt
         from utility.user_input import User_Input
-        self.device_compensation = User_Input(prompt).money(' device compensation')
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Shift__device_compensation__prompt)
+        confirm_text = ' device compensation'
+        self.device_compensation = User_Input(prompt).money(confirm_text)
     
     def input_extra_tips_claimed(self):
-        from resources.strings import Shift__extra_tips_claimed__prompt as\
-                prompt
+        from resources.strings import Shift__extra_tips_claimed__prompt
         from utility.user_input import User_Input
-        self.extra_tips_claimed = User_Input(prompt).money(' extra claimed for taxes')
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Shift__extra_tips_claimed__prompt)
+        confirm_text = ' extra claimed for taxes'
+        self.extra_tips_claimed = User_Input(prompt).money(confirm_text)
 
     def input_fuel_economy(self):
-        from resources.strings import Shift__fuel_economy__prompt as prompt
+        from resources.strings import Shift__fuel_economy__prompt
         from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Shift__fuel_economy__prompt)
         self.fuel_economy = User_Input(prompt).fuel_economy()
 
     def input_miles_traveled(self):
-        from resources.strings import Shift__miles_traveled__prompt as prompt
+        from resources.strings import Shift__miles_traveled__prompt
         from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Shift__miles_traveled__prompt)
         self.miles_traveled = User_Input(prompt).miles_traveled()
     
     def input_total_hours(self):
-        from resources.strings import Shift__total_hours__prompt as prompt
+        from resources.strings import Shift__total_hours__prompt
         from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Shift__total_hours__prompt)
         self.total_hours = User_Input(prompt).total_hours()
     
     def input_vehicle_compensation(self):
-        from resources.strings import Shift__vehicle_compensation__prompt as\
-                prompt
+        from resources.strings import Shift__vehicle_compensation__prompt
         from utility.user_input import User_Input
-        self.vehicle_compensation = User_Input(prompt).money(' vehicle compensation')
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Shift__vehicle_compensation__prompt)
+        confirm_text = ' vehicle compensation'
+        self.vehicle_compensation = User_Input(prompt).money(confirm_text)
 
     def set_end_time(self):
         from datetime import datetime
@@ -211,39 +229,60 @@ class Shift:
     def end(self):
         from processes.track import end_shift
         self = end_shift(self)
+        return self
 
     def load_completed(self):
-        from processes.load import load_completed_shift
-        self = load_completed_shift(self)
+        from processes.load import load_shift, load_carry_out_tips,\
+            load_shift_deliveries, load_parent_extra_stops, load_split
+        from os import path
+
+        self = load_shift(self)
+        if path.exists(self.file_list()['tips']):
+            self = load_carry_out_tips(self)
+        if path.exists(Delivery(self).file_list()['completed_ids']):
+            self = load_shift_deliveries(self)
+        if path.exists(Extra_Stop(self).file_list()['completed_ids']):
+            self = load_parent_extra_stops(self)
+        if path.exists(Split(self).file_list()['info']):
+            self.split = load_split(Split(self))
+        return self
 
     def load_current(self):
-        from processes.load import load_current_shift
-        self = load_current_shift(self)
+        from processes.load import load_shift, load_carry_out_tips,\
+            load_shift_deliveries, load_parent_extra_stops, load_split
+        from os import path
+
+        self = load_shift(self, current=True)
+        if path.exists(self.file_list()['tips']):
+            self = load_carry_out_tips(self)
+        if path.exists(Delivery(self).file_list()['completed_ids']):
+            self = load_shift_deliveries(self)
+        if path.exists(Extra_Stop(self).file_list()['completed_ids']):
+            self = load_parent_extra_stops(self)
+        if path.exists(Split(self).file_list()['info']):
+            self.split = load_split(Split(self))
+        return self
 
     def start(self):
         from processes.track import start_shift
         self = start_shift(self)
+        return self
 
     def remove_id_from_file(self):
-        # todo: this needs to be tested and reworked
-        from os import remove
         from utility.file import Read, write
         from utility.utility import To_Datetime
 
         ids_file  = self.file_list()['completed_ids']
 
-        id_list = [id for id in Read(ids_file).comma() if id != f'{self.id}']
-        comma_number = len(id_list) - 1
+        id_list = [To_Datetime(id).from_date() for id in Read(ids_file).comma()]
+        new_ids_list = [str(id.date()) for id in id_list if id != self.id]
 
-        new_ids_list = ''
-        for value in range(comma_number):
-            new_ids_list += id_list[value] + ','
-        new_ids_list += id_list[-1]
-
-        if len(id_list) == 0:
+        if len(new_ids_list) == 0:
+            from os import remove
             remove(ids_file)
-        elif len(id_list) > 0:
-            write(new_ids_list, ids_file)
+        elif len(new_ids_list) > 0:
+            from utility.file import write
+            write(','.join(new_ids_list), ids_file)
 
 
 class Delivery:
@@ -304,16 +343,15 @@ class Delivery:
         if isinstance(self.start_time, datetime) and\
                 isinstance(self.end_time, datetime):
             from resources.strings import delivery__menu__texts as display_text
-            from utility.utility import time_taken
             view_parts['total_duration'] =\
-                time_taken(self.start_time,
-                           self.end_time,
-                           display_text['total_duration'])
+                f"{display_text['total_duration']}{self.end_time - self.start_time}"
 
+        # start time
         if isinstance(self.start_time, datetime):
             start_time = self.start_time.strftime('%I:%M:%S %p')
             view_parts['start_time'] = f'Started at:\t{start_time}'
 
+        # orders
         view_parts['order_quantity'] = f'Number of orders:\t{len(self.orders)}'
 
         temp_string = 'Order I.D. #{}:\t'
@@ -332,18 +370,22 @@ class Delivery:
             temp_string += f'{id}'
             view_parts['order_ids'] = temp_string
 
+        # distance
         if isinstance(self.miles_traveled, float)\
                   and self.miles_traveled > 0.0:
             view_parts['distance'] =\
                 f'Total distance traveled for delivery:\t{self.miles_traveled} miles'
 
+        # average speed
         if isinstance(self.average_speed, int) and self.average_speed > 0:
             view_parts['average_speed'] = f'Average speed for delivery:\t{self.average_speed} mph'
 
+        # end time
         if isinstance(self.end_time, datetime):
             end_time = self.end_time.strftime('%I:%M:%S %p')
             view_parts['end_time'] = f'Completed at:\t{end_time}'
         
+        # extra stops
         if len(self.extra_stops) > 0:
             view_parts['extra_stops'] = f'Number of extra stops:\t{len(self.extra_stops)}'
         
@@ -364,15 +406,19 @@ class Delivery:
         self.orders.append(order)
 
     def input_average_speed(self):
-        from resources.strings import Delivery__average_speed__prompt as\
-            prompt
+        from resources.strings import Delivery__average_speed__prompt
         from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Delivery__average_speed__prompt)
         self.average_speed = User_Input(prompt).average_speed()
 
     def input_distance(self):
-        from resources.strings import Delivery__miles_traveled_prompt as\
-            prompt
+        from resources.strings import Delivery__miles_traveled_prompt
         from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Delivery__miles_traveled_prompt)
         self.miles_traveled = User_Input(prompt).miles_traveled()
 
     def set_end_time(self):
@@ -386,6 +432,30 @@ class Delivery:
     def end(self):
         from processes.track import end_delivery
         self = end_delivery(self)
+
+    def load_completed(self):
+        from processes.load import load_delivery, load_delivery_orders,\
+            load_parent_extra_stops
+        from os import path
+
+        self = load_delivery(self)
+        if path.exists(Order(self).file_list()['completed_ids']):
+            self = load_delivery_orders(self)
+        if path.exists(Extra_Stop(self).file_list()['completed_ids']):
+            self = load_parent_extra_stops(self)
+        return self
+
+    def load_current(self):
+        from processes.load import load_delivery, load_delivery_orders,\
+            load_parent_extra_stops
+        from os import path
+
+        self = load_delivery(self, current=True)
+        if path.exists(Order(self).file_list()['completed_ids']):
+            self = load_delivery_orders(self)
+        if path.exists(Extra_Stop(self).file_list()['completed_ids']):
+            self = load_parent_extra_stops(self)
+        return self
 
     def start(self):
         from processes.track import start_delivery
@@ -455,14 +525,18 @@ class Order:
         return view_parts
 
     def input_id(self):
-        from resources.strings import Order__input_id__prompt as prompt
+        from resources.strings import Order__input_id__prompt
         from utility.user_input import User_Input
-        self.id = User_Input(prompt).id()
+        from utility.utility import add_newlines
+
+        self.id = User_Input(add_newlines(Order__input_id__prompt)).id()
 
     def input_miles_traveled(self):
-        from resources.strings import Order__input_miles_traveled__prompt as\
-            prompt
+        from resources.strings import Order__input_miles_traveled__prompt
         from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Order__input_miles_traveled__prompt)
         self.miles_traveled = User_Input(prompt).miles_traveled()
 
     def input_tip(self):
@@ -477,12 +551,14 @@ class Order:
         self.start_time = now()
 
     def load_completed(self):
-        from processes.load import load_completed_order
-        self = load_completed_order(self)
+        from processes.load import load_order
+        self = load_order(self)
+        return self
 
     def load_current(self):
-        from processes.load import load_current_order
-        self = load_current_order(self)
+        from processes.load import load_order
+        self = load_order(self, current=True)
+        return self
 
     def track(self):
         from processes.track import track_order
@@ -536,9 +612,12 @@ class Tip:
             Tip__input_card__prompt as card_prompt,\
             Tip__input_cash__prompt as cash_prompt
         from utility.user_input import User_Input
+        from utility.utility import add_newlines
 
-        self.card = User_Input(card_prompt).card_tip()
-        self.cash = User_Input(cash_prompt).cash_tip()
+        self.card = User_Input(add_newlines(card_prompt)).card_tip()
+        self.cash = User_Input(add_newlines(cash_prompt)).cash_tip()
+
+        return self
 
 
 class Split:
@@ -588,8 +667,10 @@ class Split:
 
     def input_miles_traveled(self):
         from utility.user_input import User_Input
+        from utility.utility import add_newlines
         # todo: need to write prompt for miles traveled and put it in resoursces file
-        self.miles_traveled = User_Input('enter miles traveled').miles_traveled()
+        prompt = add_newlines('enter miles traveled')
+        self.miles_traveled = User_Input(prompt).miles_traveled()
 
     def set_end_time(self):
         from utility.utility import now
@@ -604,12 +685,12 @@ class Split:
         self = end_split(self)
 
     def load_completed(self):
-        from processes.load import load_completed_extra_stop
-        self = load_completed_extra_stop(self)
+        from processes.load import load_split
+        self = load_split(self)
 
     def load_current(self):
-        from processes.load import load_current_extra_stop
-        self = load_current_extra_stop(self)
+        from processes.load import load_split
+        self = load_split(self, current=True)
 
     def start(self):
         from processes.track import start_split
@@ -716,19 +797,27 @@ class Extra_Stop:
         return self
 
     def input_location(self):
-        from resources.strings import Extra_Stop__location__prompt as prompt
+        from resources.strings import Extra_Stop__location__prompt
         from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Extra_Stop__location__prompt)
         self.location = User_Input(prompt).location()
     
     def input_reason(self):
-        from resources.strings import Extra_Stop__reason__prompt as prompt
+        from resources.strings import Extra_Stop__reason__prompt
         from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Extra_Stop__reason__prompt)
         self.reason = User_Input(prompt).reason()
     
     def input_miles_traveled(self):
-        from resources.strings import Extra_Stop__miles_traveled__prompt as\
-            prompt
+        from resources.strings import Extra_Stop__miles_traveled__prompt
         from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Extra_Stop__miles_traveled__prompt)
         self.miles_traveled = User_Input(prompt).miles_traveled()
 
     def set_end_time(self):
@@ -740,12 +829,12 @@ class Extra_Stop:
         self.start_time = now()
 
     def load_completed(self):
-        from processes.load import load_completed_extra_stop
-        self = load_completed_extra_stop(self)
+        from processes.load import load_extra_stop
+        self = load_extra_stop(self)
 
     def load_current(self):
-        from processes.load import load_current_extra_stop
-        self = load_current_extra_stop(self)
+        from processes.load import load_extra_stop
+        self = load_extra_stop(self, current=True)
 
     def track(self):
         from processes.track import track_extra_stop

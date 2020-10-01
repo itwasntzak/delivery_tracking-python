@@ -1,7 +1,7 @@
 
 # shift
 # end
-def end_shift(shift):
+def end_shift(shift, test=False):
     from objects import Shift
     if not isinstance(shift, Shift):
         raise TypeError
@@ -14,7 +14,7 @@ def end_shift(shift):
 
     # end time
     if not path.exists(file_list['end_time']):
-        if not shift.end_time:
+        if test is False:
             # set
             shift.set_end_time()
         # save
@@ -22,7 +22,7 @@ def end_shift(shift):
 
     # distance
     if not path.exists(file_list['miles_traveled']):
-        if not shift.miles_traveled:
+        if test is False:
             # input
             shift.input_miles_traveled()
         # save
@@ -30,7 +30,7 @@ def end_shift(shift):
 
     # fuel economy
     if not path.exists(file_list['fuel_economy']):
-        if not shift.fuel_economy:
+        if test is False:
             # input
             shift.input_fuel_economy()
         # save
@@ -38,7 +38,7 @@ def end_shift(shift):
 
     # vehicle compensation
     if not path.exists(file_list['vehicle_compensation']):
-        if not shift.vehicle_compensation:
+        if test is False:
             # input
             shift.input_vehicle_compensation()
         # save
@@ -46,7 +46,7 @@ def end_shift(shift):
 
     # device compensation
     if not path.exists(file_list['device_compensation']):
-        if not shift.device_compensation:
+        if test is False:
             # input
             shift.input_device_compensation()
         # save
@@ -54,7 +54,7 @@ def end_shift(shift):
 
     # total hours
     if not path.exists(file_list['total_hours']):
-        if not shift.total_hours:
+        if test is False:
             # input
             shift.input_total_hours()
         # save
@@ -62,7 +62,7 @@ def end_shift(shift):
 
     # extra tips claimed
     if not path.exists(file_list['extra_tips_claimed']):
-        if not shift.extra_tips_claimed:
+        if test is False:
             # input
             shift.input_extra_tips_claimed()
         # save
@@ -72,7 +72,7 @@ def end_shift(shift):
 
 
 # start
-def start_shift(shift):
+def start_shift(shift, test=False):
     from objects import Shift
     if not isinstance(shift, Shift):
         raise TypeError
@@ -90,7 +90,7 @@ def start_shift(shift):
     # start time
     if not path.exists(file_list['start_time']):
         from utility.file import write
-        if not shift.start_time:
+        if test is False:
             # set
             shift.set_start_time()
         # save
@@ -101,7 +101,7 @@ def start_shift(shift):
 
 # delivery
 # end
-def end_delivery(delivery):
+def end_delivery(delivery, test=False):
     from objects import Delivery
     if not isinstance(delivery, Delivery):
         raise TypeError
@@ -114,15 +114,15 @@ def end_delivery(delivery):
 
     # miles traveled
     if not path.exists(file_list['miles_traveled']):
-        if not delivery.miles_traveled:
+        if test is False:
             # input
-            delivery.input_miles_traveled()
+            delivery.input_distance()
         # save
         write(delivery.miles_traveled, file_list['miles_traveled'])
 
     # average speed
     if not path.exists(file_list['average_speed']):
-        if not delivery.average_speed:
+        if test is False:
             # input
             delivery.input_average_speed()
         # save
@@ -130,9 +130,9 @@ def end_delivery(delivery):
 
     # end time
     if not path.exists(file_list['end_time']):
-        if not delivery.end_time:
+        if test is False:
             # set
-            delivery.input_end_time()
+            delivery.set_end_time()
         # save
         write(delivery.end_time, file_list['end_time'])
 
@@ -140,7 +140,7 @@ def end_delivery(delivery):
 
 
 # start
-def start_delivery(delivery):
+def start_delivery(delivery, test=False):
     from objects import Delivery
     if not isinstance(delivery, Delivery):
         raise TypeError
@@ -158,9 +158,9 @@ def start_delivery(delivery):
     # start time
     if not path.exists(file_list['start_time']):
         from utility.file import write
-        if not delivery.start_time:
+        if test is False:
             # set
-            delivery.input_start_time()
+            delivery.set_start_time()
         # save
         write(delivery.start_time, file_list['start_time'])
 
@@ -168,7 +168,7 @@ def start_delivery(delivery):
 
 
 # order
-def track_order(order):
+def track_order(order, test=False):
     from objects import Order
     if not isinstance(order, Order):
         raise TypeError
@@ -186,7 +186,7 @@ def track_order(order):
 
     # id
     if not path.exists(file_list['id']):
-        if not order.id:
+        if test is False:
             # input
             order.input_id()
         # save
@@ -194,7 +194,7 @@ def track_order(order):
 
     # tip
     if not path.exists(file_list['tip']):
-        if not order.tip:
+        if test is False:
             # input
             order.input_tip()
         # save
@@ -202,7 +202,7 @@ def track_order(order):
 
     # miles traveled
     if not path.exists(file_list['miles_traveled']):
-        if not order.miles_traveled:
+        if test is False:
             # input
             order.input_miles_traveled()
         # save
@@ -210,7 +210,7 @@ def track_order(order):
 
     # end time
     if not path.exists(file_list['end_time']):
-        if not order.end_time:
+        if test is False:
             # set
             order.set_end_time()
         # save
@@ -221,7 +221,7 @@ def track_order(order):
 
 # split
 # enjd
-def end_split(split):
+def end_split(split, test=False):
     from objects import Split
     if not isinstance(split, Split):
         raise TypeError
@@ -233,7 +233,7 @@ def end_split(split):
 
     # miles traveled
     if not path.exists(file_list['miles_traveled']):
-        if not split.miles_traveled:
+        if test is False:
             # input
             split.input_miles_traveled()
         # save
@@ -241,9 +241,9 @@ def end_split(split):
 
     # end time
     if not path.exists(file_list['end_time']):
-        if not split.end_time:
+        if test is False:
             # set
-            split.input_end_time()
+            split.set_end_time()
         # save
         write(split.end_time, file_list['end_time'])
 
@@ -251,7 +251,7 @@ def end_split(split):
 
 
 # start
-def start_split(split):
+def start_split(split, test=False):
     from objects import Split
     if not isinstance(split, Split):
         raise TypeError
@@ -270,9 +270,9 @@ def start_split(split):
     if not path.exists(file_list['start_time']):
         from utility.file import write
 
-        if not split.start_time:
+        if test is False:
             # input
-            split.input_start_time()
+            split.set_start_time()
         # save
         write(split.start_time,  file_list['start_time'])
 
@@ -280,7 +280,7 @@ def start_split(split):
 
 
 # estra stop
-def track_extra_stop(extra_stop):
+def track_extra_stop(extra_stop, test=False):
     from objects import Extra_Stop
     if not isinstance(extra_stop, Extra_Stop):
         raise TypeError
@@ -304,7 +304,7 @@ def track_extra_stop(extra_stop):
     # start time
     if isinstance(extra_stop.parent, Shift):
         if not path.exists(file_list['start_time']):
-            if not extra_stop.start_time:
+            if test is False:
                 # set
                 extra_stop.set_start_time()
             # save
@@ -312,7 +312,7 @@ def track_extra_stop(extra_stop):
 
     # location
     if not path.exists(file_list['location']):
-        if not extra_stop.location:
+        if test is False:
             # input
             extra_stop.input_location()
         # save
@@ -320,7 +320,7 @@ def track_extra_stop(extra_stop):
 
     # reason
     if not path.exists(file_list['reason']):
-        if not extra_stop.reason:
+        if test is False:
             # input
             extra_stop.input_reason()
         # save
@@ -328,7 +328,7 @@ def track_extra_stop(extra_stop):
 
     # miles traveled
     if not path.exists(file_list['miles_traveled']):
-        if not extra_stop.miles_traveled:
+        if test is False:
             # input
             extra_stop.input_miles_traveled()
         # save
@@ -336,7 +336,7 @@ def track_extra_stop(extra_stop):
 
     # end time
     if not path.exists(file_list['end_time']):
-        if not extra_stop.end_time:
+        if test is False:
             # set
             extra_stop.set_end_time()
         # save

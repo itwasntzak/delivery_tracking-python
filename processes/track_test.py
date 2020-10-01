@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 from testing_tools import completed_shift
 
 class Test_Track(unittest.TestCase):
@@ -40,7 +41,7 @@ class Test_Track(unittest.TestCase):
         self.assertFalse(path.exists(file_list['extra_tips_claimed']))
 
         # run function
-        end_shift(self.shift)
+        end_shift(self.shift, test=True)
 
         # check that files do exist
         self.assertTrue(path.exists(file_list['end_time']))
@@ -107,7 +108,7 @@ class Test_Track(unittest.TestCase):
         self.assertFalse(path.exists(file_list['start_time']))
 
         # run function
-        start_shift(self.shift)
+        start_shift(self.shift, test=True)
 
         # check that the file and directory were created
         self.assertTrue(path.exists(file_list['directory']))
@@ -141,7 +142,7 @@ class Test_Track(unittest.TestCase):
         self.assertFalse(path.exists(file_list['end_time']))
 
         # run function
-        end_delivery(delivery)
+        end_delivery(delivery, test=True)
 
         # check that files were created
         self.assertTrue(path.exists(file_list['miles_traveled']))
@@ -183,7 +184,7 @@ class Test_Track(unittest.TestCase):
         self.assertFalse(path.exists(file_list['start_time']))
 
         # run function
-        start_delivery(delivery)
+        start_delivery(delivery, test=True)
 
         # check that file and directory were created
         self.assertTrue(path.exists(file_list['directory']))
@@ -222,7 +223,7 @@ class Test_Track(unittest.TestCase):
         self.assertFalse(path.exists(file_list['end_time']))
 
         # run function
-        track_order(order)
+        track_order(order, test=True)
 
         # check that directory and files were created
         self.assertTrue(path.exists(file_list['directory']))
@@ -275,7 +276,7 @@ class Test_Track(unittest.TestCase):
         self.assertFalse(path.exists(file_list['end_time']))
 
         # run function
-        end_split(split)
+        end_split(split, test=True)
 
         # check that files were created
         self.assertTrue(path.exists(file_list['miles_traveled']))
@@ -314,7 +315,7 @@ class Test_Track(unittest.TestCase):
         self.assertFalse(path.exists(file_list['start_time']))
 
         # run function
-        start_split(split)
+        start_split(split, test=True)
 
         # check that files were created
         self.assertTrue(path.exists(file_list['directory']))
@@ -352,7 +353,7 @@ class Test_Track(unittest.TestCase):
         self.assertFalse(path.exists(file_list['end_time']))
 
         # run function
-        track_extra_stop(extra_stop)
+        track_extra_stop(extra_stop, test=True)
 
         # check that files were created
         self.assertTrue(path.exists(file_list['directory']))
@@ -413,7 +414,7 @@ class Test_Track(unittest.TestCase):
         self.assertFalse(path.exists(file_list['end_time']))
 
         # run function
-        track_extra_stop(extra_stop)
+        track_extra_stop(extra_stop, test=True)
 
         # check that files were created
         self.assertTrue(path.exists(file_list['directory']))

@@ -622,3 +622,66 @@ class Revise_Delivery(input_data.Input_Delivery):
             option_selection()
         result()
         return self
+
+
+class Revise_Order:
+    # options
+    # iI = id
+    # tT = tip
+    # mM = miles traveled
+    # eE = end time
+    # vV = view current values of order
+    # sS = save current values of order
+    # bB = back a menu
+    # qQ = quit program
+
+    def __init__(self, shift, order):
+        # todo: Edit_Order first thing, display the current order data to the user
+        # todo: then resent the user with the option to select what data of the order to edit
+        from utility.user_input import confirmation
+        
+        self.option_selection()
+        while not confirmation(self.confirmation_text):
+            self.option_selection()
+        
+        self.result()
+
+    def build_confirmation_text(self):
+        import re
+
+        if re.match('[iI]{1}', user_choice):
+            self.confirmation_text = 'Change order id'
+        elif re.match('[tT]{1}', user_choice):
+            self.confirmation_text = 'Change the tip'
+        elif re.match('[mM]{1}', user_choice):
+            self.confirmation_text = 'Change miles traveled'
+        elif re.match('[eE]{1}', user_choice):
+            self.confirmation_text = 'Change end time'
+        elif re.match('[vV]{1}', user_choice):
+            self.confirmation_text = 'View order info'
+        elif re.match('[sS]{1}', user_choice):
+            self.confirmation_text = 'Save any changes'
+        elif re.match('[qQ]{1}', user_choice):
+            self.confirmation_text = 'Quit without saving'
+        elif re.match('[bB]{1}', user_choice):
+            self.confirmation_text = 'Go back to delivery'
+
+        return self
+
+    def build_prompt(self):
+        # todo: need to write build prompt for the revise order menu
+        pass
+
+    def option_selection(self):
+        from resources.strings import Order__change_data__prompt as prompt
+        from utility.user_input import text
+
+        self.build_prompt()
+        self.user_choice = text(prompt, permit='^[iItTmMeEvVsSqQbB]{1}')
+        self.build_confirmation_text()
+    
+    def result(self):
+        # todo: write result method for revise order menu
+        pass
+
+

@@ -306,6 +306,8 @@ class Test_Load(unittest.TestCase):
         # create file and directory
         mkdir(self.shift.deliveries[0].file_list()['directory'])
         mkdir(file_list['directory'])
+        with open(file_list['id'], 'w') as id_file:
+            id_file.write(str(self.shift.deliveries[0].orders[0].id))
         with open(file_list['tip'], 'w') as info_file:
             info_file.write(str(self.shift.deliveries[0].orders[0].tip.csv()))
         with open(file_list['miles_traveled'], 'w') as info_file:
@@ -314,6 +316,7 @@ class Test_Load(unittest.TestCase):
             info_file.write(str(self.shift.deliveries[0].orders[0].end_time))
 
         # check that file was created and baseline
+        self.assertTrue(path.exists(file_list['id']))
         self.assertTrue(path.exists(file_list['tip']))
         self.assertTrue(path.exists(file_list['miles_traveled']))
         self.assertTrue(path.exists(file_list['end_time']))
@@ -328,6 +331,7 @@ class Test_Load(unittest.TestCase):
         order = load_order(order, current=True)
 
         # check that data was loaded correctly
+        self.assertEqual(order.id, self.shift.deliveries[0].orders[0].id)
         self.assertEqual(
             order.tip.csv(), self.shift.deliveries[0].orders[0].tip.csv())
         self.assertEqual(
@@ -337,6 +341,7 @@ class Test_Load(unittest.TestCase):
             order.end_time, self.shift.deliveries[0].orders[0].end_time)
 
         # delete file and directory
+        remove(file_list['id'])
         remove(file_list['tip'])
         remove(file_list['miles_traveled'])
         remove(file_list['end_time'])

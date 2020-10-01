@@ -35,43 +35,45 @@ def load_shift(shift, current=False):
     else:
         # start time
         if path.exists(file_list['start_time']):
-            shift.start_time = Read(file_list['start_time']).datetimes()
+            shift.start_time = Read(file_list['start_time']).datetime()
         # end time
         if path.exists(file_list['end_time']):
-            shift.end_time = Read(file_list['end_time']).datetimes()
+            shift.end_time = Read(file_list['end_time']).datetime()
         # miles traveled
         if path.exists(file_list['miles_traveled']):
-            shift.miles_traveled = Read(file_list['miles_traveled']).floats()
+            shift.miles_traveled = Read(file_list['miles_traveled']).decimal()
         # fuel economy
         if path.exists(file_list['fuel_economy']):
-            shift.fuel_economy = Read(file_list['fuel_economy']).floats()
+            shift.fuel_economy = Read(file_list['fuel_economy']).decimal()
         # vehical compensation
         if path.exists(file_list['vehicle_compensation']):
             shift.vehicle_compensation =\
-                Read(file_list['vehicle_compensation']).floats()
+                Read(file_list['vehicle_compensation']).decimal()
         # device compensation
         if path.exists(file_list['device_compensation']):
             shift.device_compensation =\
-                Read(file_list['device_compensation']).floats()
+                Read(file_list['device_compensation']).decimal()
         # total hours
         if path.exists(file_list['total_hours']):
-            shift.total_hours = Read(file_list['total_hours']).floats()
+            shift.total_hours = Read(file_list['total_hours']).decimal()
         # extra tips claimed
         if path.exists(file_list['extra_tips_claimed']):
             shift.extra_tips_claimed =\
-                Read(file_list['extra_tips_claimed']).floats()
+                Read(file_list['extra_tips_claimed']).decimal()
 
     return shift
 
 
 def load_carry_out_tips(shift):
     from objects import Tip
+    from os import path
     from utility.file import Read
 
-    file_data = Read(shift.file_list()['tips']).newline()
-    for tip in file_data:
-        tip_data = tip.split(',')
-        shift.carry_out_tips.append(Tip(tip_data[0], tip_data[1], tip_data[2]))
+    if path.exists(shift.file_list()['tips']):
+        file_data = Read(shift.file_list()['tips']).newline()
+        for tip in file_data:
+            tip_data = tip.split(',')
+            shift.carry_out_tips.append(Tip(tip_data[0], tip_data[1], tip_data[2]))
 
     return shift
 
@@ -84,10 +86,10 @@ def load_shift_deliveries(shift):
     deliveries_ids_file = Delivery(shift).file_list()['completed_ids']
     if path.exists(deliveries_ids_file):
         # ids
-        shift.delivery_ids = Read(deliveries_ids_file).integers()
+        shift.delivery_ids = Read(deliveries_ids_file).integer_list()
         # deliveries
         shift.deliveries =\
-            [load_delivery(Delivery(shift, id)) for id in shift.delivery_ids]
+            [Delivery(shift, id).load_completed() for id in shift.delivery_ids]
     
     return shift
 
@@ -122,29 +124,32 @@ def load_delivery(delivery, current=False):
     else:
         # start time
         if path.exists(file_list['start_time']):
-            delivery.start_time = Read(file_list['start_time']).datetimes()
+            delivery.start_time = Read(file_list['start_time']).datetime()
         # miles traveled
         if path.exists(file_list['miles_traveled']):
-            delivery.miles_traveled = Read(file_list['miles_traveled']).floats()
+            delivery.miles_traveled = Read(file_list['miles_traveled']).decimal()
         # average speed
         if path.exists(file_list['average_speed']):
             delivery.average_speed = Read(file_list['average_speed']).integer()
         # end time
         if path.exists(file_list['end_time']):
-            delivery.end_time = Read(file_list['end_time']).datetimes()
+            delivery.end_time = Read(file_list['end_time']).datetime()
 
     return delivery
 
 
 def load_delivery_orders(delivery):
     from objects import Order
+    from os import path
+    from utility.file import Read
+
     order_ids_file = Order(delivery).file_list()['completed_ids']
     if path.exists(order_ids_file):
         # ids
-        delivery.order_ids = Read(order_ids_file).integers()
+        delivery.order_ids = Read(order_ids_file).integer_list()
         # orders
         delivery.orders =\
-            [Order(delivery, id).load() for id in delivery.order_ids]
+            [Order(delivery, id).load_completed() for id in delivery.order_ids]
     
     return delivery
 
@@ -158,7 +163,6 @@ def load_order(order, current=False):
             load__order__wrong_parameter as error_message
         raise TypeError(error_message)
 
-    from objects import Tip
     from os import path
     from utility.file import Read
     from utility.utility import To_Datetime
@@ -166,6 +170,7 @@ def load_order(order, current=False):
     file_list = order.file_list()
 
     if current is False:
+        from objects import Tip
         # order data
         order_data = Read(order.file_list()['info']).comma()
         # tip
@@ -176,15 +181,18 @@ def load_order(order, current=False):
         order.end_time = To_Datetime(order_data[4]).from_datetime()
 
     else:
+        # id
+        if path.exists(file_list['id']):
+            order.id = Read(file_list['id']).integer()
         # tip
         if path.exists(file_list['tip']):
             order.tip = load_tip(file_list['tip'])
         # distance
         if path.exists(file_list['miles_traveled']):
-            order.miles_traveled = Read(file_list['miles_traveled']).floats()
+            order.miles_traveled = Read(file_list['miles_traveled']).decimal()
         # end time
         if path.exists(file_list['end_time']):
-            order.end_time = Read(file_list['end_time']).datetimes()
+            order.end_time = Read(file_list['end_time']).datetime()
 
     return order
 
@@ -197,7 +205,7 @@ def load_tip(file_path):
     from objects import Tip
     from utility.file import Read
 
-    data = Read(file_path).floats()
+    data = Read(file_path).decimal()
     return Tip(data[0], data[1], data[2])
 
 
@@ -226,13 +234,13 @@ def load_split(split, current=False):
     else:
         # distance
         if path.exists(file_list['miles_traveled']):
-            split.miles_traveled = Read(file_list['miles_traveled']).floats()
+            split.miles_traveled = Read(file_list['miles_traveled']).decimal()
         # start time
         if path.exists(file_list['start_time']):
-            split.start_time = Read(file_list['start_time']).datetimes()
+            split.start_time = Read(file_list['start_time']).datetime()
         # end time
         if path.exists(file_list['end_time']):
-            split.end_time = Read(file_list['end_time']).datetimes()
+            split.end_time = Read(file_list['end_time']).datetime()
 
     return split
 
@@ -279,15 +287,15 @@ def load_extra_stop(extra_stop, current=False):
             extra_stop.reason = Read(file_list['reason']).data
         # distance
         if path.exists(file_list['miles_traveled']):
-            extra_stop.miles_traveled = Read(file_list['miles_traveled']).floats()
+            extra_stop.miles_traveled = Read(file_list['miles_traveled']).decimal()
         # end time
         if path.exists(file_list['end_time']):
-            extra_stop.end_time = Read(file_list['end_time']).datetimes()
+            extra_stop.end_time = Read(file_list['end_time']).datetime()
 
         if isinstance(extra_stop.parent, Shift):
             # start time
             if path.exists(file_list['start_time']):
-                extra_stop.start_time = Read(file_list['start_time']).datetimes()
+                extra_stop.start_time = Read(file_list['start_time']).datetime()
 
     return extra_stop
 
@@ -304,7 +312,7 @@ def load_parent_extra_stops(parent):
     extra_stop_ids_file = Extra_Stop(parent).file_list()['completed_ids']
     if path.exists(extra_stop_ids_file):
         # ids
-        parent.extra_stop_ids = Read(extra_stop_ids_file).integers()
+        parent.extra_stop_ids = Read(extra_stop_ids_file).integer_list()
         # extra stops
         parent.extra_stops = [load_extra_stop(Extra_Stop(parent, id))
                               for id in parent.extra_stop_ids]

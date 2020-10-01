@@ -21,10 +21,10 @@ class Select_Delivery:
         self.prompt += delivery__select['prompt']
 
     def confirm(self):
-        from utility.user_input import confirmation
+        from utility.user_input import confirm
 
         self.user_choice()
-        while not confirmation(f'Delivery #{self.user_choice}'):
+        while not confirm(f'Delivery #{self.user_choice}'):
             self.user_choice()
 
     def get_index(self):
@@ -41,12 +41,13 @@ class Select_Delivery:
             return False
 
     def user_choice(self):
-        from utility.user_input import match_input
+        from utility.user_input import check_match, user_input
         pattern = r'[\d]|^[b]$'
         self.build_prompt()
-        self.user_choice = match_input(self.prompt, pattern)
-        while not self.match_check():
-            self.user_choice = match_input(self.prompt, pattern)
+        self.user_choice = user_input(self.prompt)
+        while not check_match(pattern, self.user_choice)\
+                and not self.match_check():
+            self.user_choice = user_input(self.prompt)
 
 
 class Select_Order:
@@ -72,10 +73,10 @@ class Select_Order:
         self.prompt += self.text['prompt'][0]
 
     def confirm(self):
-        from utility.user_input import confirmation
+        from utility.user_input import confirm
 
         self.user_choice()
-        while not confirmation(self.user_choice, self.text['confrimation']):
+        while not confirm(self.user_choice, self.text['confrimation']):
             self.user_choice()
     
     def get_index(self):
@@ -92,13 +93,14 @@ class Select_Order:
             return False
 
     def user_choice(self):
-        from utility.user_input import match_input
+        from utility.user_input import check_match, user_input
 
         pattern = r'[\d]|^[b]$'
         self.build_prompt()
-        self.user_choice = match_input(self.prompt, pattern)
-        while not self.match_check():
-            self.user_choice = match_input(self.prompt, pattern)
+        self.user_choice = user_input(self.prompt, pattern)
+        while not check_match(pattern, self.user_choice)\
+                and not self.match_check():
+            self.user_choice = user_input(self.prompt, pattern)
 
 
 class Quick_Select_Order:
@@ -116,10 +118,10 @@ class Quick_Select_Order:
             self.confirm()
     
     def confirm(self):
-        from utility.user_input import confirmation
+        from utility.user_input import confirm
 
         self.user_choice()
-        while not confirmation(self.user_choice, self.text['confrimation']):
+        while not confirm(self.user_choice, self.text['confrimation']):
             self.user_choice()
 
     def get_delivery_id(self):
@@ -146,13 +148,14 @@ class Quick_Select_Order:
         return False
 
     def user_choice(self):
-        from utility.user_input import match_input
+        from utility.user_input import check_match, user_input
 
         pattern = r'[\d]|^[b]$'
         prompt = self.text['prompt'][1]
-        self.user_choice = match_input(prompt, pattern)
-        while not match_check():
-            self.user_choice = match_input(prompt, pattern)
+        self.user_choice = user_input(prompt, pattern)
+        while not check_match(pattern, self.user_choice)\
+                and not self.match_check():
+            self.user_choice = user_input(prompt, pattern)
 
 
 class Select_Carry_Out_Tip:
@@ -191,11 +194,10 @@ class Select_Carry_Out_Tip:
         self.prompt += self.text['prompt']
 
     def confirm(self):
-        from utility.user_input import confirmation
+        from utility.user_input import confirm
 
         self.user_choice()
-        while not self.user_choice in ('b', 'B') and\
-                not confirmation(self.user_choice, self.text['confirmation']):
+        while not confirm(self.user_choice, self.text['confirmation']):
             self.user_choice()
 
     def get_index(self):
@@ -212,13 +214,14 @@ class Select_Carry_Out_Tip:
         return False
     
     def user_choice(self):
-        from utility.user_input import match_input
+        from utility.user_input import check_match, user_input
 
         pattern = r'[\d]|^[b]$'
         self.build_prompt()
-        self.user_choice = match_input(self.prompt, prompt)
-        while not self.match_check():
-            self.user_choice = match_input(self.prompt, prompt)
+        self.user_choice = user_input(self.prompt, prompt)
+        while not check_match(pattern, self.user_choice)\
+                and not self.match_check():
+            self.user_choice = user_input(self.prompt, prompt)
 
 
 class Select_Extra_Stop:
@@ -257,8 +260,7 @@ class Select_Extra_Stop:
         from utility.user_input import confirmation
 
         self.user_choice()
-        while not self.user_choice in ('b', 'B') or\
-                not confirmation(self.user_choice):
+        while not confirm(self.user_choice):
             self.user_choice()
 
     def get_index(self):
@@ -275,10 +277,11 @@ class Select_Extra_Stop:
         return False
 
     def user_choice(self):
-        from utility.user_input import match_input
+        from utility.user_input import check_match, user_input
 
         pattern = r'[\d]|^[b]$'
         self.build_prompt()
-        self.user_choice = match_input(self.prompt, pattern)
-        while self.match_check():
-            self.user_choice = match_input(self.prompt, pattern)
+        self.user_choice = user_input(self.prompt, pattern)
+        while not check_match(pattern, self.user_choice)\
+                and not self.match_check():
+            self.user_choice = user_input(self.prompt, pattern)

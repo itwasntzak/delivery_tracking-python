@@ -137,6 +137,62 @@ class Test_Shift(unittest.TestCase):
 
         self.assertEqual(test_list, expected_list)
 
+    def test_remove_id_from_file(self):
+        import datetime
+        from objects import Shift
+        from os import mkdir, remove, rmdir, path
+
+        shift = Shift(datetime.datetime.strptime('2020-06-29', '%Y-%m-%d'))
+
+        # write file
+        mkdir('data')
+        with open(shift.file_list()['completed_ids'], 'w') as file:
+            file.write('2020-06-20,2020-06-24,2020-06-27,2020-06-29,2020-06-30')
+        # read file
+        with open(shift.file_list()['completed_ids'], 'r') as file:
+            test = file.read()
+        # test that id is in file
+        self.assertIn('2020-06-29', test)
+
+        # run method
+        shift.remove_id_from_file()
+
+        # read file
+        with open(shift.file_list()['completed_ids'], 'r') as file:
+            test = file.read()
+        # test that id is not in file
+        self.assertNotIn('2020-06-29', test)
+
+        # remove test file
+        remove(shift.file_list()['completed_ids'])
+        rmdir('data')
+
+    def test_remove_id_from_file_empty_file(self):
+        import datetime
+        from objects import Shift
+        from os import mkdir, rmdir, path
+
+        shift = Shift(datetime.datetime.strptime('2020-06-29', '%Y-%m-%d'))
+
+        # write file
+        mkdir('data')
+        with open(shift.file_list()['completed_ids'], 'w') as file:
+            file.write('2020-06-29')
+        # read file
+        with open(shift.file_list()['completed_ids'], 'r') as file:
+            test = file.read()
+        # test that id is in file
+        self.assertIn('2020-06-29', test)
+
+        # run method
+        shift.remove_id_from_file()
+
+
+        # check that file was deleted
+        self.assertFalse(path.exists(shift.file_list()['completed_ids']))
+
+        # remove directory
+        rmdir('data')
 
 class Test_Delivery(unittest.TestCase):
     def setUp(self):

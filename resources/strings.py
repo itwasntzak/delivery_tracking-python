@@ -154,10 +154,12 @@ extra_stop__select = {
 
 # utility
 #   user input
-User_Input__average_speed__succeed = ' mph'
-User_Input__card_tip__succeed = ' card tip'
-User_Input__cash_tip__succeed = ' cash tip'
-User_Input__fuel_economy__succeed = ' mpg'
-User_Input__miles_traveled__succeed = ' miles'
-User_Input__total_hours__succeed = ' hours worked'
-User_Input__unknown_tip__succeed = ' unknown tip amount'
+confirm_text = 'Is this correct?\t[Y/N]'
+money_symbol = '$'
+average_speed_succeed = ' mph'
+card_tip_succeed = ' card tip'
+cash_tip_succeed = ' cash tip'
+fuel_economy_succeed = ' mpg'
+miles_traveled_succeed = ' miles'
+total_hours_succeed = ' hours worked'
+unknown_tip_succeed = ' unknown tip amount'

@@ -16,9 +16,8 @@
 # todo: need to fix vehical comp for shift on 7-2 through 7-21
 
 from menus import Shift_Tracking_Menu
-from objects.shift import Shift
-from os import getcwd, path
-import re
+from objects import Shift
+from os import path
 from resources.system_names import data_directory, shifts_directory
 from utility.utility import now
 
@@ -31,20 +30,20 @@ if not path.exists(shifts_path):
     from os import mkdir
     mkdir(shifts_path)
 
+shift = Shift(now().date())
 # check for completed shift
-if path.exists(Shift(now().date()).file_list()['info']):
-    from menus import completed_shift
-    shift = completed_shift()
+if path.exists(shift.file_list()['info']):
+    from menus import Completed_Shift
+    menu = Completed_Shift(shift)
+    shift = menu.shift
 # check if shift has not started
-elif not path.exists(Shift(now().date()).file_list()['directory']):
-    from processes.input_data import start_shift
-    shift = start_shift()
+elif not path.exists(shift.file_list()['directory']):
+    shift.start()
 # load shift
 else:
-    from processes.load import current_shift as load_shift
-    shift = load_shift()
+    shift.load_current()
 
 # daily shift tracking menu
-menu = Shift_Tracking(shift)
+menu = Shift_Tracking_Menu(shift)
 while menu.condition:
-    menu = Shift_Tracking(menu.shift)
+    menu = Shift_Tracking_Menu(menu.shift)
