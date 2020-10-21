@@ -44,6 +44,4 @@ else:
     shift.load_current()
 
 # daily shift tracking menu
-menu = Shift_Tracking_Menu(shift)
-while menu.condition:
-    menu = Shift_Tracking_Menu(menu.shift)
+Shift_Tracking_Menu(shift)

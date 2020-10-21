@@ -8,46 +8,48 @@ class Select_Delivery:
         self.shift = shift
 
         if test is False:
-            self.confirm()
+            self.main()
 
     def build_prompt(self):
         from resources.strings import delivery__select
 
-        self.prompt = delivery__select['initial'].format(len(self.shift.deliveries))
+        initial = delivery__select['initial'].format(len(self.shift.deliveries))
+        self.prompt = f'\n{initial}\n'
         for delivery in self.shift.deliveries:
             self.prompt += f'Delivery #{delivery.id + 1}\n'
             order_id_strings = [str(id) for id in delivery.order_ids]
-            self.prompt += f"\t{', '.join(order_id_strings)}\n"
-        self.prompt += delivery__select['prompt']
+            self.prompt += f"\tOrder I.D.'s: {', '.join(order_id_strings)}\n"
+        self.prompt += f"\n{delivery__select['prompt']}\n"
 
-    def confirm(self):
+    def get_index(self):
+        if self.user_selection.lower() != 'b':
+            return int(self.user_selection) - 1
+
+    def main(self):
         from utility.user_input import confirm
 
         self.user_choice()
-        while not confirm(f'Delivery #{self.user_choice}'):
+        while self.user_selection.lower() != 'b' and\
+                not confirm(f'Delivery #{self.user_selection}'):
             self.user_choice()
 
-    def get_index(self):
-        if type(self.user_choice) is int:
-            return self.user_choice - 1
-
     def match_check(self):
-        if type(self.user_choice) is str:
-            if self.user_choice in ('b', 'B'):
+        if type(self.user_selection) is str:
+            if self.user_selection in ('b', 'B'):
                 return True
-        elif (self.user_choice - 1) in self.shift.delivery_ids:
+        elif (self.user_selection - 1) in self.shift.delivery_ids:
             return True
         else:
             return False
 
     def user_choice(self):
         from utility.user_input import check_match, user_input
-        pattern = r'[\d]|^[b]$'
+
         self.build_prompt()
-        self.user_choice = user_input(self.prompt)
-        while not check_match(pattern, self.user_choice)\
+        self.user_selection = user_input(self.prompt)
+        while not check_match(r'[\d]|^[b]$', self.user_selection)\
                 and not self.match_check():
-            self.user_choice = user_input(self.prompt)
+            self.user_selection = user_input(self.prompt)
 
 
 class Select_Order:
@@ -65,7 +67,7 @@ class Select_Order:
             self.confirm()
 
     def build_prompt(self):
-        self.prompt = self.text['initial']
+        self.prompt = '\n' + self.text['initial']
         order_id_string = [str(id) for id in self.delivery.order_ids]
         self.prompt += '\n'.join(order_id_string)
         if self.prompt[-1] != '\n':
@@ -95,12 +97,11 @@ class Select_Order:
     def user_choice(self):
         from utility.user_input import check_match, user_input
 
-        pattern = r'[\d]|^[b]$'
         self.build_prompt()
-        self.user_choice = user_input(self.prompt, pattern)
-        while not check_match(pattern, self.user_choice)\
+        self.user_choice = user_input(self.prompt)
+        while not check_match(r'[\d]|^[b]$', self.user_choice)\
                 and not self.match_check():
-            self.user_choice = user_input(self.prompt, pattern)
+            self.user_choice = user_input(self.prompt)
 
 
 class Quick_Select_Order:
@@ -170,45 +171,49 @@ class Select_Carry_Out_Tip:
         self.text = carry_out_tip__select
 
         if test is False:
-            if len(shift.carry_out_tips) < 0:
-                self.confirm()
+            if len(shift.carry_out_tips) > 0:
+                self.main()
             else:
                 print(carry_out_tip__select['no_option'])
         
     def build_prompt(self):
-        self.prompt = self.text['initial']
+        from utility.utility import to_money
+
+        self.prompt = f"\n{self.text['initial']}\n"
 
         count = 1
         for tip in self.shift.carry_out_tips:
             self.prompt += f'\t{count}. '
             
             if tip.has_card and tip.has_cash:
-                self.prompt += f'Card: ${tip.card}, Cash: ${tip.cash}\n'
+                self.prompt +=\
+                    f'Card: ${to_money(tip.card)}, Cash: ${to_money(tip.cash)}\n'
             elif tip.has_card:
-                self.prompt += f'Card: ${tip.card}\n'
+                self.prompt += f'Card: ${to_money(tip.card)}\n'
             elif tip.has_cash:
-                self.prompt += f'Cash: ${tip.cash}\n'
+                self.prompt += f'Cash: ${to_money(tip.cash)}\n'
             
             count += 1
         
-        self.prompt += self.text['prompt']
+        self.prompt += f"\n{self.text['prompt']}\n"
 
-    def confirm(self):
+    def main(self):
         from utility.user_input import confirm
 
         self.user_choice()
-        while not confirm(self.user_choice, self.text['confirmation']):
+        while self.user_selection.lower() != 'b' and not\
+                confirm(self.text['confirmation'].format(self.user_selection)):
             self.user_choice()
 
     def get_index(self):
-        if not self.user_choice in ('b', 'B'):
-            return self.user_choice - 1
+        if self.user_selection.lower() != 'b':
+            return int(self.user_selection) - 1
     
     def match_check(self):
-        if type(self.user_choice) is str:
-            if self.user_choice in ('b', 'B'):
-                return True
-        elif (self.user_choice - 1) in range(len(self.shift.carry_out_tips)):
+        if self.user_selection.lower() == 'b':
+            return True
+        elif (int(self.user_selection) - 1) in\
+                range(len(self.shift.carry_out_tips)):
             return True
 
         return False
@@ -216,12 +221,11 @@ class Select_Carry_Out_Tip:
     def user_choice(self):
         from utility.user_input import check_match, user_input
 
-        pattern = r'[\d]|^[b]$'
         self.build_prompt()
-        self.user_choice = user_input(self.prompt, prompt)
-        while not check_match(pattern, self.user_choice)\
+        self.user_selection = user_input(self.prompt)
+        while not check_match(r'[\d]|^[b]$', self.user_selection)\
                 and not self.match_check():
-            self.user_choice = user_input(self.prompt, prompt)
+            self.user_selection = user_input(self.prompt)
 
 
 class Select_Extra_Stop:
@@ -237,8 +241,8 @@ class Select_Extra_Stop:
         self.text = extra_stop__select
 
         if test is False:
-            if len(parent.extra_stops) < 0:
-                self.confirm()
+            if len(parent.extra_stops) > 0:
+                self.main()
             else:
                 if isinstance(parent, Shift):
                     parent_type = 'shift'
@@ -248,30 +252,33 @@ class Select_Extra_Stop:
                 print(extra_stop__select['no_option'].format(parent_type))
     
     def build_prompt(self):
-        self.prompt = self.text['initial']
+        self.prompt = f"\n{self.text['initial']}\n"
 
         count = 1
         for extra_stop in self.parent.extra_stops:
-            self.prompt += self.text['display'].format(count, extra_stop.location)
+            self.prompt +=\
+                self.text['display'].format(count, extra_stop.location) + '\n'
             count += 1
-        self.prompt += self.text['prompt']
-    
-    def confirm(self):
-        from utility.user_input import confirmation
-
-        self.user_choice()
-        while not confirm(self.user_choice):
-            self.user_choice()
+        self.prompt += f"\n{self.text['prompt']}\n"
 
     def get_index(self):
-        if not self.user_choice in ('b', 'B'):
-            return self.user_choice - 1
+        if self.user_selection.lower() != 'b':
+            return int(self.user_selection) - 1
+
+    def main(self):
+        from utility.user_input import confirm
+
+        self.user_choice()
+        while self.user_selection.lower() != 'b' and\
+                not confirm(self.user_selection):
+            self.user_choice()
 
     def match_check(self):
-        if type(self.user_choice) is str:
-            if self.user_choice in ('b', 'B'):
+        if type(self.user_selection) is str:
+            if self.user_selection.lower() == 'b':
                 return True
-        elif (self.user_choice - 1) in range(len(self.parent.extra_stop_ids)):
+        elif (int(self.user_selection) - 1) in\
+                range(len(self.parent.extra_stop_ids)):
             return True
         
         return False
@@ -281,7 +288,7 @@ class Select_Extra_Stop:
 
         pattern = r'[\d]|^[b]$'
         self.build_prompt()
-        self.user_choice = user_input(self.prompt, pattern)
-        while not check_match(pattern, self.user_choice)\
+        self.user_selection = user_input(self.prompt)
+        while not check_match(pattern, self.user_selection)\
                 and not self.match_check():
-            self.user_choice = user_input(self.prompt, pattern)
+            self.user_selection = user_input(self.prompt)

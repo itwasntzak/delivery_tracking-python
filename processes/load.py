@@ -1,6 +1,6 @@
 
 # shift
-def load_shift(shift, current=False):
+def load_shift(shift):
     from objects import Shift
     if not isinstance(shift, Shift):
         raise TypeError
@@ -12,27 +12,7 @@ def load_shift(shift, current=False):
 
     file_list = shift.file_list()
 
-    if current is False:
-        # shift info
-        shift_data = Read(file_list['info']).comma()
-        # distance
-        shift.miles_traveled = float(shift_data[0])
-        # fuel economy
-        shift.fuel_economy = float(shift_data[1])
-        # vehicle compensation
-        shift.vehicle_compensation = float(shift_data[2])
-        # device compensation
-        shift.device_compensation = float(shift_data[3])
-        # extra tips claimed
-        shift.extra_tips_claimed = float(shift_data[4])
-        # total hours
-        shift.total_hours = float(shift_data[5])
-        # start time
-        shift.start_time = To_Datetime(shift_data[6]).from_datetime()
-        # end time
-        shift.end_time = To_Datetime(shift_data[7]).from_datetime()
-
-    else:
+    if shift.in_progress:
         # start time
         if path.exists(file_list['start_time']):
             shift.start_time = Read(file_list['start_time']).datetime()
@@ -60,6 +40,26 @@ def load_shift(shift, current=False):
         if path.exists(file_list['extra_tips_claimed']):
             shift.extra_tips_claimed =\
                 Read(file_list['extra_tips_claimed']).decimal()
+
+    else:
+        # shift info
+        shift_data = Read(file_list['info']).comma()
+        # distance
+        shift.miles_traveled = float(shift_data[0])
+        # fuel economy
+        shift.fuel_economy = float(shift_data[1])
+        # vehicle compensation
+        shift.vehicle_compensation = float(shift_data[2])
+        # device compensation
+        shift.device_compensation = float(shift_data[3])
+        # extra tips claimed
+        shift.extra_tips_claimed = float(shift_data[4])
+        # total hours
+        shift.total_hours = float(shift_data[5])
+        # start time
+        shift.start_time = To_Datetime(shift_data[6]).from_datetime()
+        # end time
+        shift.end_time = To_Datetime(shift_data[7]).from_datetime()
 
     return shift
 
@@ -95,7 +95,7 @@ def load_shift_deliveries(shift):
 
 
 # delivery
-def load_delivery(delivery, current=False):
+def load_delivery(delivery):
     from objects import Delivery
     if not isinstance(delivery, Delivery):
         # todo: need to write error message
@@ -108,8 +108,8 @@ def load_delivery(delivery, current=False):
 
     # get list of files and directory
     file_list = delivery.file_list()
-
-    if current is False:
+    # completed delivery
+    if delivery.in_progress is False:
         # delivery info
         delivery_data = Read(file_list['info']).comma()
         # miles traveled
@@ -120,8 +120,8 @@ def load_delivery(delivery, current=False):
         delivery.start_time = To_Datetime(delivery_data[2]).from_datetime()
         # end time
         delivery.end_time = To_Datetime(delivery_data[3]).from_datetime()
-
-    else:
+    # delivery in progress
+    elif delivery.in_progress is True:
         # start time
         if path.exists(file_list['start_time']):
             delivery.start_time = Read(file_list['start_time']).datetime()
@@ -155,13 +155,12 @@ def load_delivery_orders(delivery):
 
 
 # order
-def load_order(order, current=False):
+def load_order(order):
     from objects import Order
     if not isinstance(order, Order):
         # todo: need to fix error message for taking delivery
-        from resources.error_messages import\
-            load__order__wrong_parameter as error_message
-        raise TypeError(error_message)
+        from resources.error_messages import load__order__wrong_parameter
+        raise TypeError(load__order__wrong_parameter)
 
     from os import path
     from utility.file import Read
@@ -169,7 +168,8 @@ def load_order(order, current=False):
 
     file_list = order.file_list()
 
-    if current is False:
+    # load completed order
+    if order.in_progress is False:
         from objects import Tip
         # order data
         order_data = Read(order.file_list()['info']).comma()
@@ -180,7 +180,8 @@ def load_order(order, current=False):
         # end time
         order.end_time = To_Datetime(order_data[4]).from_datetime()
 
-    else:
+    # load in progress order
+    elif order.in_progress is True:
         # id
         if path.exists(file_list['id']):
             order.id = Read(file_list['id']).integer()
@@ -210,7 +211,7 @@ def load_tip(file_path):
 
 
 # split
-def load_split(split, current=False):
+def load_split(split):
     from objects import Split
     if not isinstance(split, Split):
         raise TypeError
@@ -221,7 +222,18 @@ def load_split(split, current=False):
 
     file_list = split.file_list()
 
-    if current is False:
+    if split.in_progress:
+        # distance
+        if path.exists(file_list['distance']):
+            split.miles_traveled = Read(file_list['distance']).decimal()
+        # start time
+        if path.exists(file_list['start_time']):
+            split.start_time = Read(file_list['start_time']).datetime()
+        # end time
+        if path.exists(file_list['end_time']):
+            split.end_time = Read(file_list['end_time']).datetime()
+
+    else:
         # split info
         split_info = Read(file_list['info']).comma()
         # distance
@@ -231,22 +243,11 @@ def load_split(split, current=False):
         # end time
         split.end_time = To_Datetime(split_info[2]).from_datetime()
 
-    else:
-        # distance
-        if path.exists(file_list['miles_traveled']):
-            split.miles_traveled = Read(file_list['miles_traveled']).decimal()
-        # start time
-        if path.exists(file_list['start_time']):
-            split.start_time = Read(file_list['start_time']).datetime()
-        # end time
-        if path.exists(file_list['end_time']):
-            split.end_time = Read(file_list['end_time']).datetime()
-
     return split
 
 
 # extra stop
-def load_extra_stop(extra_stop, current=False):
+def load_extra_stop(extra_stop):
     from objects import Extra_Stop
     if not isinstance(extra_stop, Extra_Stop):
         raise TypeError
@@ -259,7 +260,7 @@ def load_extra_stop(extra_stop, current=False):
     # get files and directory
     file_list = extra_stop.file_list()
 
-    if current is False:
+    if extra_stop.in_progress is False:
         # extra stop info
         extra_stop_data = Read(file_list['info']).newline()
         # location
@@ -278,7 +279,7 @@ def load_extra_stop(extra_stop, current=False):
             # end time
             extra_stop.end_time = To_Datetime(extra_stop_data[4]).from_datetime()
 
-    else:
+    elif extra_stop.in_progress is True:
         # location
         if path.exists(file_list['location']):
             extra_stop.location = Read(file_list['location']).data
@@ -287,7 +288,8 @@ def load_extra_stop(extra_stop, current=False):
             extra_stop.reason = Read(file_list['reason']).data
         # distance
         if path.exists(file_list['miles_traveled']):
-            extra_stop.miles_traveled = Read(file_list['miles_traveled']).decimal()
+            extra_stop.miles_traveled =\
+                Read(file_list['miles_traveled']).decimal()
         # end time
         if path.exists(file_list['end_time']):
             extra_stop.end_time = Read(file_list['end_time']).datetime()
@@ -314,7 +316,7 @@ def load_parent_extra_stops(parent):
         # ids
         parent.extra_stop_ids = Read(extra_stop_ids_file).integer_list()
         # extra stops
-        parent.extra_stops = [load_extra_stop(Extra_Stop(parent, id))
+        parent.extra_stops = [Extra_Stop(parent, id).load_completed()
                               for id in parent.extra_stop_ids]
     
     return parent

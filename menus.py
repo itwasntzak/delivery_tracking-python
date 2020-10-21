@@ -14,7 +14,7 @@ class Completed_Shift:
         self.shift = shift
 
         if test is False:
-            from utility.utility import enter_to_continue
+            from utility.user_input import enter_to_continue
             self.user_choice()
             if self.user_choice.lower() == 'r':
                 from resources.strings import Shift__resume__confirmation
@@ -88,13 +88,12 @@ class Delivery_Tracking_Menu:
           delivery without order, or if they want to delete the delivery
     '''
 
-    # options
-    # oO = order
-    # eE = extra stop
-    # cC = complete delivery
-    # vV = view delivery
-    # rR = revise delivery
-    # bB = back a menu
+    # o = order
+    # e = extra stop
+    # c = complete delivery
+    # v = view delivery
+    # r = revise delivery
+    # b = back a menu
 
     def __init__(self, delivery, test=False):
         from objects import Delivery
@@ -103,40 +102,41 @@ class Delivery_Tracking_Menu:
 
         from resources.strings import delivery__menu__texts
 
-        self.condition = True
-        self.complete = False
+        self.delivery = delivery.load_current()
         self.display_text = delivery__menu__texts
-        self.delivery = delivery
+        self.complete = False
+        self.loop_condition = True
 
         if test is False:
-            from processes.load import load_delivery
-
-            self.delivery.load_current()
-            self.confirm()
-            self.result()
+            self.main()
+            while self.loop_condition:
+                self.main()
 
     def build_confirmation_text(self):
         import re
         from os import path
 
-        if self.user_choice.lower() == 'o':
+        # delivery
+        if self.user_selection.lower() == 'o':
             from objects import Order
             if not path.exists(Order(self.delivery).file_list()['directory']):
                 self.confirmation_text = self.display_text['order'][0]
             else:
                 self.confirmation_text = self.display_text['order'][1]
-
-        elif self.user_choice.lower() == 'e':
+        # extra stop
+        elif self.user_selection.lower() == 'e':
             from objects import Extra_Stop
-            if not path.exists(Extra_Stop(self.delivery).file_list()['directory']):
+            extra_stop_directory =\
+                Extra_Stop(self.delivery).file_list()['directory']
+            if not path.exists(extra_stop_directory):
                 self.confirmation_text = self.display_text['extra_stop'][0]
             else:
                 self.confirmation_text = self.display_text['extra_stop'][1]
-
-        elif self.user_choice.lower() == 'c':
+        # complete
+        elif self.user_selection.lower() == 'c':
             self.confirmation_text = self.display_text['end']
-
-        elif self.user_choice.lower() == 'r':
+        # revise
+        elif self.user_selection.lower() == 'r':
             self.confirmation_text = self.display_text['revise']
     
     def build_prompt(self):
@@ -145,51 +145,51 @@ class Delivery_Tracking_Menu:
         from utility.utility import add_newlines
 
         # initial
-        self.prompt = self.display_text['initial']
+        self.prompt = self.display_text['initial'] + '\n'
         # order
-        if not path.exists(Order(self.delivery).file_list()['directory']):
-            self.prompt += 'O. ' + self.display_text['order'][0]
-        else:
-            self.prompt += 'O. ' + self.display_text['order'][1]
+        order_index = 0
+        if path.exists(Order(self.delivery).file_list()['directory']):
+            order_index = 1
+        self.prompt += f'O. {self.display_text["order"][order_index]}\n'
         # extra stop
-        if not path.exists(Extra_Stop(self.delivery).file_list()['directory']):
-            self.prompt += 'E. ' + self.display_text['extra_stop'][0]
-        else:
-            self.prompt += 'E. ' + self.display_text['extra_stop'][1]
+        extra_stop_index = 0
+        if path.exists(Extra_Stop(self.delivery).file_list()['directory']):
+            extra_stop_index = 1
+        self.prompt +=\
+            f'E. {self.display_text["extra_stop"][extra_stop_index]}\n'
         # complete
-        self.prompt += 'C. ' + self.display_text['end']
+        self.prompt += f'C. {self.display_text["end"]}\n'
         # view
-        self.prompt += 'V. ' + self.display_text['view']
+        self.prompt += f'V. {self.display_text["view"]}\n'
         # revise
-        self.prompt += 'R. ' + self.display_text['revise']
+        self.prompt += f'R. {self.display_text["revise"]}\n'
         # back
-        self.prompt += 'B. ' + self.display_text['back']
+        self.prompt += f'B. {self.display_text["back"]}\n'
 
         self.prompt = add_newlines(self.prompt)
 
-        return self
-
-    def confirm(self):
+    def main(self):
         from utility.user_input import confirm
 
         self.user_choice()
-        while not self.user_choice.lower() in ('v', 'b') and\
+        while not self.user_selection.lower() in ('v', 'b') and\
                 not confirm(self.confirmation_text):
             self.user_choice()
+        self.result()
 
     def user_choice(self):
         from utility.user_input import check_match
         from utility.user_input import user_input
 
         self.build_prompt()
-        self.user_choice = user_input(self.prompt)
-        while not check_match('^[oecvb]$', self.user_choice):
-            self.user_choice = user_input(self.prompt)
-
+        self.user_selection = user_input(self.prompt)
+        while not check_match('^[oecrvb]$', self.user_selection):
+            self.user_selection = user_input(self.prompt)
         self.build_confirmation_text()
 
     def result(self):
-        if self.user_choice.lower() == 'o':
+        # order
+        if self.user_selection.lower() == 'o':
             from objects import Order
             import os
             from processes.consolidate import consolidate_order
@@ -201,62 +201,54 @@ class Delivery_Tracking_Menu:
             order = track_order(order)
             consolidate_order(order)
             self.delivery.add_order(order)
-
-        elif self.user_choice.lower() == 'e':
+        # extra stop
+        elif self.user_selection.lower() == 'e':
             from objects import Extra_Stop
             import os
             from processes.consolidate import consolidate_extra_stop
             from processes.track import track_extra_stop
 
-            extra_stop = Extra_Stop(self.delivery)
-            if os.path.exists(extra_stop.file_list()['start_time']):
-                from processes.load import load_extra_stop
-                extra_stop = load_extra_stop(extra_stop, current=True)
+            extra_stop = Extra_Stop(self.delivery).load_current()
             extra_stop = track_extra_stop(extra_stop)
             consolidate_extra_stop(extra_stop)
             self.delivery.add_extra_stop(extra_stop)
-
-        elif self.user_choice.lower() == 'c':
+        # complete
+        elif self.user_selection.lower() == 'c':
             from processes.consolidate import consolidate_delivery
             from processes.track import end_delivery
 
             self.delivery = end_delivery(self.delivery)
             consolidate_delivery(self.delivery)
-            self.condition = False
+            self.loop_condition = False
             self.complete = True
-
-        elif self.user_choice.lower() == 'v':
+        # view
+        elif self.user_selection.lower() == 'v':
             # todo: should ask if user wants to view sub parts
             from utility.utility import now, add_newlines
-            from processes.view import view_delivery
+            from processes.view import View_Delivery
 
             duration = now() - self.delivery.start_time
-            print(f"{add_newlines(self.display_text['current_duration'] + str(duration))}")
-            print(view_delivery(self.delivery))
-        
-        elif self.user_choice.lower() == 'r':
-            # todo: need to write functions that allow user to edit data having to do with delivery
-            # parts to make this happen:
-            # the first part is allowing the user to select what part of the extisting delivery to edit
-            # if that is start time, or select from any of the entered orders for the delivery to edit
-            # if the user wants to edit the order, other selection must be made of what data or the order to edit
-            pass
-
-        elif self.user_choice.lower() == 'b':
-            self.condition = False
+            print(add_newlines(self.display_text['current_duration'] + str(duration)))
+            print(View_Delivery(self.delivery).main())
+        # revise
+        elif self.user_selection.lower() == 'r':
+            from processes.revise import Revise_Delivery
+            revise_delivery = Revise_Delivery(self.delivery)
+            self.delivery = revise_delivery.delivery
+        # back
+        elif self.user_selection.lower() == 'b':
+            self.loop_condition = False
 
 
 class Shift_Tracking_Menu: 
-    # todo: add rR option to allow shift revision
-
-    # option
-    # dD = delivery
-    # eE = extra stop
-    # cC = carry out tip
-    # sS = split
-    # xX = end shift
-    # vV = view shift
-    # qQ = quit program
+    # d = delivery
+    # e = extra stop
+    # c = carry out tip
+    # s = split
+    # x = end shift
+    # r = revise
+    # v = view shift
+    # q = quit program
 
     def __init__(self, shift, test=False):
         from objects import Shift
@@ -265,51 +257,51 @@ class Shift_Tracking_Menu:
 
         from resources.strings import shift__menu__texts
 
-        self.condition = True
-        self.display_text = shift__menu__texts
         self.shift = shift
+        self.display_text = shift__menu__texts
+        self.loop_condition = True
 
         if test is False:
-            from processes.load import load_shift
-
-            self.confirm()
-            self.result()
+            self.main()
+            while self.loop_condition:
+                self.main()
 
     def build_confirmation_text(self):
         from os import path
-        import re
 
-        if self.user_choice.lower() == 'd':
+        # delivery
+        if self.user_selection.lower() == 'd':
             from objects import Delivery
             if not path.exists(Delivery(self.shift).file_list()['directory']):
                 self.confirmation_text = self.display_text['delivery'][0]
             else:
                 self.confirmation_text = self.display_text['delivery'][1]
-
-        elif self.user_choice.lower() == 'e':
+        # extra stop
+        elif self.user_selection.lower() == 'e':
             from objects import Extra_Stop
             if not path.exists(Extra_Stop(self.shift).file_list()['directory']):
                 self.confirmation_text = self.display_text['extra_stop'][0]
             else:
                 self.confirmation_text = self.display_text['extra_stop'][1]
-
-        elif self.user_choice.lower() == 'c':
+        # carry out tip
+        elif self.user_selection.lower() == 'c':
             self.confirmation_text = self.display_text['tip']
-
-        elif self.user_choice.lower() == 's':
+        # split
+        elif self.user_selection.lower() == 's':
             from objects import Split
             if not path.exists(Split(self.shift).file_list()['directory']):
                 self.confirmation_text = self.display_text['split'][0]
             else:
                 self.confirmation_text = self.display_text['split'][1]
-
-        elif self.user_choice.lower() == 'x':
+        # end
+        elif self.user_selection.lower() == 'x':
             if not path.exists(self.shift.file_list()['end_time']):
                 self.confirmation_text = self.display_text['end'][0]
             else:
                 self.confirmation_text = self.display_text['end'][1]
-
-        return self
+        # revise
+        elif self.user_selection.lower() == 'r':
+            self.confirmation_text = self.display_text['revise']
 
     def build_prompt(self):
         from objects import Delivery, Extra_Stop, Split
@@ -317,142 +309,123 @@ class Shift_Tracking_Menu:
         from utility.utility import add_newlines
 
         # initial
-        self.prompt = self.display_text['initial']
+        self.prompt = f"\n{self.display_text['initial']}\n"
         # delivery
-        self.prompt += 'D. '
-        if not path.exists(Delivery(self.shift).file_list()['directory']):
-            self.prompt += self.display_text['delivery'][0]
-        else:
-            self.prompt += self.display_text['delivery'][1]
+        delivery_index = 0
+        if path.exists(Delivery(self.shift).file_list()['directory']):
+            delivery_index = 1
+        self.prompt += f'D. {self.display_text["delivery"][delivery_index]}\n'
         # extra stop
-        self.prompt += 'E. '
-        if not path.exists(Extra_Stop(self.shift).file_list()['directory']):
-            self.prompt += self.display_text['extra_stop'][0]
-        else:
-            self.prompt += self.display_text['extra_stop'][1]
+        extra_stop_index = 0
+        if path.exists(Extra_Stop(self.shift).file_list()['directory']):
+           extra_stop_index = 1
+        self.prompt +=\
+            f'E. {self.display_text["extra_stop"][extra_stop_index]}\n'
         # carry out tip
-        self.prompt += 'C. ' + self.display_text['tip']
+        self.prompt += f'C. {self.display_text["tip"]}\n'
         # split
-        self.prompt += 'S. '
-        if not path.exists(Split(self.shift).file_list()['directory']):
-            self.prompt += self.display_text['split'][0]
-        else:
-            self.prompt += self.display_text['split'][1]
+        split_index = 0
+        if path.exists(Split(self.shift).file_list()['directory']):
+            split_index = 1
+        self.prompt += f'S. {self.display_text["split"][split_index]}\n'
         # end shift
-        self.prompt += 'X. '
-        if not path.exists(self.shift.file_list()['end_time']):
-            self.prompt += self.display_text['end'][0]
-        else:
-            self.prompt += self.display_text['end'][1]
+        end_index = 0
+        if path.exists(self.shift.file_list()['end_time']):
+            end_index = 1
+        self.prompt += f'X. {self.display_text["end"][end_index]}\n'
         # view
-        self.prompt += 'V. ' + self.display_text['view']
-
-        # todo: add revise as a menu option one revise shift is written
-
+        self.prompt += f'V. {self.display_text["view"]}\n'
+        # revise
+        self.prompt += f'R. {self.display_text["revise"]}\n'
         # quit
-        self.prompt += 'Q. ' + self.display_text['quit']
+        self.prompt += f'Q. {self.display_text["quit"]}\n'
 
         self.prompt = add_newlines(self.prompt)
 
-        return self
-
-    def confirm(self):
+    def main(self):
         from utility.user_input import confirm
 
-        self.user_action()
-        while not self.user_choice.lower() in ('v', 'q') and\
+        self.user_choice()
+        while not self.user_selection.lower() in ('v', 'q') and\
                 not confirm(self.confirmation_text):
-            self.user_action()
+            self.user_choice()
+        self.result()
 
-    def user_action(self):
+    def user_choice(self):
         from utility.user_input import check_match, user_input
 
         self.build_prompt()
-        self.user_choice = user_input(self.prompt)
-        while not check_match('^[decsxvq]$', self.user_choice):
-            self.user_choice = user_input(self.prompt)
-
+        self.user_selection = user_input(self.prompt)
+        while not check_match('^[decsxrvq]$', self.user_selection):
+            self.user_selection = user_input(self.prompt)
         self.build_confirmation_text()
 
     def result(self):
-        if self.user_choice.lower() == 'd':
+        # delivery
+        if self.user_selection.lower() == 'd':
             from objects import Delivery
             import os
             from processes.track import start_delivery
 
             delivery = start_delivery(Delivery(self.shift))
 
-            menu = Delivery_Tracking_Menu(delivery)
-            while menu.condition:
-                menu = Delivery_Tracking_Menu(menu.delivery)
+            delivery_menu = Delivery_Tracking_Menu(delivery)
 
-            if menu.complete is True:
-                self.shift.add_delivery(menu.delivery)
-
-        elif self.user_choice.lower() == 'e':
+            if delivery_menu.complete is True:
+                self.shift.add_delivery(delivery_menu.delivery)
+        # extra stop
+        elif self.user_selection.lower() == 'e':
             from objects import Extra_Stop
             import os
             from processes.consolidate import consolidate_extra_stop
             from processes.load import load_extra_stop
             from processes.track import track_extra_stop
 
-            extra_stop = Extra_Stop(self.shift)
-            if os.path.exists(extra_stop.file_list()['start_time']):
-                extra_stop = load_extra_stop(extra_stop, current=True)
+            extra_stop = Extra_Stop(self.shift).load_current()
             extra_stop = track_extra_stop(extra_stop)
             consolidate_extra_stop(extra_stop)
             self.shift.add_extra_stop(extra_stop)
-
-        elif self.user_choice.lower() == 'c':
+        # carry out tip
+        elif self.user_selection.lower() == 'c':
             from objects import Tip
             from utility.file import save
 
-            tip = Tip().input()
+            tip = Tip().input_both()
             save(tip.csv(), self.shift.file_list()['tips'], '\n')
             self.shift.carry_out_tips.append(tip)
-
-        elif self.user_choice.lower() == 's':
+        # split
+        elif self.user_selection.lower() == 's':
             from objects import Split
             from os import path
             from processes.consolidate import consolidate_split
 
-            split = Split(self.shift)
-            if not path.exists(split.file_list()['start_time']):
-                split.start()
-                self.condition = False
+            if not path.exists(Split(self.shift).file_list()['start_time']):
+                self.shift.split = Split(self.shift).start()
+                self.loop_condition = False
             else:
-                split.load_current()
-                split.end()
-                consolidate_split(split)
-                self.shift.split = split
-
-        elif self.user_choice.lower() == 'x':
+                self.shift.split.end()
+                consolidate_split(self.shift.split)
+        # end shift
+        elif self.user_selection.lower() == 'x':
             from processes.consolidate import consolidate_shift
             from processes.track import end_shift
 
             self.shift = end_shift(self.shift)
             consolidate_shift(self.shift)
-            self.condition = False
-
-        elif self.user_choice.lower() == 'v':
+            self.loop_condition = False
+        # view
+        elif self.user_selection.lower() == 'v':
             # todo: should ask if user wants to view sub parts
             # todo: add averages, average tip per delviery and etc...
-            from processes.view import view_shift
-            from utility.utility import to_money
-
-            all_tips = [tip.total_amount() for tip in self.shift.all_tips()]
-            card_tips = [tip.card for tip in self.shift.card_tips()]
-            cash_tips = [tip.cash for tip in self.shift.cash_tips()]
-
-
-            print(f'\n{view_shift(self.shift)}'
-                  f'Total tips:\t{to_money(sum(all_tips))}\n'
-                  f'Card tips:\t{to_money(sum(card_tips))}\n'
-                  f'Cash tips:\t{to_money(sum(cash_tips))}\n')
-        
-        # todo: add revise result one revise shift is written
-
-        elif self.user_choice.lower() == 'q':
-            self.condition = False
+            from processes.view import View_Shift
+            print(View_Shift(self.shift).main())
+        # revise
+        elif self.user_selection.lower() == 'r':
+            from processes.revise import Revise_Shift
+            revise_shift = Revise_Shift(self.shift)
+            self.shift = revise_shift.shift
+        # quit
+        elif self.user_selection.lower() == 'q':
+            self.loop_condition = False
 
         return self

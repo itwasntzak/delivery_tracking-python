@@ -133,7 +133,7 @@ def input_integer(prompt, preced=None):
         print('\nError, please enter a number value (base 10)')
         integer = user_input(prompt, preced)
     
-    return integer
+    return int(integer)
 
 
 def input_text(prompt, spaces=False, symbols=None):
@@ -158,96 +158,95 @@ def input_text(prompt, spaces=False, symbols=None):
 
 class User_Input():
     def __init__(self, prompt):
-        self.prompt = prompt
+        from utility.utility import add_newlines
+
+        self.prompt = add_newlines(prompt)
 
     # general
     def miles_traveled(self):
-        from resources.strings import miles_traveled_succeed as succeed
-        from utility.utility import prep_data_string
+        from resources.strings import miles_traveled_after_text
 
         miles_traveled = input_decimal(self.prompt)
-        while not confirm(prep_data_string(miles_traveled, after=succeed)):
+        while not confirm(f'{miles_traveled}{miles_traveled_after_text}'):
             miles_traveled = input_decimal(self.prompt)
         
         return miles_traveled
 
-    def money(self, succeed=None):
+    def money(self, after=None):
         from resources.strings import money_symbol
-        from utility.utility import prep_data_string
+        from utility.utility import prep_data_string, to_money
 
         money = input_decimal(self.prompt, money_symbol)
-        while not confirm(prep_data_string(money, money_symbol, succeed)):
+        while not confirm(prep_data_string(to_money(money), after=after)):
             money = input_decimal(self.prompt, money_symbol)
 
         return money
 
     # shift
     def fuel_economy(self):
-        from resources.strings import fuel_economy_succeed
-        from utility.utility import prep_data_string
+        from resources.strings import fuel_economy_after_text
 
         fuel_economy = input_decimal(self.prompt)
-        while not confirm(prep_data_string(fuel_economy, after=fuel_economy_succeed)):
+        while not confirm(f'{fuel_economy}{fuel_economy_after_text}'):
             fuel_economy = input_decimal(self.prompt)
 
         return fuel_economy
     
     def total_hours(self):
-        from resources.strings import total_hours_succeed
-        from utility.utility import prep_data_string
+        from resources.strings import total_hours_after_text
 
         total_hours = input_decimal(self.prompt)
-        while not confirm(prep_data_string(total_hours, after=total_hours_succeed)):
+        while not confirm(f'{total_hours}{total_hours_after_text}'):
             total_hours = input_decimal(self.prompt)
         
         return total_hours
 
     # delivery
     def average_speed(self):
-        from resources.strings import average_speed_succeed
-        from utility.utility import prep_data_string
+        from resources.strings import average_speed_after_text
 
         average_speed = input_integer(self.prompt)
-        string = prep_data_string(average_speed, after=average_speed_succeed)
-        while not confirm(string):
+        while not confirm(f'{average_speed}{average_speed_after_text}'):
             average_speed = input_integer(self.prompt)
 
         return average_speed
 
     # order
     def id(self):
-        from utility.utility import prep_data_string
-
         id = input_integer(self.prompt, '#')
-        while not confirm(prep_data_string(id, 'Id is #')):
+        while not confirm(f'I.D. is #{id}'):
             id = input_integer(self.prompt, '#')
 
         return id
 
     # tip
     def card_tip(self):
-        from resources.strings import card_tip_succeed as succeed
-        return self.money(succeed)
+        from resources.strings import card_tip_after_text
+        return self.money(card_tip_after_text)
 
     def cash_tip(self):
-        from resources.strings import cash_tip_succeed as succeed
-        return self.money(succeed)
+        from resources.strings import cash_tip_after_text
+        return self.money(cash_tip_after_text)
 
     def unknown_tip(self):
-        from resources.strings import unknown_tip_succeed as succeed
-        return self.money(succeed)
+        from resources.strings import unknown_tip_after_text
+        return self.money(unknown_tip_after_text)
 
     # extra stop
     def location(self):
-        location = input_text(self.prompt, spaces=True, symbols=',./&?!:;()-+%')
-        while not confirm(location):
-            location = input_text(self.prompt, spaces=True, symbols=',./&?!:;()-+%')
+        location =\
+            input_text(self.prompt, spaces=True, symbols=r",./&?!':;()-+%")
+        while not confirm(location.capitalize()):
+            location =\
+                input_text(self.prompt, spaces=True, symbols=r",./&?!':;()-+%")
 
         return location
 
     def reason(self):
-        reason = input_text(self.prompt, spaces=True, symbols=',./&?!:;()-+%')
-        while not confirm(reason):
-            reason = input_text(self.prompt, spaces=True, symbols=',./&?!:;()-+%')
+        reason =\
+            input_text(self.prompt, spaces=True, symbols=r",./&?!':;()-+%")
+        while not confirm(reason.capitalize()):
+            reason =\
+                input_text(self.prompt, spaces=True, symbols=r",./&?!':;()-+%")
 
         return reason

@@ -254,6 +254,7 @@ class Test_Select(unittest.TestCase):
         self.assertFalse(select_order.match_check())
 
     def test_select_carry_out_tip(self):
+        # todo: need to add test for carry out tip with more then a single tip type
         from processes.select import Select_Carry_Out_Tip
 
         select_carry_out_tip = Select_Carry_Out_Tip(self.shift, test=True)
