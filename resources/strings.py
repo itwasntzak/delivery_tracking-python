@@ -4,6 +4,8 @@
 resource legend:
     file/class_name__function/method_name__resource_occurrence
     file/class_name__resource_occurrence
+thoughts on new ways
+    group by files,
 """
 # objects
 #   shift
@@ -22,13 +24,13 @@ Shift__overwritten__confirmation = 'Shift has been overwriten!'
 Shift__overwrite__prompt = 'Are you sure you want to overwrite the completed shift?'
 Shift__start__enter_to_continue__display = 'Shift has been started!'
 Shift__total_hours__prompt = 'Enter total hours worked:\t#.## hours'
-Shift__vehical_compensation__prompt = 'Amount of vehicle compensation paid:\t$#.##'
+Shift__vehicle_compensation__prompt = 'Amount of vehicle compensation paid:\t$#.##'
 
 #   delivery
 Delivery__average_speed__prompt = 'Enter the average speed for this delivery:\t##'
 Delivery__miles_traveled_prompt = 'Delivery miles traveled:\t#.#'
 Delivery__order_quantity__prompt = 'Number of orders?'
-Delivery__time_taken__display = 'Delivery completed in:\t'
+Delivery__time_taken__display = 'Delivery completed in:'
 
 #   order
 Order__change_data__prompt =\
@@ -43,17 +45,18 @@ Order__change_data__prompt =\
     'B. Go back to delivery options'
 Order__input_id__prompt = 'Enter order number:\t#-####'
 Order__input_miles_traveled__prompt = 'Order miles traveled:\t#.#'
-Order__time_taken__display = 'Order completed in:\t'
+Order__time_taken__display = 'Order completed in:'
 
 #   tip
-Tip__input_card__prompt = 'Enter card tip amount:\t$#.##\n(0 for no tip)'
-Tip__input_cash__prompt  = 'Enter cash tip amount:\t$#.##\n(0 for no tip)'
+Tip__input_card__prompt = 'Enter card tip amount:\t$#.##'
+Tip__input_cash__prompt  = 'Enter cash tip amount:\t$#.##'
+Tip__input_unknown__prompt  = 'Enter unknown tip amount:\t$#.##'
 
 #   extra stop
-Extra_Stop__location__prompt = 'Extra stop location:\n'
-Extra_Stop__miles_traveled__prompt = 'Extra stop miles traveled:\t#.#\n'
-Extra_Stop__reason__prompt = 'Reason for extra stop?\n'
-Extra_Stop__time_taken__display = 'Extra stop completed in:\t'
+Extra_Stop__location__prompt = 'Extra stop location:'
+Extra_Stop__miles_traveled__prompt = 'Extra stop miles traveled:\t#.#'
+Extra_Stop__reason__prompt = 'Reason for extra stop?'
+Extra_Stop__time_taken__display = 'Extra stop completed in:'
 
 #   split
 Split__end__confirmation = 'Are you sure you want to end the split?'
@@ -61,53 +64,113 @@ Split__start__enter_to_continue = 'Split has been started.'
 Split__start__confirmation = 'Are you sure you want to start a split?'
 
 
-# menus
 # Shift_Menu
 shift__menu__texts = {
-            'initial': '- Shift Menu -\nPlease select an option:\n',
-            'delivery': ['Start delivery\n', 'Continue delivery\n'],
-            'extra_stop': ['Start extra stop\n', 'Continue extra stop\n'],
-            'tip': 'Enter carry out tip\n',
-            'split': ['Start split\n', 'End split\n'],
-            'end': ['End shift\n', 'Continue ending shift\n'],
-            'view': 'View shift\n',
-            'quit': 'Quit program\n'
-        }
+    'initial': '- Shift Menu -\nPlease select an option:',
+    'delivery': ['Start delivery', 'Continue delivery'],
+    'extra_stop': ['Start extra stop', 'Continue extra stop'],
+    'tip': 'Enter carry out tip',
+    'split': ['Start split', 'End split'],
+    'end': ['End shift', 'Continue ending shift'],
+    'revise': 'Revise part of shift',
+    'view': 'View shift',
+    'quit': 'Quit program'
+}
+
+shift__revise__text = {
+    'initial': '- Revise Shift -\nPlease select an option:',
+    'start_time': ['Revise start time', 'Add start time'],
+    'end_time': ['Revise end time', 'Add end time'],
+    'total_hours': ['Revise total hour', 'Add total hour'],
+    'distance': ['Revise miles traveled', 'Add miles traveled'],
+    'fuel_economy': ['Revise fuel economy', 'Add fuel economy'],
+    'vehicle_comp': ['Revise mileage', 'Add mileage'],
+    'device_comp': ['Revise device useage paid', 'Add device useage paid'],
+    'extra_tips': ['Revise extra tips claimed', 'Add extra tips claimed'],
+    'total_in_hand': ['Revise total money in hand', 'Add total money in hand'],
+    'delivery': ['Select a delivery', 'Revise delivery', 'Add a delivery'],
+    'extra_stop': ['Select a extra stop', 'Revise extra stop'],
+    'tips': 'Revise a carry out tip',
+    'split': 'Revise split',
+    'view': 'View current shift',
+    'back': 'Go back'
+}
 
 # Delivery_Menu
 delivery__menu__texts = {
-    'initial': '- Delivery Menu -\nPlease select an option:\n',
-    'order': ['Add new order\n', 'Continue entering order\n'],
-    'extra_stop': ['Take extra stop\n', 'Continue extra stop\n'],
-    'end': 'Complete current delivery\n',
-    'view': 'View current delivery\n',
-    'revise': 'Revise current delivery\n',
-    'back': 'Back a menu\n',
-    'quit': 'Quit program\n',
-    'time_taken': 'Current time on delivery:\t'
+    'initial': '- Delivery Menu -\nPlease select an option:',
+    'order': ['Add new order', 'Continue entering order'],
+    'extra_stop': ['Take extra stop', 'Continue extra stop'],
+    'end': 'Complete current delivery',
+    'view': 'View current delivery',
+    'revise': 'Revise current delivery',
+    'back': 'Back a menu',
+    'quit': 'Quit program',
+    'current_duration': 'Current time on delivery:\t',
+    'total_duration': 'Total time on delivery:'
 }
 
-delivery__revise__text = {
-    'initial': 'Select part of delivery to revise:\n',
-    'start_time': ['Revise start time\n', 'Add start time\n'],
-    'miles_traveled': ['Revise miles traveled\n', 'Add miles traveled\n'],
-    'average_speed': ['Revise average speed\n', 'Add average speed\n'],
-    'end_time': ['Revise end time\n', 'Add end time\n'],
-    'order': ['Select or add order\n', 'Revise or add order\n', 'Add order\n'],
-    'extra_stop': ['Select an extra stop\n', 'Revise extra stop\n'],
-    'view': 'View current delivery\n',
-    'save': 'Save current delivery\n',
-    'back': 'Go back a menu\n',
-    'quit': 'Quit program\n'
+delivery__select = {
+    'initial': 'There are {} number of deliveries',
+    'prompt': 'Enter the ID of the delivery you want to select:\n(B to go back)'
 }
 
+delivery__revise = {
+    'initial': '- Revise Delivery -\nPlease select an option:',
+    'start_time': ['Revise start time', 'Add start time'],
+    'distance': ['Revise miles traveled', 'Add miles traveled'],
+    'average_speed': ['Revise average speed', 'Add average speed'],
+    'end_time': ['Revise end time', 'Add end time'],
+    'order': ['Select an order', 'Revise order', 'Add order'],
+    'extra_stop': ['Select an extra stop', 'Revise extra stop'],
+    'view': 'View current delivery',
+    'save': 'Save changes',
+    'back': 'Go back'
+}
+
+order__select = {
+    'initial': 'Order IDs:',
+    'prompt': ['Enter an above ID to select an order:\n(B to go back)',
+               'Enter the ID of the order you want to select:\n(B to go back)'],
+    'no_match': "The entered number doesn't match a order ID",
+    'confirmation': 'Select order with ID #'
+}
+
+tip_revise_text = {
+    'initial': '- Revise Tip -\nPlease select an option:',
+    'card': ['Add a card tip', 'Edit card tip'],
+    'cash': ['Add a cash tip', 'Edit cash tip'],
+    'both': 'Edit/add both card and cash tips',
+    'unknown': ['Add a tip of unknown type', 'Edit tip of unknown type'],
+    'view': "View tip's current values",
+    'save': 'Save changes',
+    'back': 'Go back'
+}
+
+carry_out_tip__select = {
+    'initial': 'Carry out tips:',
+    'prompt': 'Enter a number to select a tip:\n(B to go back)',
+    'no_option': 'There are no carry out tips',
+    'no_match': "That number doesn't match an option",
+    'confirmation': 'Tip option: {}'
+}
+
+extra_stop__select = {
+    'initial': 'Extra Stops:',
+    'display': '#{}, Location: {}',
+    'prompt': 'Enter an ID number to select an extra stop:\n(B to go back)',
+    'no_match': 'Please enter one of the ID numbers above',
+    'no_option': 'There are no extra stops for this {}'
+}
 
 # utility
 #   user input
-User_Input__average_speed__succeed = ' mph'
-User_Input__card_tip__succeed = ' card tip'
-User_Input__cash_tip__succeed = ' cash tip'
-User_Input__fuel_economy__succeed = ' mpg'
-User_Input__miles_traveled__succeed = ' miles'
-User_Input__total_hours__succeed = ' hours worked'
-User_Input__unknown_tip__succeed = ' unknown tip amount'
+confirm_text = 'Is this correct?\t[Y/N]'
+money_symbol = '$'
+average_speed_after_text = ' mph'
+card_tip_after_text = ' card tip'
+cash_tip_after_text = ' cash tip'
+fuel_economy_after_text = ' mpg'
+miles_traveled_after_text = ' miles'
+total_hours_after_text = ' hours worked'
+unknown_tip_after_text = ' unknown tip amount'
