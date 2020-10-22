@@ -187,11 +187,11 @@ class Select_Carry_Out_Tip:
             
             if tip.has_card and tip.has_cash:
                 self.prompt +=\
-                    f'Card: ${to_money(tip.card)}, Cash: ${to_money(tip.cash)}\n'
+                    f'Card: {to_money(tip.card)}, Cash: {to_money(tip.cash)}\n'
             elif tip.has_card:
-                self.prompt += f'Card: ${to_money(tip.card)}\n'
+                self.prompt += f'Card: {to_money(tip.card)}\n'
             elif tip.has_cash:
-                self.prompt += f'Cash: ${to_money(tip.cash)}\n'
+                self.prompt += f'Cash: {to_money(tip.cash)}\n'
             
             count += 1
         
