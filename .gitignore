@@ -1,7 +1,9 @@
 __pycache__/
 brain/
 .vscode/
-ide_tools
 *.pyc
-my_data
-unittest.bat
+testing_toosl.py
+testing.py
+testing.py
+testing.py
+testing.py
