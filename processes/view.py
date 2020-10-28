@@ -47,17 +47,37 @@ class View_Shift:
         # cash tips
         string += f"\t{shift_parts['cash_tips']}\n"
         # number of deliveries
-        string += f"\t{shift_parts['deliveries']}\n"
+        string += f"\t{shift_parts['deliveries']}"
         # number of extra stops
         if 'extra_stops' in shift_parts.keys():
-            string += f"\t{shift_parts['extra_stops']}\n"
+            string += f"\n\t{shift_parts['extra_stops']}"
 
+        return string
+
+    def full(self):
+        # get main
+        string = self.main()
+        # deliveries
+        if len(self.shift.deliveries) > 0:
+            # head
+            string += '\n\n- Deliveries -\n'
+            # deliveries
+            for delivery in self.shift.deliveries:
+                string += View_Delivery(delivery).full()
+        # extra stops
+        if len(self.shift.extra_stops) > 0:
+            # head
+            string += '\n\n- Extra Stops -\n'
+            # extra stops
+            for extra_stop in self.shift.extra_stops:
+                string += view_extra_stop(extra_stop)
+        
         return string
 
     def quick(self):
         shift_parts = self.shift.view()
 
-        string = '- Shift -\n'
+        string = '\n- Shift -\n'
         # id
         string +=  f"\t{shift_parts['id']}\n"
         # start time
@@ -76,7 +96,7 @@ class View_Shift:
         # card tips
         string += f"\t{shift_parts['card_tips']}\n"
         # cash tips
-        string += f"\t{shift_parts['cash_tips']}\n"
+        string += f"\t{shift_parts['cash_tips']}"
 
         return string
 
@@ -90,10 +110,11 @@ class View_Delivery:
         self.delivery = delivery
 
     def main(self):
+        from utility.utility import add_newlines
         delivery_parts = self.delivery.view()
 
         # id
-        string = f"\n{delivery_parts['id']}\n"
+        string = f"{delivery_parts['id']}\n"
 
         # total duration
         if 'total_duration' in delivery_parts.keys():
@@ -124,9 +145,29 @@ class View_Delivery:
 
         # average speed
         if 'average_speed' in delivery_parts.keys():
-            string += f"\t{delivery_parts['average_speed']}\n"
+            string += f"\t{delivery_parts['average_speed']}"
 
-        return string
+        return add_newlines(string)
+
+    def full(self):
+        from utility.utility import add_newlines
+        # get main
+        main = self.main()
+        string = ''
+        # order head
+        if len(self.delivery.orders) > 0:
+            string += '\n\n- Orders -\n'
+            # orders        
+            for order in self.delivery.orders:
+                string += add_newlines(view_order(order))
+        # extra stop head
+        if len(self.delivery.extra_stops) > 0:
+            string += '\n\n- Extra Stops -\n'
+            # extra stops
+            for extra_stop in self.delivery.extra_stops:
+                string += add_newlines(view_extra_stop(extra_stop))
+        
+        return main + string
 
     def quick(self):
         delivery_parts = self.delivery.view()
@@ -224,7 +265,7 @@ def view_extra_stop(extra_stop):
 
     extra_stop_parts = extra_stop.view()
 
-    string = f"\n{extra_stop_parts['id']}\n"
+    string = f"{extra_stop_parts['id']}\n"
 
     if 'start_time' in extra_stop_parts.keys():
         string += f"\t{extra_stop_parts['start_time']}\n"
