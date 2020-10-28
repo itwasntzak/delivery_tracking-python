@@ -223,13 +223,7 @@ class Delivery_Tracking_Menu:
             self.complete = True
         # view
         elif self.user_selection.lower() == 'v':
-            # todo: should ask if user wants to view sub parts
-            from utility.utility import now, add_newlines
-            from processes.view import View_Delivery
-
-            duration = now() - self.delivery.start_time
-            print(add_newlines(self.display_text['current_duration'] + str(duration)))
-            print(View_Delivery(self.delivery).main())
+            View_Delivery_Menu(self.delivery)
         # revise
         elif self.user_selection.lower() == 'r':
             from processes.revise import Revise_Delivery
@@ -415,10 +409,7 @@ class Shift_Tracking_Menu:
             self.loop_condition = False
         # view
         elif self.user_selection.lower() == 'v':
-            # todo: should ask if user wants to view sub parts
-            # todo: add averages, average tip per delviery and etc...
-            from processes.view import View_Shift
-            print(View_Shift(self.shift).main())
+            View_Shift_Menu(self.shift)
         # revise
         elif self.user_selection.lower() == 'r':
             from processes.revise import Revise_Shift
@@ -429,3 +420,343 @@ class Shift_Tracking_Menu:
             self.loop_condition = False
 
         return self
+
+
+class View_Shift_Menu:
+    # f = full
+    # m = main
+    # q = quick
+    # s = select
+    # b = back
+
+    def __init__(self, shift):
+        from objects import Shift
+        if not isinstance(shift, Shift):
+            raise TypeError
+
+        from processes.view import View_Shift
+
+        self.shift = shift
+        self.view = View_Shift(shift)
+        self.prompt =\
+            '\n- View Shift -\n'\
+            'F. Full view\n'\
+            'M. Main view\n'\
+            'Q. Quick view\n'\
+            'S. Select sub-part to view\n'\
+            'B. Go back\n'
+        
+        self.loop_condition = True
+        self.main()
+        while self.loop_condition:
+            self.main()
+    
+    def main(self):
+        from utility.user_input import check_match, user_input
+
+        self.user_selection = user_input(self.prompt)
+        while not check_match('^[fmqsb]$', self.user_selection):
+            self.user_selection = user_input(self.prompt)
+        self.result()
+
+    def result(self):
+        # full
+        if self.user_selection.lower() == 'f':
+            print(self.view.full())
+        # main
+        elif self.user_selection.lower() == 'm':
+            print(self.view.main())
+        # quick
+        elif self.user_selection.lower() == 'q':
+            print(self.view.quick())
+        # sub-parts
+        elif self.user_selection.lower() == 's':
+            View_Shift_Select_Option(self.shift)
+        # back
+        elif self.user_selection.lower() == 'b':
+            self.loop_condition = False
+
+
+class View_Shift_Select_Option:
+    # d = deliveries
+    # e = extra stops
+    # s = split
+    # t = carry out tips
+    # b = back
+
+    def __init__(self, shift):
+        from objects import Shift
+        if not isinstance(shift, Shift):
+            raise TypeError
+
+        self.shift = shift
+        self.loop_condition = True
+
+        self.main()
+        while self.loop_condition:
+            self.main()
+    
+    def build_confirmation_text(self):
+        # deliveries
+        if self.user_selection.lower() == 'd':
+            self.confirmation_text = 'Select a delivery'
+        # extra stops
+        elif self.user_selection.lower() == 'e':
+            self.confirmation_text = 'Select a extra stop'
+        # split
+        elif self.user_selection.lower() == 's':
+            self.confirmation_text = 'View split'
+        # carry out tips
+        elif self.user_selection.lower() == 't':
+            self.confirmation_text = 'View carry out tips'
+
+    def build_prompt(self):
+        # todo: add conditional generation
+        self.prompt = '\n- Shift Sub-select -\n'
+        if len(self.shift.deliveries) >= 1:
+            self.prompt += 'D. Select delivery to view\n'
+        if len(self.shift.extra_stops) >= 1:
+            self.prompt += 'E. Select extra stop to view\n'
+        if self.shift.split is not None:
+            self.prompt += 'S. View split\n'
+        if len(self.shift.carry_out_tips) >= 1:
+            self.prompt += 'T. View carry out tips\n'
+        
+        self.prompt += 'B. Go back\n'
+
+    def main(self):
+        from utility.user_input import confirm
+
+        self.user_choice()
+        while self.user_selection.lower() != 'b' and\
+                not confirm(self.confirmation_text):
+            self.user_choice()
+        self.result()
+
+    def user_choice(self):
+        from utility.user_input import check_match, user_input
+        # build pattern
+        pattern = '^['
+        if len(self.shift.deliveries) >= 1:
+            pattern += 'd'
+        if len(self.shift.extra_stops) >= 1:
+            pattern += 'e'
+        if self.shift.split is not None:
+            pattern += 's'
+        if len(self.shift.carry_out_tips) >= 1:
+            pattern += 't'
+        pattern += 'b]$'
+        # user input
+        self.build_prompt()
+        self.user_selection = user_input(self.prompt)
+        while not check_match(pattern, self.user_selection):
+            self.user_selection = user_input(self.prompt)
+        self.build_confirmation_text()
+
+    def result(self):
+        # delivery
+        if self.user_selection.lower() == 'd':
+            if len(self.shift.deliveries) == 1:
+                View_Delivery_Menu(self.shift.deliveries[0])
+                self.loop_condition = False
+            elif len(self.shift.deliveries) > 1:
+                from processes.select import Select_Delivery
+                select_delivery = Select_Delivery(self.shift)
+                delivery_index = select_delivery.get_index()
+                if isinstance(delivery_index, int):
+                    delivery = self.shift.deliveries[delivery_index]
+                    View_Delivery_Menu(delivery)
+        # extra stop
+        elif self.user_selection.lower() == 'e':
+            from processes.view import view_extra_stop
+            # 1 extra stop
+            if len(self.shift.extra_stops) == 1:
+                # display extra stop to user
+                print(view_extra_stop(self.shift.extra_stops[0]))
+                self.loop_condition = False
+            # more then 1 extra stop
+            elif len(self.shift.extra_stops) > 1:
+                from processes.select import Select_Extra_Stop
+                # user select extra stop
+                select_extra_stop = Select_Extra_Stop(self.shift)
+                # get index
+                extra_stop_index = select_extra_stop.get_index()
+                # display extra stop to user
+                if isinstance(extra_stop_index, int):
+                    extra_stop = self.shift.extra_stops[extra_stop_index]
+                    print(view_extra_stop(extra_stop))
+        # split
+        elif self.user_selection.lower() == 's':
+            from processes.view import view_split
+            print(view_split(self.shift.split))
+        # carry out tip
+        elif self.user_selection.lower() == 't':
+            from processes.view import view_tip
+            if len(self.shift.carry_out_tips) == 1:
+                print(view_tip(self.shift.carry_out_tips[0]))
+            elif len(self.shift.carry_out_tips) > 1:
+                from processes.select import Select_Carry_Out_Tip
+                select_tip = Select_Carry_Out_Tip(self.shift)
+                tip_index = select_tip.get_index()
+                if isinstance(tip_index, int):
+                    print(view_tip(self.shift.carry_out_tips[tip_index]))
+        # back
+        elif self.user_selection.lower() == 'b':
+            self.loop_condition = False
+
+
+class View_Delivery_Menu:
+    # f = full
+    # m = main
+    # q = quick
+    # s = select
+    # b = back
+    
+    def __init__(self, delivery):
+        from objects import Delivery
+        if not isinstance(delivery, Delivery):
+            raise TypeError
+
+        from processes.view import View_Delivery
+
+        self.delivery = delivery
+        self.view = View_Delivery(delivery)
+        self.prompt =\
+            '\n- View Delivery -\n'\
+            'F. Full view\n'\
+            'M. Main view\n'\
+            'Q. Quick view\n'\
+            'S. Select sub-part to view\n'\
+            'B. Go back\n'
+
+        self.loop_condition = True
+        self.main()
+        while self.loop_condition:
+            self.main()
+    
+    def main(self):
+        from utility.user_input import check_match, user_input
+
+        self.user_selection = user_input(self.prompt)
+        while not check_match('^[fmqsb]$', self.user_selection):
+            self.user_selection = user_input(self.prompt)
+        self.result()
+
+    def result(self):
+        # full
+        if self.user_selection.lower() == 'f':
+            print(self.view.full())
+        # main
+        elif self.user_selection.lower() == 'm':
+            print(self.view.main())
+        # quick
+        elif self.user_selection.lower() == 'q':
+            print(self.view.quick())
+        # sub-parts
+        elif self.user_selection.lower() == 's':
+            View_Delivery_Select_Option(self.delivery)
+        # back
+        elif self.user_selection.lower() == 'b':
+            self.loop_condition = False
+
+
+class View_Delivery_Select_Option:
+    # o = orders
+    # e = extra stops
+    # b = back
+
+    def __init__(self, delivery):
+        from objects import Delivery
+        if not isinstance(delivery, Delivery):
+            raise TypeError
+
+        self.delivery = delivery
+        self.loop_condition = True
+
+        self.main()
+        while self.loop_condition:
+            self.main()
+    
+    def build_confirmation_text(self):
+        # orders
+        if self.user_selection.lower() == 'o':
+            self.confirmation_text = 'Select a delivery'
+        # extra stops
+        elif self.user_selection.lower() == 'e':
+            self.confirmation_text = 'Select a extra stop'
+
+    def build_prompt(self):
+        # inital
+        self.prompt = '\n- Delivery Sub-select -\n'
+        # orders
+        if len(self.delivery.orders) >= 1:
+            self.prompt += 'O. Select order to view\n'
+        # extra stops
+        if len(self.delivery.extra_stops) >= 1:
+            self.prompt += 'E. Select extra stop to view\n'
+        # back
+        self.prompt += 'B. Go back\n'
+
+    def main(self):
+        from utility.user_input import confirm
+
+        self.user_choice()
+        while self.user_selection.lower() != 'b' and\
+                not confirm(self.confirmation_text):
+            self.user_choice()
+        self.result()
+
+    def user_choice(self):
+        from utility.user_input import check_match, user_input
+        # build pattern
+        pattern = '^['
+        if len(self.delivery.orders) >= 1:
+            pattern += 'o'
+        if len(self.delivery.extra_stops) >= 1:
+            pattern += 'e'
+        pattern += 'b]$'
+        # user input
+        self.build_prompt()
+        self.user_selection = user_input(self.prompt)
+        while not check_match(pattern, self.user_selection):
+            self.user_selection = user_input(self.prompt)
+        self.build_confirmation_text()
+
+    def result(self):
+        # orders
+        if self.user_selection.lower() == 'o':
+            from processes.view import view_order
+            # 1 order
+            if len(self.delivery.orders) == 1:
+                from utility.utility import add_newlines
+                print(add_newlines(view_order(self.delivery.orders[0])))
+                self.loop_condition = False
+            # more then 1 order
+            elif len(self.delivery.orders) > 1:
+                from processes.select import Select_Order
+                select_order = Select_Order(self.delivery)
+                order_index = select_order.get_index()
+                if isinstance(order_index, int):
+                    print(view_order(self.delivery.orders[order_index]))
+        # extra stops
+        elif self.user_selection.lower() == 'e':
+            from processes.view import view_extra_stop
+            # 1 extra stop
+            if len(self.delivery.extra_stops) == 1:
+                # display extra stop to user
+                print(view_extra_stop(self.delivery.extra_stops[0]))
+                self.loop_condition = False
+            # more then 1 extra stop
+            elif len(self.delivery.extra_stops) > 1:
+                from processes.select import Select_Extra_Stop
+                # user select extra stop
+                select_extra_stop = Select_Extra_Stop(self.delivery)
+                # get index
+                extra_stop_index = select_extra_stop.get_index()
+                if isinstance(extra_stop_index, int):
+                    extra_stop = self.delivery.extra_stops[extra_stop_index]
+                    # display extra stop to user
+                    print(view_extra_stop(extra_stop))
+        # back
+        elif self.user_selection.lower() == 'b':
+            self.loop_condition = False

@@ -62,34 +62,36 @@ class Select_Order:
 
         self.text = order__select
         self.delivery = delivery
+        self.loop_condition = True
 
         if test is False:
-            self.confirm()
+            self.main()
+            while self.loop_condition:
+                self.main()
 
     def build_prompt(self):
-        self.prompt = '\n' + self.text['initial']
-        order_id_string = [str(id) for id in self.delivery.order_ids]
-        self.prompt += '\n'.join(order_id_string)
-        if self.prompt[-1] != '\n':
-            self.prompt += '\n'
-        self.prompt += self.text['prompt'][0]
+        from utility.utility import add_newlines
 
-    def confirm(self):
+        self.prompt = add_newlines(self.text['initial'])
+        self.prompt += '\n'.join([str(id) for id in self.delivery.order_ids])
+        self.prompt += add_newlines(self.text['prompt'][0])
+
+    def main(self):
         from utility.user_input import confirm
 
         self.user_choice()
-        while not confirm(self.user_choice, self.text['confrimation']):
+        while self.user_selection.lower() != 'b' and\
+                not confirm(f'{self.text["confirmation"]}{self.user_selection}'):
             self.user_choice()
     
     def get_index(self):
-        if not self.user_choice in ('b', 'B'):
-            return self.delivery.order_ids.index(self.user_choice)
+        if self.user_selection.lower() != 'b':
+            return self.delivery.order_ids.index(int(self.user_selection))
 
     def match_check(self):
-        if type(self.user_choice) is str:
-            if self.user_choice in ('b', 'B'):
-                return True
-        elif self.user_choice in self.delivery.order_ids:
+        if self.user_selection.lower() == 'b':
+            return True
+        elif int(self.user_selection) in self.delivery.order_ids:
             return True
         else:
             return False
@@ -98,10 +100,10 @@ class Select_Order:
         from utility.user_input import check_match, user_input
 
         self.build_prompt()
-        self.user_choice = user_input(self.prompt)
-        while not check_match(r'[\d]|^[b]$', self.user_choice)\
+        self.user_selection = user_input(self.prompt)
+        while not check_match(r'[\d]|^[b]$', self.user_selection)\
                 and not self.match_check():
-            self.user_choice = user_input(self.prompt)
+            self.user_selection = user_input(self.prompt)
 
 
 class Quick_Select_Order:
@@ -114,49 +116,49 @@ class Quick_Select_Order:
 
         self.text = order__select
         self.shift = shift
+        self.loop_condition = True
 
         if test is False:
-            self.confirm()
+            self.main()
+            while self.loop_condition:
+                self.main()
     
-    def confirm(self):
+    def main(self):
         from utility.user_input import confirm
 
         self.user_choice()
-        while not confirm(self.user_choice, self.text['confrimation']):
+        while self.user_selection.lower() != 'b' and\
+                not confirm(f"{self.text['confrimation']}{self.user_selection}"):
             self.user_choice()
 
     def get_delivery_id(self):
         for delivery in self.shift.deliveries:
-                for id in delivery.order_ids:
-                    if self.user_choice is id:
-                        return delivery.id
+            if int(self.user_selection) is delivery.order_ids:
+                return delivery.id
     
     def get_order_index(self):
         for delivery in self.shift.deliveries:
-                for id in delivery.order_ids:
-                    if self.user_choice is id:
-                        return delivery.order_ids.index(self.user_choice)
+            if int(self.user_selection) in delivery.order_ids:
+                return delivery.order_ids.index(int(self.user_selection))
 
     def match_check(self):
-        if self.user_choice in ('b', 'B'):
+        if self.user_selection.lower() == 'b':
             return True
-        else:
-            for delivery in self.shift.deliveries:
-                for id in delivery.order_ids:
-                    if self.user_choice is id:
-                        return True
+        for delivery in self.shift.deliveries:
+            if int(self.user_selection) in delivery.order_ids:
+                return True
 
         return False
 
     def user_choice(self):
         from utility.user_input import check_match, user_input
+        from utility.utility import add_newlines
 
-        pattern = r'[\d]|^[b]$'
-        prompt = self.text['prompt'][1]
-        self.user_choice = user_input(prompt, pattern)
-        while not check_match(pattern, self.user_choice)\
+        prompt = add_newlines(self.text['prompt'][1])
+        self.user_selection = user_input(prompt)
+        while not check_match(r'[\d]|^[b]$', self.user_selection)\
                 and not self.match_check():
-            self.user_choice = user_input(prompt, pattern)
+            self.user_selection = user_input(prompt)
 
 
 class Select_Carry_Out_Tip:
