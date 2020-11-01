@@ -15,10 +15,6 @@
 # todo: need to finish add pretty much everything to shift for 7-21
 # todo: need to fix vehical comp for shift on 7-2 through 7-21
 
-# required to work properly on termux with shortcut
-from os import chdir
-chdir('delivery_tracking')
-
 from menus import Shift_Tracking_Menu
 from objects import Shift
 from os import path
