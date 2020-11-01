@@ -652,19 +652,25 @@ class Revise_Tip:
         self.build_confirmation()
 
     def result(self):
+        from utility.utility import to_money
         # card
         if self.user_selection == '1':
+            print(f'\nCurrent card tip: {to_money(self.tip.card)}')
             self.tip.input_card()
         # cash
         elif self.user_selection == '2':
+            print(f'\nCurrent cash tip: {to_money(self.tip.cash)}')
             self.tip.input_cash()
         # card and cash
         elif self.user_selection == '3':
+            print(f'\nCurrent card tip: {to_money(self.tip.card)}')
+            print(f'\nCurrent cash tip: {to_money(self.tip.cash)}')
             self.tip.input_both()
         # unknown
         elif self.user_selection.lower() == 'u':
             # todo: need to add part to check if card and/or cash are not 
             #   zero, and then present the user with the apropeate options
+            print(f'\nCurrent unknown tip: {to_money(self.tip.unknonw)}')
             self.tip.input_unknown()
         # view
         elif self.user_selection.lower() == 'v':
