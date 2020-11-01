@@ -11,7 +11,7 @@ def load_shift(shift):
     from utility.utility import To_Datetime
 
     file_list = shift.file_list()
-
+    # in progress
     if shift.in_progress:
         # start time
         if path.exists(file_list['start_time']):
@@ -40,26 +40,34 @@ def load_shift(shift):
         if path.exists(file_list['extra_tips_claimed']):
             shift.extra_tips_claimed =\
                 Read(file_list['extra_tips_claimed']).decimal()
-
+    # completed
     else:
         # shift info
         shift_data = Read(file_list['info']).comma()
         # distance
-        shift.miles_traveled = float(shift_data[0])
+        if shift_data[0] != '':
+            shift.miles_traveled = float(shift_data[0])
         # fuel economy
-        shift.fuel_economy = float(shift_data[1])
+        if shift_data[1] != '':
+            shift.fuel_economy = float(shift_data[1])
         # vehicle compensation
-        shift.vehicle_compensation = float(shift_data[2])
+        if shift_data[2] != '':
+            shift.vehicle_compensation = float(shift_data[2])
         # device compensation
-        shift.device_compensation = float(shift_data[3])
+        if shift_data[3] != '':
+            shift.device_compensation = float(shift_data[3])
         # extra tips claimed
-        shift.extra_tips_claimed = float(shift_data[4])
+        if shift_data[4] != '':
+            shift.extra_tips_claimed = float(shift_data[4])
         # total hours
-        shift.total_hours = float(shift_data[5])
+        if shift_data[5] != '':
+            shift.total_hours = float(shift_data[5])
         # start time
-        shift.start_time = To_Datetime(shift_data[6]).from_datetime()
+        if shift_data[6] != '':
+            shift.start_time = To_Datetime(shift_data[6]).from_datetime()
         # end time
-        shift.end_time = To_Datetime(shift_data[7]).from_datetime()
+        if shift_data[7] != '':
+            shift.end_time = To_Datetime(shift_data[7]).from_datetime()
 
     return shift
 
@@ -108,20 +116,8 @@ def load_delivery(delivery):
 
     # get list of files and directory
     file_list = delivery.file_list()
-    # completed delivery
-    if delivery.in_progress is False:
-        # delivery info
-        delivery_data = Read(file_list['info']).comma()
-        # miles traveled
-        delivery.miles_traveled = float(delivery_data[0])
-        # average speed
-        delivery.average_speed = int(delivery_data[1])
-        # start time
-        delivery.start_time = To_Datetime(delivery_data[2]).from_datetime()
-        # end time
-        delivery.end_time = To_Datetime(delivery_data[3]).from_datetime()
-    # delivery in progress
-    elif delivery.in_progress is True:
+    # in progress
+    if delivery.in_progress:
         # start time
         if path.exists(file_list['start_time']):
             delivery.start_time = Read(file_list['start_time']).datetime()
@@ -134,6 +130,22 @@ def load_delivery(delivery):
         # end time
         if path.exists(file_list['end_time']):
             delivery.end_time = Read(file_list['end_time']).datetime()
+    # completed
+    else:
+        # delivery info
+        delivery_data = Read(file_list['info']).comma()
+        # miles traveled
+        if delivery_data[0] != '':
+            delivery.miles_traveled = float(delivery_data[0])
+        # average speed
+        if delivery_data[1] != '':
+            delivery.average_speed = int(delivery_data[1])
+        # start time
+        if delivery_data[2] != '':
+            delivery.start_time = To_Datetime(delivery_data[2]).from_datetime()
+        # end time
+        if delivery_data[3] != '':
+            delivery.end_time = To_Datetime(delivery_data[3]).from_datetime()
 
     return delivery
 
@@ -168,20 +180,8 @@ def load_order(order):
 
     file_list = order.file_list()
 
-    # load completed order
-    if order.in_progress is False:
-        from objects import Tip
-        # order data
-        order_data = Read(order.file_list()['info']).comma()
-        # tip
-        order.tip = Tip(order_data[0], order_data[1], order_data[2])
-        # distance
-        order.miles_traveled = float(order_data[3])
-        # end time
-        order.end_time = To_Datetime(order_data[4]).from_datetime()
-
-    # load in progress order
-    elif order.in_progress is True:
+    # in progress
+    if order.in_progress:
         # id
         if path.exists(file_list['id']):
             order.id = Read(file_list['id']).integer()
@@ -194,6 +194,19 @@ def load_order(order):
         # end time
         if path.exists(file_list['end_time']):
             order.end_time = Read(file_list['end_time']).datetime()
+    # completed
+    else:
+        from objects import Tip
+        # order data
+        order_data = Read(order.file_list()['info']).comma()
+        # tip
+        order.tip = Tip(order_data[0], order_data[1], order_data[2])
+        # distance
+        if order_data[3] != '':
+            order.miles_traveled = float(order_data[3])
+        # end time
+        if order_data[4] != '':
+            order.end_time = To_Datetime(order_data[4]).from_datetime()
 
     return order
 
@@ -222,6 +235,7 @@ def load_split(split):
 
     file_list = split.file_list()
 
+    # in progress
     if split.in_progress:
         # distance
         if path.exists(file_list['distance']):
@@ -232,16 +246,19 @@ def load_split(split):
         # end time
         if path.exists(file_list['end_time']):
             split.end_time = Read(file_list['end_time']).datetime()
-
+    # completed
     else:
         # split info
         split_info = Read(file_list['info']).comma()
         # distance
-        split.miles_traveled = float(split_info[0])
+        if split_info[0] != '':
+            split.miles_traveled = float(split_info[0])
         # start time
-        split.start_time = To_Datetime(split_info[1]).from_datetime()
+        if split_info[1] != '':
+            split.start_time = To_Datetime(split_info[1]).from_datetime()
         # end time
-        split.end_time = To_Datetime(split_info[2]).from_datetime()
+        if split_info[2] != '':
+            split.end_time = To_Datetime(split_info[2]).from_datetime()
 
     return split
 
@@ -260,26 +277,8 @@ def load_extra_stop(extra_stop):
     # get files and directory
     file_list = extra_stop.file_list()
 
-    if extra_stop.in_progress is False:
-        # extra stop info
-        extra_stop_data = Read(file_list['info']).newline()
-        # location
-        extra_stop.location = extra_stop_data[0]
-        # reason
-        extra_stop.reason = extra_stop_data[1]
-        # distance
-        extra_stop.miles_traveled = float(extra_stop_data[2])
-
-        if isinstance(extra_stop.parent, Delivery):
-            # end time
-            extra_stop.end_time = To_Datetime(extra_stop_data[3]).from_datetime()
-        elif isinstance(extra_stop.parent, Shift):
-            # start time
-            extra_stop.start_time = To_Datetime(extra_stop_data[3]).from_datetime()
-            # end time
-            extra_stop.end_time = To_Datetime(extra_stop_data[4]).from_datetime()
-
-    elif extra_stop.in_progress is True:
+    # in progress
+    if extra_stop.in_progress:
         # location
         if path.exists(file_list['location']):
             extra_stop.location = Read(file_list['location']).data
@@ -298,6 +297,25 @@ def load_extra_stop(extra_stop):
             # start time
             if path.exists(file_list['start_time']):
                 extra_stop.start_time = Read(file_list['start_time']).datetime()
+    # completed
+    else:
+        # extra stop info
+        extra_stop_data = Read(file_list['info']).newline()
+        # location
+        extra_stop.location = extra_stop_data[0]
+        # reason
+        extra_stop.reason = extra_stop_data[1]
+        # distance
+        extra_stop.miles_traveled = float(extra_stop_data[2])
+
+        if isinstance(extra_stop.parent, Delivery):
+            # end time
+            extra_stop.end_time = To_Datetime(extra_stop_data[3]).from_datetime()
+        elif isinstance(extra_stop.parent, Shift):
+            # start time
+            extra_stop.start_time = To_Datetime(extra_stop_data[3]).from_datetime()
+            # end time
+            extra_stop.end_time = To_Datetime(extra_stop_data[4]).from_datetime()
 
     return extra_stop
 
