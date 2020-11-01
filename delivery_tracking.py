@@ -3,17 +3,10 @@
 
 # todo: change all variable and attributes called miles_traveled to distance
 # todo: change any saved time to just time and remove the date. add To_Datetime().from_time()
+# todo: there are many, many strings in the code files. need to be moved to strings file
 # todo: make unit tests for everything
-# todo: learn to unit test
 
-# todo: need to finish ending and updating shift for 5-30
-# todo: need to finish ending and updating shift for 6-6
 # todo: add shift data for 6-14. accidentally deleted it while half asleep
-# todo: need to finish ending and updating shift for 6-28. phone died
-# todo: need to finish ending and updating shift for 6-30
-# todo: need to finish ending and updating shift for 7-11
-# todo: need to finish add pretty much everything to shift for 7-21
-# todo: need to fix vehical comp for shift on 7-2 through 7-21
 
 from menus import Shift_Tracking_Menu
 from objects import Shift

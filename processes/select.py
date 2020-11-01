@@ -39,8 +39,8 @@ class Select_Delivery:
                 return True
         elif (self.user_selection - 1) in self.shift.delivery_ids:
             return True
-        else:
-            return False
+
+        return False
 
     def user_choice(self):
         from utility.user_input import check_match, user_input
@@ -62,12 +62,9 @@ class Select_Order:
 
         self.text = order__select
         self.delivery = delivery
-        self.loop_condition = True
 
         if test is False:
             self.main()
-            while self.loop_condition:
-                self.main()
 
     def build_prompt(self):
         from utility.utility import add_newlines
@@ -93,8 +90,8 @@ class Select_Order:
             return True
         elif int(self.user_selection) in self.delivery.order_ids:
             return True
-        else:
-            return False
+
+        return False
 
     def user_choice(self):
         from utility.user_input import check_match, user_input
@@ -116,12 +113,9 @@ class Quick_Select_Order:
 
         self.text = order__select
         self.shift = shift
-        self.loop_condition = True
 
         if test is False:
             self.main()
-            while self.loop_condition:
-                self.main()
     
     def main(self):
         from utility.user_input import confirm

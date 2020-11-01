@@ -21,12 +21,12 @@ def end_shift(shift, test=False):
         write(shift.end_time, file_list['end_time'])
 
     # distance
-    if not path.exists(file_list['miles_traveled']):
+    if not path.exists(file_list['distance']):
         if test is False:
             # input
-            shift.input_miles_traveled()
+            shift.input_distance()
         # save
-        write(shift.miles_traveled, file_list['miles_traveled'])
+        write(shift.distance, file_list['distance'])
 
     # fuel economy
     if not path.exists(file_list['fuel_economy']):
@@ -112,13 +112,13 @@ def end_delivery(delivery, test=False):
     # get list of files and directory
     file_list = delivery.file_list()
 
-    # miles traveled
-    if not path.exists(file_list['miles_traveled']):
+    # distance
+    if not path.exists(file_list['distance']):
         if test is False:
             # input
-            delivery.input_miles_traveled()
+            delivery.input_distance()
         # save
-        write(delivery.miles_traveled, file_list['miles_traveled'])
+        write(delivery.distance, file_list['distance'])
 
     # average speed
     if not path.exists(file_list['average_speed']):
@@ -198,13 +198,13 @@ def track_order(order, test=False):
             order.input_tip()
         # save
         write(order.tip.csv(), file_list['tip'])
-    # miles traveled
-    if not path.exists(file_list['miles_traveled']):
+    # distance
+    if not path.exists(file_list['distance']):
         if test is False:
             # input
-            order.input_miles_traveled()
+            order.input_distance()
         # save
-        write(order.miles_traveled, file_list['miles_traveled'])
+        write(order.distance, file_list['distance'])
     # end time
     if not path.exists(file_list['end_time']):
         if test is False:
@@ -230,13 +230,13 @@ def end_split(split, test=False):
 
     file_list = split.file_list()
 
-    # miles traveled
+    # distance
     if not path.exists(file_list['distance']):
         if test is False:
             # input
-            split.input_miles_traveled()
+            split.input_distance()
         # save
-        write(split.miles_traveled, file_list['distance'])
+        write(split.distance, file_list['distance'])
 
     # end time
     if not path.exists(file_list['end_time']):
@@ -325,13 +325,13 @@ def track_extra_stop(extra_stop, test=False):
         # save
         write(extra_stop.reason, file_list['reason'])
 
-    # miles traveled
-    if not path.exists(file_list['miles_traveled']):
+    # distance
+    if not path.exists(file_list['distance']):
         if test is False:
             # input
-            extra_stop.input_miles_traveled()
+            extra_stop.input_distance()
         # save
-        write(extra_stop.miles_traveled, file_list['miles_traveled'])
+        write(extra_stop.distance, file_list['distance'])
 
     # end time
     if not path.exists(file_list['end_time']):

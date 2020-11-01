@@ -14,7 +14,7 @@ class Shift:
         self.carry_out_tips = []
         self.start_time = None
         self.end_time = None
-        self.miles_traveled = None
+        self.distance = None
         self.fuel_economy = None
         self.vehicle_compensation = None
         self.device_compensation = None
@@ -25,7 +25,7 @@ class Shift:
 
     def csv(self):
         return '{0},{1},{2},{3},{4},{5},{6},{7}'.format(
-            self.miles_traveled, self.fuel_economy, self.vehicle_compensation,
+            self.distance, self.fuel_economy, self.vehicle_compensation,
             self.device_compensation, self.extra_tips_claimed,
             self.total_hours, self.start_time, self.end_time)
 
@@ -33,7 +33,7 @@ class Shift:
         from os import path
         from resources.system_names import\
             end_time as end_time, start_time as start_time,\
-            miles_traveled as miles_traveled,\
+            miles_traveled as distance,\
             Shift__carry_out_tips as carry_out_tip,\
             Shift__completed_ids as completed_ids,\
             Shift__completed_info as info_file,\
@@ -57,7 +57,7 @@ class Shift:
             'extra_tips_claimed': path.join(directory, extra_claimed),
             'fuel_economy': path.join(directory, fuel_economy),
             'info': path.join(directory, info_file),
-            'miles_traveled': path.join(directory, miles_traveled),
+            'distance': path.join(directory, distance),
             'start_time': path.join(directory, start_time),
             'total_hours': path.join(directory, total_hours),
             'vehicle_compensation': path.join(directory, vehicle_compensation)
@@ -99,10 +99,10 @@ class Shift:
                 f'Average fuel economy: {self.fuel_economy} mpg'
 
         # distance
-        if isinstance(self.miles_traveled, float)\
-                  and self.miles_traveled > 0.0:
+        if isinstance(self.distance, float)\
+                  and self.distance > 0.0:
             view_parts['distance']  =\
-                f'Total miles traveled: {self.miles_traveled} miles'
+                f'Total miles traveled: {self.distance} miles'
 
         # total hours
         if isinstance(self.total_hours, float) and self.total_hours > 0.0:
@@ -255,21 +255,21 @@ class Shift:
             from utility.file import write
             write(self.fuel_economy, self.file_list()['fuel_economy'])
 
-    def change_miles_traveled(self):
+    def change_distance(self):
         import os
         # get old value
-        old_value = self.miles_traveled
+        old_value = self.distance
         # display old value to user
         print(f'\nCurrent amount miles traveled: {old_value}')
         # user inputs new value
-        self.input_miles_traveled()
+        self.input_distance()
         # update file if shift has been completed
         if os.path.exists(self.file_list()['info']):
             self.save()
         # update file if shift is in progress
-        elif os.path.exists(self.file_list()['miles_traveled']):
+        elif os.path.exists(self.file_list()['distance']):
             from utility.file import write
-            write(self.miles_traveled, self.file_list()['miles_traveled'])
+            write(self.distance, self.file_list()['distance'])
 
     def change_start_time(self):
         import os
@@ -343,13 +343,13 @@ class Shift:
         prompt = add_newlines(Shift__fuel_economy__prompt)
         self.fuel_economy = User_Input(prompt).fuel_economy()
 
-    def input_miles_traveled(self):
+    def input_distance(self):
         from resources.strings import Shift__miles_traveled__prompt
         from utility.user_input import User_Input
         from utility.utility import add_newlines
 
         prompt = add_newlines(Shift__miles_traveled__prompt)
-        self.miles_traveled = User_Input(prompt).miles_traveled()
+        self.distance = User_Input(prompt).distance()
     
     def input_total_hours(self):
         from resources.strings import Shift__total_hours__prompt
@@ -460,7 +460,7 @@ class Delivery:
         self.date = shift.id
         self.start_time = None
         self.end_time = None
-        self.miles_traveled = None
+        self.distance = None
         self.average_speed = None
         self.order_ids = []
         self.orders = []
@@ -469,11 +469,11 @@ class Delivery:
         self.in_progress = True
 
     def collection(self):
-        return (self.miles_traveled, self.average_speed,
+        return (self.distance, self.average_speed,
                 self.start_time, self.end_time)
 
     def csv(self):
-        return f'{self.miles_traveled},{self.average_speed},'\
+        return f'{self.distance},{self.average_speed},'\
                f'{self.start_time},{self.end_time}'
 
     def file_list(self):
@@ -483,7 +483,7 @@ class Delivery:
             delivery_directory, end_time as end_time,\
             Delivery__average_speed as average_speed,\
             Delivery__info as info_file,\
-            miles_traveled as miles_traveled,\
+            miles_traveled as distance,\
             start_time as start_time
 
         parent_directory = self.parent.file_list()['directory']
@@ -495,7 +495,7 @@ class Delivery:
             'average_speed': path.join(directory, average_speed),
             'end_time': path.join(directory, end_time),
             'info': path.join(directory, info_file),
-            'miles_traveled': path.join(directory, miles_traveled),
+            'distance': path.join(directory, distance),
             'start_time': path.join(directory, start_time)
         }
 
@@ -537,10 +537,10 @@ class Delivery:
             view_parts['order_ids'] = temp_string
 
         # distance
-        if isinstance(self.miles_traveled, float)\
-                  and self.miles_traveled > 0.0:
+        if isinstance(self.distance, float)\
+                  and self.distance > 0.0:
             view_parts['distance'] =\
-                f'Total distance traveled for delivery: {self.miles_traveled} miles'
+                f'Total distance traveled for delivery: {self.distance} miles'
 
         # average speed
         if isinstance(self.average_speed, int) and self.average_speed > 0:
@@ -601,20 +601,20 @@ class Delivery:
             from utility.file import write
             write(self.end_time, self.file_list()['end_time'])
 
-    def change_miles_traveled(self):
+    def change_distance(self):
         import os
         # display current value to user
         if self.average_speed is not None:
-            print(f'\nCurrent miles traveled: {self.miles_traveled} miles')
+            print(f'\nCurrent miles traveled: {self.distance} miles')
         # user inputs new value
-        self.input_miles_traveled()
+        self.input_distance()
         # update complete delivery file
         if os.path.exists(self.file_list()['info']):
             self.save()
         # update in progress file
-        elif os.path.exists(self.file_list()['miles_traveled']):
+        elif os.path.exists(self.file_list()['distance']):
             from utility.file import write
-            write(self.miles_traveled, self.file_list()['miles_traveled'])
+            write(self.distance, self.file_list()['distance'])
         
     def change_start_time(self):
         import os
@@ -638,13 +638,13 @@ class Delivery:
         prompt = add_newlines(Delivery__average_speed__prompt)
         self.average_speed = User_Input(prompt).average_speed()
 
-    def input_miles_traveled(self):
+    def input_distance(self):
         from resources.strings import Delivery__miles_traveled_prompt
         from utility.user_input import User_Input
         from utility.utility import add_newlines
 
         prompt = add_newlines(Delivery__miles_traveled_prompt)
-        self.miles_traveled = User_Input(prompt).miles_traveled()
+        self.distance = User_Input(prompt).distance()
 
     def remove_id_from_file(self):
         import os
@@ -731,21 +731,21 @@ class Order:
 
         self.date = delivery.date
         self.tip = Tip()
-        self.miles_traveled = None
+        self.distance = None
         self.end_time = None
         self.in_progress = True
 
     def collection(self):
         return (self.tip.card, self.tip.cash, self.tip.unknown,
-                self.miles_traveled, self.end_time)
+                self.distance, self.end_time)
 
     def csv(self):
-        return f'{self.tip.csv()},{self.miles_traveled},{self.end_time}'
+        return f'{self.tip.csv()},{self.distance},{self.end_time}'
 
     def file_list(self):
         from os import path
         from resources.system_names import\
-            end_time, miles_traveled, Order__completed_ids as completed_ids,\
+            end_time, distance, Order__completed_ids as completed_ids,\
             order_directory, Order__id as order_id, Tip__info as tip
 
         parent_directory = self.parent.file_list()['directory']
@@ -757,16 +757,16 @@ class Order:
             'directory': directory,
             'end_time': path.join(directory, end_time),
             'id': path.join(directory, order_id),
-            'miles_traveled': path.join(directory, miles_traveled),
+            'distance': path.join(directory, distance),
             'tip': path.join(directory, tip)
         }
 
     def view(self):
         # id
         view_parts = {'id': f'Order I.D. #: {self.id}'}
-        if self.miles_traveled:
+        if self.distance:
             view_parts['distance'] =\
-                f'Distance to address: {self.miles_traveled} miles'
+                f'Distance to address: {self.distance} miles'
         if self.end_time:
             formated_time = self.end_time.strftime('%I:%M:%S %p')
             view_parts['end_time'] = f'Completed at: {formated_time}'
@@ -827,20 +827,20 @@ class Order:
         
         return original_order_id
 
-    def change_miles_traveled(self):
+    def change_distance(self):
         import os
         # display current value
-        if self.miles_traveled is not None:
-            print(f'Current distance traveled: {self.miles_traveled} miles')
+        if self.distance is not None:
+            print(f'Current distance traveled: {self.distance} miles')
         # user inputs new value
-        self.input_miles_traveled()
+        self.input_distance()
         # update completed order file
         if os.path.exists(self.file_list()['info']):
             self.save()
         # update in progress file
         elif os.path.exists(self.file_list()['distance']):
             from utility.file import write
-            write(self.miles_traveled, self.file_list()['distance'])
+            write(self.distance, self.file_list()['distance'])
 
     def change_tip(self):
         import os
@@ -878,13 +878,13 @@ class Order:
 
         self.id = User_Input(add_newlines(Order__input_id__prompt)).id()
 
-    def input_miles_traveled(self):
+    def input_distance(self):
         from resources.strings import Order__input_miles_traveled__prompt
         from utility.user_input import User_Input
         from utility.utility import add_newlines
 
         prompt = add_newlines(Order__input_miles_traveled__prompt)
-        self.miles_traveled = User_Input(prompt).miles_traveled()
+        self.distance = User_Input(prompt).distance()
 
     def input_tip(self):
         self.tip = Tip().input_both()
@@ -1028,16 +1028,16 @@ class Split:
         self.date = shift.id
         self.start_time = None
         self.end_time = None
-        self.miles_traveled = None
+        self.distance = None
         self.in_progress = True
 
     def csv(self):
-        return f'{self.miles_traveled},{self.start_time},{self.end_time}'
+        return f'{self.distance},{self.start_time},{self.end_time}'
 
     def file_list(self):
         from os import path
         from resources.system_names import\
-            end_time, miles_traveled, split_directory, start_time, Split__info
+            end_time, distance, split_directory, start_time, Split__info
 
         parent_directory = self.parent.file_list()['directory']
         directory = path.join(parent_directory, split_directory)
@@ -1046,7 +1046,7 @@ class Split:
             'directory': directory,
             'end_time': path.join(directory, end_time),
             'info': path.join(parent_directory, Split__info),
-            'distance': path.join(directory, miles_traveled),
+            'distance': path.join(directory, distance),
             'start_time': path.join(directory, start_time)
         }
 
@@ -1056,9 +1056,9 @@ class Split:
         start_time = self.start_time.strftime('%I:%M:%S %p')
         view_parts = {'start_time': f'Started at: {start_time}'}
 
-        if isinstance(self.miles_traveled, float):
+        if isinstance(self.distance, float):
             view_parts['distance'] =\
-                f'Miles traveled: {self.miles_traveled} miles'
+                f'Miles traveled: {self.distance} miles'
 
         if isinstance(self.end_time, datetime):
             end_time = self.end_time.strftime('%I:%M:%S %p')
@@ -1080,21 +1080,21 @@ class Split:
             from utility.file import write
             write(self.end_time, self.file_list()['end_time'])
 
-    def change_miles_traveled(self):
+    def change_distance(self):
         import os
         # get old value
-        old_value = self.miles_traveled
+        old_value = self.distance
         # display old value to user
-        print(f'\nCurrent miles traveled: {self.miles_traveled}')
+        print(f'\nCurrent miles traveled: {self.distance}')
         # user inputs new value
-        self.input_miles_traveled()
+        self.input_distance()
         # update file if split was completed
         if os.path.exists(self.file_list()['info']):
             self.save()
         # update file if split is in progress
         elif os.path.exists(self.file_list()['distance']):
             from utility.file import write
-            write(self.miles_traveled, self.file_list()['distance'])
+            write(self.distance, self.file_list()['distance'])
 
     def change_start_time(self):
         import os
@@ -1110,12 +1110,12 @@ class Split:
             from utility.file import write
             write(self.start_time, self.file_list()['start_time'])
 
-    def input_miles_traveled(self):
+    def input_distance(self):
         from utility.user_input import User_Input
         from utility.utility import add_newlines
-        # todo: need to write prompt for miles traveled and put it in resoursces file
+        # todo: need to write prompt for distance and put it in resoursces file
         prompt = add_newlines('enter miles traveled')
-        self.miles_traveled = User_Input(prompt).miles_traveled()
+        self.distance = User_Input(prompt).distance()
 
     def set_end_time(self):
         from utility.utility import now
@@ -1172,7 +1172,7 @@ class Extra_Stop:
 
         self.location = None
         self.reason = None
-        self.miles_traveled = None
+        self.distance = None
         self.start_time = None
         self.end_time = None
         self.in_progress = True
@@ -1181,23 +1181,23 @@ class Extra_Stop:
         from objects import Shift
 
         if isinstance(self.parent, Shift):
-            return (self.location, self.reason, self.miles_traveled,
+            return (self.location, self.reason, self.distance,
                     self.end_time, self.start_time)
 
-        return (self.location, self.reason, self.miles_traveled, self.end_time)
+        return (self.location, self.reason, self.distance, self.end_time)
 
     def csv(self):
         if isinstance(self.parent, Shift):
-            return f'{self.location},{self.reason},{self.miles_traveled},'\
+            return f'{self.location},{self.reason},{self.distance},'\
                    f'{self.start_time},{self.end_time}'
         elif isinstance(self.parent, Delivery):
-            return f'{self.location},{self.reason},{self.miles_traveled},'\
+            return f'{self.location},{self.reason},{self.distance},'\
                    f'{self.end_time}'
 
     def file_list(self):
         from os import path
         from resources.system_names import\
-            end_time, extra_stop_directory, miles_traveled, start_time,\
+            end_time, extra_stop_directory, distance, start_time,\
             Extra_Stop__completed_ids as completed_ids,\
             Extra_Stop__info as info_file,\
             Extra_Stop__location as location, Extra_Stop__reason as reason,\
@@ -1218,7 +1218,7 @@ class Extra_Stop:
             'directory': directory,
             'end_time': path.join(directory, end_time),
             'location': path.join(directory, location),
-            'miles_traveled': path.join(directory, miles_traveled),
+            'distance': path.join(directory, distance),
             'reason': path.join(directory, reason),
             'start_time': path.join(directory, start_time)
         }
@@ -1227,13 +1227,13 @@ class Extra_Stop:
         if isinstance(self.parent, Shift):
             return f'{self.location}\n'\
                    f'{self.reason}\n'\
-                   f'{self.miles_traveled}\n'\
+                   f'{self.distance}\n'\
                    f'{self.start_time}\n'\
                    f'{self.end_time}'
         elif isinstance(self.parent, Delivery):
             return f'{self.location}\n'\
                    f'{self.reason}\n'\
-                   f'{self.miles_traveled}\n'\
+                   f'{self.distance}\n'\
                    f'{self.end_time}'
 
     def view(self):
@@ -1245,7 +1245,7 @@ class Extra_Stop:
             'id': f'Extra stop id #: {self.id + 1}',
             'location': f'Location: {self.location.capitalize()}',
             'reason': f'Reason: {self.reason.capitalize()}',
-            'distance': f'Distance to extra stop: {self.miles_traveled} miles',
+            'distance': f'Distance to extra stop: {self.distance} miles',
             'end_time': f'Extra stop was completed at: {end_time}'
         }
 
@@ -1295,21 +1295,21 @@ class Extra_Stop:
             from utility.file import write
             write(self.location, self.file_list()['location'])
 
-    def change_miles_traveled(self):
+    def change_distance(self):
         import os
-        # get old miles_traveled
-        old_reason = self.miles_traveled
-        # display old miles traveled to user
-        print(f'\nCurrent miles traveled: {self.miles_traveled}')
-        # user inputs new miles traveled
-        self.input_miles_traveled()
+        # get old distance
+        old_reason = self.distance
+        # display old distance to user
+        print(f'\nCurrent miles traveled: {self.distance}')
+        # user inputs new distance
+        self.input_distance()
         # update file if extra stop has been completed
         if os.path.exists(self.file_list()['info']):
             self.save()
         # update file if extra stop is in progress
-        elif os.path.exists(self.file_list()['miles_traveled']):
+        elif os.path.exists(self.file_list()['distance']):
             from utility.file import write
-            write(self.miles_traveled, self.file_list()['miles_traveled'])
+            write(self.distance, self.file_list()['distance'])
 
     def change_reason(self):
         import os
@@ -1349,13 +1349,13 @@ class Extra_Stop:
         prompt = add_newlines(Extra_Stop__location__prompt)
         self.location = User_Input(prompt).location()
 
-    def input_miles_traveled(self):
+    def input_distance(self):
         from resources.strings import Extra_Stop__miles_traveled__prompt
         from utility.user_input import User_Input
         from utility.utility import add_newlines
 
         prompt = add_newlines(Extra_Stop__miles_traveled__prompt)
-        self.miles_traveled = User_Input(prompt).miles_traveled()
+        self.distance = User_Input(prompt).distance()
 
     def input_reason(self):
         from resources.strings import Extra_Stop__reason__prompt

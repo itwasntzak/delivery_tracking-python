@@ -163,14 +163,14 @@ class User_Input():
         self.prompt = add_newlines(prompt)
 
     # general
-    def miles_traveled(self):
+    def distance(self):
         from resources.strings import miles_traveled_after_text
 
-        miles_traveled = input_decimal(self.prompt)
-        while not confirm(f'{miles_traveled}{miles_traveled_after_text}'):
-            miles_traveled = input_decimal(self.prompt)
+        distance = input_decimal(self.prompt)
+        while not confirm(f'{distance}{miles_traveled_after_text}'):
+            distance = input_decimal(self.prompt)
         
-        return miles_traveled
+        return distance
 
     def money(self, after=None):
         from resources.strings import money_symbol

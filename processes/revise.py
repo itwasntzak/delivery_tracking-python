@@ -130,11 +130,11 @@ class Revise_Shift:
             self.prompt +=\
                 f'3. {self.text["total_hours"][total_hours_condition]}\n'
             # distance
-            miles_traveled_condition = 0
-            if self.shift.miles_traveled is None:
-                miles_traveled_condition = 1
+            distance_condition = 0
+            if self.shift.distance is None:
+                distance_condition = 1
             self.prompt +=\
-                f'4. {self.text["distance"][miles_traveled_condition]}\n'
+                f'4. {self.text["distance"][distance_condition]}\n'
             # fuel economy
             fuel_economy_condition = 0
             if self.shift.fuel_economy is None:
@@ -224,7 +224,7 @@ class Revise_Shift:
             self.shift.change_total_hours()
         # distance
         elif self.user_selection == '4':
-            self.shift.change_miles_traveled()
+            self.shift.change_distance()
         # fuel economy
         elif self.user_selection == '5':
             self.shift.change_fuel_economy()
@@ -320,9 +320,9 @@ class Revise_Delivery:
                 self.confirmation_text = self.display_text['start_time'][1]
         # distance
         elif self.user_selection == '2':
-            if isinstance(self.delivery.miles_traveled, float):
+            if isinstance(self.delivery.distance, float):
                 self.confirmation_text = self.display_text['distance'][0]
-            elif self.delivery.miles_traveled is None:
+            elif self.delivery.distance is None:
                 self.confirmation_text = self.display_text['distance'][1]
         # average speed
         elif self.user_selection == '3':
@@ -369,9 +369,9 @@ class Revise_Delivery:
 
         if not self.delivery.in_progress:
             # distance
-            if isinstance(self.delivery.miles_traveled, float):
+            if isinstance(self.delivery.distance, float):
                 distance_condition = 0
-            elif self.delivery.miles_traveled is None:
+            elif self.delivery.distance is None:
                 distance_condition = 1
             self.prompt +=\
                 f'2. {self.display_text["distance"][distance_condition]}\n'
@@ -441,7 +441,7 @@ class Revise_Delivery:
             self.delivery.change_start_time()
         # distance
         elif self.user_selection == '2':
-            self.delivery.change_miles_traveled()
+            self.delivery.change_distance()
         # average speed
         elif self.user_selection == '3':
             self.delivery.change_average_speed()
@@ -542,7 +542,7 @@ class Revise_Order:
             self.order.change_tip()
         # miles traveled
         elif self.user_selection == '3':
-            self.order.change_miles_traveled()
+            self.order.change_distance()
         # end time
         elif self.user_selection == '4':
             self.order.change_end_time()
@@ -744,7 +744,7 @@ class Revise_Split:
             self.split.change_start_time()
         # distance
         elif self.user_selection == '2':
-            self.split.change_miles_traveled()
+            self.split.change_distance()
         # end time
         elif self.user_selection == '3':
             self.split.change_end_time()
@@ -844,7 +844,7 @@ class Revise_Extra_Stop:
             self.extra_stop.change_reason()
         # distance
         elif self.user_selection == '3':
-            self.extra_stop.change_miles_traveled()
+            self.extra_stop.change_distance()
         # end time
         elif self.user_selection == '4':
             self.extra_stop.change_end_time()

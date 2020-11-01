@@ -19,9 +19,9 @@ def load_shift(shift):
         # end time
         if path.exists(file_list['end_time']):
             shift.end_time = Read(file_list['end_time']).datetime()
-        # miles traveled
-        if path.exists(file_list['miles_traveled']):
-            shift.miles_traveled = Read(file_list['miles_traveled']).decimal()
+        # distance
+        if path.exists(file_list['distance']):
+            shift.distance = Read(file_list['distance']).decimal()
         # fuel economy
         if path.exists(file_list['fuel_economy']):
             shift.fuel_economy = Read(file_list['fuel_economy']).decimal()
@@ -46,7 +46,7 @@ def load_shift(shift):
         shift_data = Read(file_list['info']).comma()
         # distance
         if shift_data[0] != '':
-            shift.miles_traveled = float(shift_data[0])
+            shift.distance = float(shift_data[0])
         # fuel economy
         if shift_data[1] != '':
             shift.fuel_economy = float(shift_data[1])
@@ -121,9 +121,9 @@ def load_delivery(delivery):
         # start time
         if path.exists(file_list['start_time']):
             delivery.start_time = Read(file_list['start_time']).datetime()
-        # miles traveled
-        if path.exists(file_list['miles_traveled']):
-            delivery.miles_traveled = Read(file_list['miles_traveled']).decimal()
+        # distance
+        if path.exists(file_list['distance']):
+            delivery.distance = Read(file_list['distance']).decimal()
         # average speed
         if path.exists(file_list['average_speed']):
             delivery.average_speed = Read(file_list['average_speed']).integer()
@@ -134,9 +134,9 @@ def load_delivery(delivery):
     else:
         # delivery info
         delivery_data = Read(file_list['info']).comma()
-        # miles traveled
+        # distance
         if delivery_data[0] != '':
-            delivery.miles_traveled = float(delivery_data[0])
+            delivery.distance = float(delivery_data[0])
         # average speed
         if delivery_data[1] != '':
             delivery.average_speed = int(delivery_data[1])
@@ -189,8 +189,8 @@ def load_order(order):
         if path.exists(file_list['tip']):
             order.tip = load_tip(file_list['tip'])
         # distance
-        if path.exists(file_list['miles_traveled']):
-            order.miles_traveled = Read(file_list['miles_traveled']).decimal()
+        if path.exists(file_list['distance']):
+            order.distance = Read(file_list['distance']).decimal()
         # end time
         if path.exists(file_list['end_time']):
             order.end_time = Read(file_list['end_time']).datetime()
@@ -203,7 +203,7 @@ def load_order(order):
         order.tip = Tip(order_data[0], order_data[1], order_data[2])
         # distance
         if order_data[3] != '':
-            order.miles_traveled = float(order_data[3])
+            order.distance = float(order_data[3])
         # end time
         if order_data[4] != '':
             order.end_time = To_Datetime(order_data[4]).from_datetime()
@@ -239,7 +239,7 @@ def load_split(split):
     if split.in_progress:
         # distance
         if path.exists(file_list['distance']):
-            split.miles_traveled = Read(file_list['distance']).decimal()
+            split.distance = Read(file_list['distance']).decimal()
         # start time
         if path.exists(file_list['start_time']):
             split.start_time = Read(file_list['start_time']).datetime()
@@ -252,7 +252,7 @@ def load_split(split):
         split_info = Read(file_list['info']).comma()
         # distance
         if split_info[0] != '':
-            split.miles_traveled = float(split_info[0])
+            split.distance = float(split_info[0])
         # start time
         if split_info[1] != '':
             split.start_time = To_Datetime(split_info[1]).from_datetime()
@@ -286,9 +286,9 @@ def load_extra_stop(extra_stop):
         if path.exists(file_list['reason']):
             extra_stop.reason = Read(file_list['reason']).data
         # distance
-        if path.exists(file_list['miles_traveled']):
-            extra_stop.miles_traveled =\
-                Read(file_list['miles_traveled']).decimal()
+        if path.exists(file_list['distance']):
+            extra_stop.distance =\
+                Read(file_list['distance']).decimal()
         # end time
         if path.exists(file_list['end_time']):
             extra_stop.end_time = Read(file_list['end_time']).datetime()
@@ -306,7 +306,7 @@ def load_extra_stop(extra_stop):
         # reason
         extra_stop.reason = extra_stop_data[1]
         # distance
-        extra_stop.miles_traveled = float(extra_stop_data[2])
+        extra_stop.distance = float(extra_stop_data[2])
 
         if isinstance(extra_stop.parent, Delivery):
             # end time
