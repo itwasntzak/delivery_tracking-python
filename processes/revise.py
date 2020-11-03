@@ -1,5 +1,6 @@
 # todo: current issue is if user chooses to add new object and the program
 #           ends, there is no way to detect and continue adding the object
+# todo: the option add child objects should only be presented if the parent object has been completed
 
 class Revise_Shift:
     # todo: if in progress, dont present the option to add a delivery
