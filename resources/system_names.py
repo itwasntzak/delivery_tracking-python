@@ -15,7 +15,7 @@ split_directory = 'split'
 
 # list of shared file names
 end_time = 'end_time.txt'
-miles_traveled = 'miles_traveled.txt'
+distance = 'distance.txt'
 start_time = 'start_time.txt'
 
 # shift files

@@ -32,8 +32,7 @@ class Shift:
     def file_list(self):
         from os import path
         from resources.system_names import\
-            end_time as end_time, start_time as start_time,\
-            miles_traveled as distance,\
+            end_time as end_time, start_time as start_time, distance,\
             Shift__carry_out_tips as carry_out_tip,\
             Shift__completed_ids as completed_ids,\
             Shift__completed_info as info_file,\
@@ -478,13 +477,11 @@ class Delivery:
 
     def file_list(self):
         from os import path
-        from resources.system_names import\
+        from resources.system_names import distance, start_time,\
             Delivery__completed_ids as completed_ids,\
             delivery_directory, end_time as end_time,\
             Delivery__average_speed as average_speed,\
-            Delivery__info as info_file,\
-            miles_traveled as distance,\
-            start_time as start_time
+            Delivery__info as info_file
 
         parent_directory = self.parent.file_list()['directory']
         directory = path.join(parent_directory, f'{self.id}')
