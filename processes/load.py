@@ -302,20 +302,28 @@ def load_extra_stop(extra_stop):
         # extra stop info
         extra_stop_data = Read(file_list['info']).newline()
         # location
-        extra_stop.location = extra_stop_data[0]
+        if extra_stop_data[0] != '':
+            extra_stop.location = extra_stop_data[0]
         # reason
-        extra_stop.reason = extra_stop_data[1]
+        if extra_stop_data[1] != '':
+            extra_stop.reason = extra_stop_data[1]
         # distance
-        extra_stop.distance = float(extra_stop_data[2])
+        if extra_stop_data[2] != '':
+            extra_stop.distance = float(extra_stop_data[2])
 
         if isinstance(extra_stop.parent, Delivery):
             # end time
-            extra_stop.end_time = To_Datetime(extra_stop_data[3]).from_datetime()
+            if extra_stop_data[3] != '':
+                extra_stop.end_time = To_Datetime(extra_stop_data[3]).from_datetime()
         elif isinstance(extra_stop.parent, Shift):
             # start time
-            extra_stop.start_time = To_Datetime(extra_stop_data[3]).from_datetime()
+            if extra_stop_data[3] != '':
+                extra_stop.start_time =\
+                    To_Datetime(extra_stop_data[3]).from_datetime()
             # end time
-            extra_stop.end_time = To_Datetime(extra_stop_data[4]).from_datetime()
+            if extra_stop_data[4] != '':
+                extra_stop.end_time =\
+                    To_Datetime(extra_stop_data[4]).from_datetime()
 
     return extra_stop
 

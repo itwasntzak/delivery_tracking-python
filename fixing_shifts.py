@@ -8,7 +8,7 @@ import os
 from utility.file import Read, write
 from utility.utility import To_Datetime
 
-shift_id = '2020-01-07'
+shift_id = '2020-01-31'
 shift = Shift(To_Datetime(shift_id).from_date().date())
 path = os.path.join('data', 'shifts', shift_id)
 # os.mkdir(path)
@@ -27,7 +27,7 @@ os.chdir(path)
 #     os.chdir('..')
 
 # untracked_delivery_ids = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
-untracked_delivery_ids = range(7)
+untracked_delivery_ids = range(11)
 for id in untracked_delivery_ids:
     # os.mkdir(f'{id}')
     os.chdir(f'{id}')
@@ -41,7 +41,8 @@ for id in untracked_delivery_ids:
         # write('', f'{order_id}.txt')
         # os.system(f'code {order_id}.txt')
 
-    # os.rename('order_numbers.txt', 'order_ids.txt')
+    if os.path.exists('order_numbers.txt'):
+        os.rename('order_numbers.txt', 'order_ids.txt')
     os.system('code delivery_info.txt')
     for order_id in Read('order_ids.txt').integer_list():
         os.system(f'code {order_id}.txt')
