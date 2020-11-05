@@ -52,6 +52,17 @@ class Read():
     def decimal_list(self):
         return [float(data) for data in self.comma()]
 
+    def date(self):
+        date_list = self.date_list()
+        if len(date_list) == 1:
+            return date_list[0]
+        elif len(date_list) > 1:
+            return date_list
+    
+    def date_list(self):
+        from utility.utility import To_Datetime
+        return [To_Datetime(data).from_date() for data in self.comma()]
+
     def datetime(self):
         datetime_list = self.datetime_list()
         if len(datetime_list) == 1:
