@@ -14,9 +14,6 @@ from os import path, chdir
 from resources.system_names import data_directory, shifts_directory
 from utility.utility import now
 
-# change working directory to make work in termux with shortcuts
-chdir('delivery_tracking')
-
 # make directories to store user data
 shifts_path = path.join(data_directory, shifts_directory)
 if not path.exists(data_directory):
