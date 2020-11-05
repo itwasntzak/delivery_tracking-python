@@ -1,5 +1,6 @@
 __pycache__/
 brain/
+data/
 .vscode/
 *.pyc
 testing_toosl.py
