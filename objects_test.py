@@ -9,7 +9,7 @@ class Test_Shift(unittest.TestCase):
 
         self.shift = objects.Shift(now().date())
 
-        self.miles_traveled = 12.3
+        self.distance = 12.3
         self.fuel_economy = 21.2
         self.vehicle_compensation = 13.07
         self.device_compensation = .27
@@ -46,21 +46,30 @@ class Test_Shift(unittest.TestCase):
             self.shift.add_delivery('hello world')
 
     def test_add_delivery(self):
+        # check delivery id is not in shift delivery ids list
         self.assertNotIn(0, self.shift.delivery_ids)
+        # check delivery object is not in shift delivery list
         self.assertNotIn(self.delivery_1, self.shift.deliveries)
 
+        # run method
         self.shift.add_delivery(self.delivery_1)
 
+        # check delivery id was successfully added
         self.assertIn(0, self.shift.delivery_ids)
+        # check delivery object was successfully added
         self.assertIn(self.delivery_1, self.shift.deliveries)
 
-
+        # check delivery id is not in shift delivery ids list
         self.assertNotIn(1, self.shift.delivery_ids)
+        # check delivery object is not in shift delivery list
         self.assertNotIn(self.delivery_2, self.shift.deliveries)
 
+        # run method
         self.shift.add_delivery(self.delivery_2)
 
+        # check delivery id was successfully added
         self.assertIn(1, self.shift.delivery_ids)
+        # check delivery object was successfully added
         self.assertIn(self.delivery_2, self.shift.deliveries)
 
     def test_csv(self):
@@ -68,7 +77,7 @@ class Test_Shift(unittest.TestCase):
         expected = 'None,None,None,None,None,None,None,None'
         self.assertEqual(self.shift.csv(), expected)
 
-        self.shift.miles_traveled = self.miles_traveled
+        self.shift.distance = self.distance
         self.shift.fuel_economy = self.fuel_economy
         self.shift.vehicle_compensation = self.vehicle_compensation
         self.shift.device_compensation = self.device_compensation
@@ -78,7 +87,7 @@ class Test_Shift(unittest.TestCase):
         self.shift.end_time = self.end_time
 
         expected = '{},{},{},{},{},{},{},{}'.format(
-            self.miles_traveled, self.fuel_economy, self.vehicle_compensation,
+            self.distance, self.fuel_economy, self.vehicle_compensation,
             self.device_compensation, self.extra_tips_claimed,
             self.total_hours, self.start_time, self.end_time)
         self.assertEqual(self.shift.csv(), expected)
@@ -253,7 +262,7 @@ class Test_Delivery(unittest.TestCase):
 
         self.delivery.start_time = start_time
         self.delivery.end_time = end_time
-        self.delivery.miles_traveled = distance
+        self.delivery.distance = distance
         self.delivery.average_speed = average_speed
 
         expected = '{},{},{},{}'.format(distance, average_speed, start_time, end_time)

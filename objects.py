@@ -23,11 +23,339 @@ class Shift:
         self.split = None
         self.in_progress = True
 
+    # retrieving tips methods
+    def all_tips(self):
+        # get order tips
+        order_tips = [order.tip
+                      for delivery in self.deliveries
+                      for order in delivery.orders]
+        # get carry out tips
+        carry_out_tips = [tip for tip in self.carry_out_tips]
+        # combine and return the two lists
+        return order_tips + carry_out_tips
+    
+    def card_tips(self):
+        # get order tips
+        order_tips = [order.tip
+                      for delivery in self.deliveries
+                      for order in delivery.orders
+                      if order.tip.card != 0.0]
+        # get carry out tips
+        carry_out_tips = [tip for tip in self.carry_out_tips if tip.card != 0.0]
+        # combine and return the two lists
+        return order_tips + carry_out_tips
+    
+    def cash_tips(self):
+        # get order tips
+        order_tips = [order.tip
+                      for delivery in self.deliveries
+                      for order in delivery.orders
+                      if order.tip.cash != 0.0]
+        # get carry out tips
+        carry_out_tips = [tip for tip in self.carry_out_tips if tip.cash != 0.0]
+        # combine and return the two lists
+        return order_tips + carry_out_tips
+
+    # add child objects methods
+    def add_delivery(self, delivery):
+        if not isinstance(delivery, Delivery):
+            raise TypeError
+
+        self.delivery_ids.append(delivery.id)
+        self.deliveries.append(delivery)
+
+    def add_extra_stop(self, extra_stop):
+        if not isinstance(extra_stop, Extra_Stop):
+            raise TypeError
+
+        self.extra_stop_ids.append(extra_stop.id)
+        self.extra_stops.append(extra_stop)
+
+    # data changing methods
+    def change_device_compensation(self):
+        # todo: need to move string
+        import os
+        from utility.utility import to_money
+
+        # get old value
+        old_value = self.device_compensation
+        # display old value to user
+        print(f'\nCurrent device compensation amount: {to_money(old_value)}')
+        # user inputs new value
+        self.input_device_compensation()
+
+        # save change
+        # shift has been completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # shift is in progress
+        elif os.path.exists(self.file_list()['device_comp']):
+            from utility.file import write
+            write(self.device_compensation, self.file_list()['device_comp'])
+
+    def change_end_time(self):
+        import os
+        from utility.utility import Change_Datetime
+
+        change_time = Change_Datetime(self.end_time).time()
+        self.end_time = change_time.datetime
+
+        # save change
+        # shift has been completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # shift is in progress
+        elif os.path.exists(self.file_list()['end_time']):
+            from utility.file import write
+            write(self.end_time, self.file_list()['end_time'])
+
+    def change_extra_tips_claimed(self):
+        # todo: need to move string
+        import os
+
+        # get old value
+        old_value = self.extra_tips_claimed
+        # display old value to user
+        print(f'\nCurrent amount of extra tips claimed: {old_value}')
+        # user inputs new value
+        self.input_extra_tips_claimed()
+
+        # save change
+        # shift has been completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # shift is in progress
+        elif os.path.exists(self.file_list()['extra_tips']):
+            from utility.file import write
+            write(self.extra_tips_claimed, self.file_list()['extra_tips'])
+
+    def change_fuel_economy(self):
+        # todo: need to move string
+        import os
+
+        # get old value
+        old_value = self.fuel_economy
+        # display old value to user
+        print(f'\nCurrent amount fuel economy: {old_value}')
+        # user inputs new value
+        self.input_fuel_economy()
+
+        # save change
+        # shift has been completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # shift is in progress
+        elif os.path.exists(self.file_list()['fuel_economy']):
+            from utility.file import write
+            write(self.fuel_economy, self.file_list()['fuel_economy'])
+
+    def change_distance(self):
+        # todo: need to move string
+        import os
+
+        # get old value
+        old_value = self.distance
+        # display old value to user
+        print(f'\nCurrent amount miles traveled: {old_value}')
+        # user inputs new value
+        self.input_distance()
+
+        # save change
+        # shift has been completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # shift is in progress
+        elif os.path.exists(self.file_list()['distance']):
+            from utility.file import write
+            write(self.distance, self.file_list()['distance'])
+
+    def change_start_time(self):
+        # todo: need to move string
+        import os
+        from utility.utility import Change_Datetime
+
+        change_time = Change_Datetime(self.start_time).time()
+        self.start_time = change_time.datetime
+
+        # save change
+        # shift has been completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # shift is in progress
+        elif os.path.exists(self.file_list()['start_time']):
+            from utility.file import write
+            write(self.start_time, self.file_list()['start_time'])
+
+    def change_total_hours(self):
+        # todo: need to move string
+        import os
+
+        # get old value
+        old_value = self.total_hours
+        # display old value to user
+        print(f'\nCurrent amount of total hours: {old_value}')
+        # user inputs new value
+        self.input_total_hours()
+
+        # save change
+        # shift has been completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # shift is in progress
+        elif os.path.exists(self.file_list()['total_hours']):
+            from utility.file import write
+            write(self.total_hours, self.file_list()['total_hours'])
+
+    def change_vehicle_compensation(self):
+        # todo: need to move string
+        import os
+
+        # get old value
+        old_value = self.vehicle_compensation
+        # display old value to user
+        print(f'\nCurrent amount of vehicle compensation: {old_value}')
+        # user inputs new value
+        self.input_vehicle_compensation()
+
+        # save change
+        # shift has been completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # shift is in progress
+        elif os.path.exists(self.file_list()['vehicle_comp']):
+            from utility.file import write
+            write(self.vehicle_compensation, self.file_list()['vehicle_comp'])
+
+    # data input methods
+    def input_device_compensation(self):
+        # todo: need to move string
+        from resources.strings import Shift__device_compensation__prompt
+        from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Shift__device_compensation__prompt)
+        confirm_text = ' device compensation'
+        self.device_compensation = User_Input(prompt).money(confirm_text)
+    
+    def input_extra_tips_claimed(self):
+        # todo: need to move string
+        from resources.strings import Shift__extra_tips_claimed__prompt
+        from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Shift__extra_tips_claimed__prompt)
+        confirm_text = ' extra claimed for taxes'
+        self.extra_tips_claimed = User_Input(prompt).money(confirm_text)
+
+    def input_fuel_economy(self):
+        # todo: need to move string
+        from resources.strings import Shift__fuel_economy__prompt
+        from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Shift__fuel_economy__prompt)
+        self.fuel_economy = User_Input(prompt).fuel_economy()
+
+    def input_distance(self):
+        # todo: need to move string
+        from resources.strings import Shift__miles_traveled__prompt
+        from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Shift__miles_traveled__prompt)
+        self.distance = User_Input(prompt).distance()
+    
+    def input_total_hours(self):
+        # todo: need to move string
+        from resources.strings import Shift__total_hours__prompt
+        from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Shift__total_hours__prompt)
+        self.total_hours = User_Input(prompt).total_hours()
+    
+    def input_vehicle_compensation(self):
+        # todo: need to move string
+        from resources.strings import Shift__vehicle_compensation__prompt
+        from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Shift__vehicle_compensation__prompt)
+        confirm_text = ' vehicle compensation'
+        self.vehicle_compensation = User_Input(prompt).money(confirm_text)
+
+    # time setting methods
+    def set_end_time(self):
+        from datetime import datetime
+        self.end_time = datetime.now()
+
+    def set_start_time(self):
+        from datetime import datetime
+        self.start_time = datetime.now()
+
+    # object loading/saving methods
+    def load_completed(self):
+        from processes.load import load_shift, load_carry_out_tips,\
+            load_shift_deliveries, load_parent_extra_stops, load_split
+        from os import path
+
+        self.in_progress = False
+        # load shift data
+        self = load_shift(self)
+        # load carry out tips
+        if path.exists(self.file_list()['tips']):
+            self = load_carry_out_tips(self)
+        # load deliveries
+        if path.exists(Delivery(self).file_list()['completed_ids']):
+            self = load_shift_deliveries(self)
+        # load extra stops
+        if path.exists(Extra_Stop(self).file_list()['completed_ids']):
+            self = load_parent_extra_stops(self)
+        # load split
+        if path.exists(Split(self).file_list()['info']):
+            self.split = load_split(Split(self))
+        return self
+
+    def load_current(self):
+        from processes.load import load_shift, load_carry_out_tips,\
+            load_shift_deliveries, load_parent_extra_stops, load_split
+        from os import path
+
+        # load shift data
+        self = load_shift(self)
+        # load carry out tips
+        if path.exists(self.file_list()['tips']):
+            self = load_carry_out_tips(self)
+        # load deliveries
+        if path.exists(Delivery(self).file_list()['completed_ids']):
+            self = load_shift_deliveries(self)
+        # load extra stops
+        if path.exists(Extra_Stop(self).file_list()['completed_ids']):
+            self = load_parent_extra_stops(self)
+        # load split
+        if path.exists(Split(self).file_list()['info']):
+            self.split = Split(self).load_completed()
+        # load split start time
+        elif path.exists(Split(self).file_list()['start_time']):
+            self.split = Split(self).load_current()
+
+        return self
+    
+    def save(self):
+        from utility.file import write
+        write(self.csv(), self.file_list()['info'])
+
+    # utility methods
     def csv(self):
         return '{0},{1},{2},{3},{4},{5},{6},{7}'.format(
             self.distance, self.fuel_economy, self.vehicle_compensation,
             self.device_compensation, self.extra_tips_claimed,
             self.total_hours, self.start_time, self.end_time)
+
+    def end(self):
+        from processes.track import end_shift
+        self = end_shift(self)
+        return self
 
     def file_list(self):
         from os import path
@@ -62,7 +390,32 @@ class Shift:
             'vehicle_compensation': path.join(directory, vehicle_compensation)
         }
 
+    def remove_id_from_file(self):
+        from utility.file import Read, write
+        from utility.utility import To_Datetime
+
+        # get file path
+        ids_file  = self.file_list()['completed_ids']
+        # get list of shift ids
+        id_list = [To_Datetime(id).from_date() for id in Read(ids_file).comma()]
+        # create new list without current shifts id
+        new_ids_list = [str(id.date()) for id in id_list if id != self.id]
+
+        # check if any shift ids are left
+        if len(new_ids_list) == 0:
+            from os import remove
+            remove(ids_file)
+        elif len(new_ids_list) > 0:
+            from utility.file import write
+            write(','.join(new_ids_list), ids_file)
+
+    def start(self):
+        from processes.track import start_shift
+        self = start_shift(self)
+        return self
+
     def view(self):
+        # todo: this isnt very readable, need to rethink this
         from datetime import datetime
         from utility.utility import to_money
 
@@ -141,309 +494,8 @@ class Shift:
         
         return view_parts
 
-    def all_tips(self):
-        tips = []
-        for delivery in self.deliveries:
-            for order in delivery.orders:
-                tips.append(order.tip)
-        
-        for tip in self.carry_out_tips:
-            tips.append(tip)
-
-        return tips
-    
-    def card_tips(self):
-        tips = []
-        for delivery in self.deliveries:
-            for order in delivery.orders:
-                if order.tip.card != 0.0:
-                    tips.append(order.tip)
-        
-        for tip in self.carry_out_tips:
-            if tip.card != 0.0:
-                tips.append(tip)
-
-        return tips
-    
-    def cash_tips(self):
-        tips = []
-        for delivery in self.deliveries:
-            for order in delivery.orders:
-                if order.tip.cash != 0.0:
-                    tips.append(order.tip)
-        
-        for tip in self.carry_out_tips:
-            if tip.cash != 0.0:
-                tips.append(tip)
-
-        return tips
-
-    def add_delivery(self, delivery):
-        if not isinstance(delivery, Delivery):
-            raise TypeError
-
-        self.delivery_ids.append(delivery.id)
-        self.deliveries.append(delivery)
-
-    def add_extra_stop(self, extra_stop):
-        if not isinstance(extra_stop, Extra_Stop):
-            raise TypeError
-
-        self.extra_stop_ids.append(extra_stop.id)
-        self.extra_stops.append(extra_stop)
-
-    def change_device_compensation(self):
-        import os
-        # get old value
-        old_value = self.device_compensation
-        # display old value to user
-        print(f'\nCurrent amount device compensation: {old_value}')
-        # user inputs new value
-        self.input_device_compensation()
-        # update file if shift has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if shift is in progress
-        elif os.path.exists(self.file_list()['device_comp']):
-            from utility.file import write
-            write(self.device_compensation, self.file_list()['device_comp'])
-
-    def change_end_time(self):
-        import os
-        from utility.utility import Change_Datetime
-
-        change_time = Change_Datetime(self.end_time).time()
-        self.end_time = change_time.datetime
-        # update file if shift has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if shift is in progress
-        elif os.path.exists(self.file_list()['end_time']):
-            from utility.file import write
-            write(self.end_time, self.file_list()['end_time'])
-
-    def change_extra_tips_claimed(self):
-        import os
-        # get old value
-        old_value = self.extra_tips_claimed
-        # display old value to user
-        print(f'\nCurrent amount of extra tips claimed: {old_value}')
-        # user inputs new value
-        self.input_extra_tips_claimed()
-        # update file if shift has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if shift is in progress
-        elif os.path.exists(self.file_list()['extra_tips']):
-            from utility.file import write
-            write(self.extra_tips_claimed, self.file_list()['extra_tips'])
-
-    def change_fuel_economy(self):
-        import os
-        # get old value
-        old_value = self.fuel_economy
-        # display old value to user
-        print(f'\nCurrent amount fuel economy: {old_value}')
-        # user inputs new value
-        self.input_fuel_economy()
-        # update file if shift has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if shift is in progress
-        elif os.path.exists(self.file_list()['fuel_economy']):
-            from utility.file import write
-            write(self.fuel_economy, self.file_list()['fuel_economy'])
-
-    def change_distance(self):
-        import os
-        # get old value
-        old_value = self.distance
-        # display old value to user
-        print(f'\nCurrent amount miles traveled: {old_value}')
-        # user inputs new value
-        self.input_distance()
-        # update file if shift has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if shift is in progress
-        elif os.path.exists(self.file_list()['distance']):
-            from utility.file import write
-            write(self.distance, self.file_list()['distance'])
-
-    def change_start_time(self):
-        import os
-        from utility.utility import Change_Datetime
-
-        change_time = Change_Datetime(self.start_time).time()
-        self.start_time = change_time.datetime
-        # update file if shift has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if shift is in progress
-        elif os.path.exists(self.file_list()['start_time']):
-            from utility.file import write
-            write(self.start_time, self.file_list()['start_time'])
-
-    def change_total_hours(self):
-        import os
-        # get old value
-        old_value = self.total_hours
-        # display old value to user
-        print(f'\nCurrent amount of total hours: {old_value}')
-        # user inputs new value
-        self.input_total_hours()
-        # update file if shift has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if shift is in progress
-        elif os.path.exists(self.file_list()['total_hours']):
-            from utility.file import write
-            write(self.total_hours, self.file_list()['total_hours'])
-
-    def change_vehicle_compensation(self):
-        import os
-        # get old value
-        old_value = self.vehicle_compensation
-        # display old value to user
-        print(f'\nCurrent amount of vehicle compensation: {old_value}')
-        # user inputs new value
-        self.input_vehicle_compensation()
-        # update file if shift has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if shift is in progress
-        elif os.path.exists(self.file_list()['vehicle_comp']):
-            from utility.file import write
-            write(self.vehicle_compensation, self.file_list()['vehicle_comp'])
-
-    def input_device_compensation(self):
-        from resources.strings import Shift__device_compensation__prompt
-        from utility.user_input import User_Input
-        from utility.utility import add_newlines
-
-        prompt = add_newlines(Shift__device_compensation__prompt)
-        confirm_text = ' device compensation'
-        self.device_compensation = User_Input(prompt).money(confirm_text)
-    
-    def input_extra_tips_claimed(self):
-        from resources.strings import Shift__extra_tips_claimed__prompt
-        from utility.user_input import User_Input
-        from utility.utility import add_newlines
-
-        prompt = add_newlines(Shift__extra_tips_claimed__prompt)
-        confirm_text = ' extra claimed for taxes'
-        self.extra_tips_claimed = User_Input(prompt).money(confirm_text)
-
-    def input_fuel_economy(self):
-        from resources.strings import Shift__fuel_economy__prompt
-        from utility.user_input import User_Input
-        from utility.utility import add_newlines
-
-        prompt = add_newlines(Shift__fuel_economy__prompt)
-        self.fuel_economy = User_Input(prompt).fuel_economy()
-
-    def input_distance(self):
-        from resources.strings import Shift__miles_traveled__prompt
-        from utility.user_input import User_Input
-        from utility.utility import add_newlines
-
-        prompt = add_newlines(Shift__miles_traveled__prompt)
-        self.distance = User_Input(prompt).distance()
-    
-    def input_total_hours(self):
-        from resources.strings import Shift__total_hours__prompt
-        from utility.user_input import User_Input
-        from utility.utility import add_newlines
-
-        prompt = add_newlines(Shift__total_hours__prompt)
-        self.total_hours = User_Input(prompt).total_hours()
-    
-    def input_vehicle_compensation(self):
-        from resources.strings import Shift__vehicle_compensation__prompt
-        from utility.user_input import User_Input
-        from utility.utility import add_newlines
-
-        prompt = add_newlines(Shift__vehicle_compensation__prompt)
-        confirm_text = ' vehicle compensation'
-        self.vehicle_compensation = User_Input(prompt).money(confirm_text)
-
-    def set_end_time(self):
-        from datetime import datetime
-        self.end_time = datetime.now()
-
-    def set_start_time(self):
-        from datetime import datetime
-        self.start_time = datetime.now()
-
-    def end(self):
-        from processes.track import end_shift
-        self = end_shift(self)
-        return self
-
-    def load_completed(self):
-        from processes.load import load_shift, load_carry_out_tips,\
-            load_shift_deliveries, load_parent_extra_stops, load_split
-        from os import path
-
-        self.in_progress = False
-        self = load_shift(self)
-        if path.exists(self.file_list()['tips']):
-            self = load_carry_out_tips(self)
-        if path.exists(Delivery(self).file_list()['completed_ids']):
-            self = load_shift_deliveries(self)
-        if path.exists(Extra_Stop(self).file_list()['completed_ids']):
-            self = load_parent_extra_stops(self)
-        if path.exists(Split(self).file_list()['info']):
-            self.split = load_split(Split(self))
-        return self
-
-    def load_current(self):
-        from processes.load import load_shift, load_carry_out_tips,\
-            load_shift_deliveries, load_parent_extra_stops, load_split
-        from os import path
-
-        self = load_shift(self)
-        if path.exists(self.file_list()['tips']):
-            self = load_carry_out_tips(self)
-        if path.exists(Delivery(self).file_list()['completed_ids']):
-            self = load_shift_deliveries(self)
-        if path.exists(Extra_Stop(self).file_list()['completed_ids']):
-            self = load_parent_extra_stops(self)
-        if path.exists(Split(self).file_list()['info']):
-            self.split = Split(self).load_completed()
-        elif path.exists(Split(self).file_list()['start_time']):
-            self.split = Split(self).load_current()
-
-        return self
-
-    def save(self):
-        from utility.file import write
-        write(self.csv(), self.file_list()['info'])
-
-    def start(self):
-        from processes.track import start_shift
-        self = start_shift(self)
-        return self
-
-    def remove_id_from_file(self):
-        from utility.file import Read, write
-        from utility.utility import To_Datetime
-
-        ids_file  = self.file_list()['completed_ids']
-
-        id_list = [To_Datetime(id).from_date() for id in Read(ids_file).comma()]
-        new_ids_list = [str(id.date()) for id in id_list if id != self.id]
-
-        if len(new_ids_list) == 0:
-            from os import remove
-            remove(ids_file)
-        elif len(new_ids_list) > 0:
-            from utility.file import write
-            write(','.join(new_ids_list), ids_file)
-
 
 class Delivery:
-    # cnsd: use commas to split delivery data, use newline to split multi-delv
     def __init__(self, shift, id=None):
         if not isinstance(shift, Shift):
             raise TypeError
@@ -467,6 +519,160 @@ class Delivery:
         self.extra_stops = []
         self.in_progress = True
 
+    # adding children methods
+    def add_extra_stop(self, extra_stop):
+        if not isinstance(extra_stop, Extra_Stop):
+            raise TypeError
+
+        self.extra_stop_ids.append(extra_stop.id)
+        self.extra_stops.append(extra_stop)
+
+    def add_order(self, order):
+        if not isinstance(order, Order):
+            raise TypeError(f'{order} is of type {type(order)}')
+
+        self.order_ids.append(order.id)
+        self.orders.append(order)
+
+    # data changing methods
+    def change_average_speed(self):
+        # todo: need to move string
+        import os
+
+        # display current value to user
+        if self.average_speed is not None:
+            print(f'\nCurrent average speed: {self.average_speed} mph')
+        # user inputs new value
+        self.input_average_speed()
+
+        # save change
+        # completed delivery
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # delivery in progress
+        elif os.path.exists(self.file_list()['average_speed']):
+            from utility.file import write
+            write(self.average_speed, self.file_list()['average_speed'])
+
+    def change_end_time(self):
+        import os
+        from utility.utility import Change_Datetime
+
+        change_time = Change_Datetime(self.end_time).time()
+        self.end_time = change_time.datetime
+
+        # save change
+        # completed delivery
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # delivery is in progress
+        elif os.path.exists(self.file_list()['end_time']):
+            from utility.file import write
+            write(self.end_time, self.file_list()['end_time'])
+
+    def change_distance(self):
+        # todo: need to moved string
+        import os
+
+        # display current value to user
+        if self.average_speed is not None:
+            print(f'\nCurrent miles traveled: {self.distance} miles')
+        # user inputs new value
+        self.input_distance()
+
+        # save change
+        # completed delivery
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # delivery in progress
+        elif os.path.exists(self.file_list()['distance']):
+            from utility.file import write
+            write(self.distance, self.file_list()['distance'])
+
+    def change_start_time(self):
+        import os
+        from utility.utility import Change_Datetime
+
+        change_time = Change_Datetime(self.start_time).time()
+        self.start_time = change_time.datetime
+
+        # save change
+        # completed delivery
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # delivery is in progress
+        elif os.path.exists(self.file_list()['start_time']):
+            from utility.file import write
+            write(self.start_time, self.file_list()['start_time'])
+
+    # data imput methods
+    def input_average_speed(self):
+        from resources.strings import Delivery__average_speed__prompt
+        from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Delivery__average_speed__prompt)
+        self.average_speed = User_Input(prompt).average_speed()
+
+    def input_distance(self):
+        from resources.strings import Delivery__miles_traveled_prompt
+        from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Delivery__miles_traveled_prompt)
+        self.distance = User_Input(prompt).distance()
+
+    # time setting methods
+    def set_end_time(self):
+        from utility.utility import now
+        self.end_time = now()
+
+    def set_start_time(self):
+        from utility.utility import now
+        self.start_time = now()
+
+    # object loading/saving methods
+    def load_completed(self):
+        from processes.load import\
+            load_delivery,\
+            load_delivery_orders,\
+            load_parent_extra_stops
+        from os import path
+
+        self.in_progress = False
+        # load delivery data
+        self = load_delivery(self)
+        # load orders
+        if path.exists(Order(self).file_list()['completed_ids']):
+            self = load_delivery_orders(self)
+        # load extra stops
+        if path.exists(Extra_Stop(self).file_list()['completed_ids']):
+            self = load_parent_extra_stops(self)
+        return self
+
+    def load_current(self):
+        from processes.load import\
+            load_delivery,\
+            load_delivery_orders,\
+            load_parent_extra_stops
+        from os import path
+
+        # load delivery data
+        self = load_delivery(self)
+        # load orders
+        if path.exists(Order(self).file_list()['completed_ids']):
+            self = load_delivery_orders(self)
+        # load extra stops
+        if path.exists(Extra_Stop(self).file_list()['completed_ids']):
+            self = load_parent_extra_stops(self)
+        return self
+
+    def save(self):
+        from os import path
+        from utility.file import write
+        write(self.csv(), self.file_list()['info'])
+
+    # utility methods
     def collection(self):
         return (self.distance, self.average_speed,
                 self.start_time, self.end_time)
@@ -474,6 +680,15 @@ class Delivery:
     def csv(self):
         return f'{self.distance},{self.average_speed},'\
                f'{self.start_time},{self.end_time}'
+
+    def delete(self):
+        # todo: should add confirmation before deleting everything
+        from processes.delete import delete_delivery
+        delete_delivery(self)
+
+    def end(self):
+        from processes.track import end_delivery
+        self = end_delivery(self)
 
     def file_list(self):
         from os import path
@@ -496,7 +711,28 @@ class Delivery:
             'start_time': path.join(directory, start_time)
         }
 
+    def remove_id_from_file(self):
+        import os
+
+        # get file
+        id_file = self.file_list()['completed_ids']
+
+        if os.path.exists(id_file):
+            from utility.file import Read, write
+            # load delivery ids list
+            delivery_ids = Read(id_file).integer_list()
+            # remove id from list
+            if self.id in delivery_ids:
+                delivery_ids.pop(delivery_ids.index(self.id))
+                # update ids file
+                write(','.join([str(id) for id in delivery_ids]), id_file)
+
+    def start(self):
+        from processes.track import start_delivery
+        self = start_delivery(self)
+
     def view(self):
+        # todo: this is a big mess, need to rethink this
         from datetime import datetime
 
         view_parts = {'id': f'Delivery #: {self.id + 1}'}
@@ -525,9 +761,9 @@ class Delivery:
         elif len(self.order_ids) > 1:
             temp_string = temp_string.format("'s")
             for value in range(len(self.order_ids) - 1):
-                    index = value
-                    id = self.order_ids[index]
-                    temp_string += f'{id}, '
+                index = value
+                id = self.order_ids[index]
+                temp_string += f'{id}, '
             index += 1
             id = self.order_ids[index]
             temp_string += f'{id}'
@@ -555,166 +791,13 @@ class Delivery:
         
         return view_parts
 
-    def add_extra_stop(self, extra_stop):
-        if isinstance(extra_stop, Extra_Stop):
-            self.extra_stop_ids.append(extra_stop.id)
-            self.extra_stops.append(extra_stop)
-        else:
-            raise TypeError
-
-    def add_order(self, order):
-        if not isinstance(order, Order):
-            raise TypeError(f'{order} is of type {type(order)}')
-
-        self.order_ids.append(order.id)
-        self.orders.append(order)
-
-    def change_average_speed(self):
-        import os
-        # display current value to user
-        if self.average_speed is not None:
-            print(f'\nCurrent average speed: {self.average_speed} mph')
-        # user inputs new value
-        self.input_average_speed()
-        # update complete delivery file
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update in progress file
-        elif os.path.exists(self.file_list()['average_speed']):
-            from utility.file import write
-            write(self.average_speed, self.file_list()['average_speed'])
-
-    def change_end_time(self):
-        import os
-        from utility.utility import Change_Datetime
-
-        change_time = Change_Datetime(self.end_time).time()
-        self.end_time = change_time.datetime
-        # update file if delivery has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if delivery is in progress
-        elif os.path.exists(self.file_list()['end_time']):
-            from utility.file import write
-            write(self.end_time, self.file_list()['end_time'])
-
-    def change_distance(self):
-        import os
-        # display current value to user
-        if self.average_speed is not None:
-            print(f'\nCurrent miles traveled: {self.distance} miles')
-        # user inputs new value
-        self.input_distance()
-        # update complete delivery file
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update in progress file
-        elif os.path.exists(self.file_list()['distance']):
-            from utility.file import write
-            write(self.distance, self.file_list()['distance'])
-        
-    def change_start_time(self):
-        import os
-        from utility.utility import Change_Datetime
-
-        change_time = Change_Datetime(self.start_time).time()
-        self.start_time = change_time.datetime
-        # update file if delivery has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if delivery is in progress
-        elif os.path.exists(self.file_list()['start_time']):
-            from utility.file import write
-            write(self.start_time, self.file_list()['start_time'])
-
-    def input_average_speed(self):
-        from resources.strings import Delivery__average_speed__prompt
-        from utility.user_input import User_Input
-        from utility.utility import add_newlines
-
-        prompt = add_newlines(Delivery__average_speed__prompt)
-        self.average_speed = User_Input(prompt).average_speed()
-
-    def input_distance(self):
-        from resources.strings import Delivery__miles_traveled_prompt
-        from utility.user_input import User_Input
-        from utility.utility import add_newlines
-
-        prompt = add_newlines(Delivery__miles_traveled_prompt)
-        self.distance = User_Input(prompt).distance()
-
-    def remove_id_from_file(self):
-        import os
-
-        id_file = self.file_list()['completed_ids']
-
-        if os.path.exists(id_file):
-            from utility.file import Read, write
-            # load delivery ids list
-            delivery_ids = Read(id_file).integer_list()
-            # remove id from list
-            if self.id in delivery_ids:
-                delivery_ids.pop(delivery_ids.index(self.id))
-                # update ids file
-                write(','.join([str(id) for id in delivery_ids]), id_file)
-
-    def set_end_time(self):
-        from utility.utility import now
-        self.end_time = now()
-
-    def set_start_time(self):
-        from utility.utility import now
-        self.start_time = now()
-
-    def delete(self):
-        # todo: should add confirmation before deleting everything
-        from processes.delete import delete_delivery
-        delete_delivery(self)
-
-    def end(self):
-        from processes.track import end_delivery
-        self = end_delivery(self)
-
-    def load_completed(self):
-        from processes.load import load_delivery, load_delivery_orders,\
-            load_parent_extra_stops
-        from os import path
-
-        self.in_progress = False
-        self = load_delivery(self)
-        if path.exists(Order(self).file_list()['completed_ids']):
-            self = load_delivery_orders(self)
-        if path.exists(Extra_Stop(self).file_list()['completed_ids']):
-            self = load_parent_extra_stops(self)
-        return self
-
-    def load_current(self):
-        from processes.load import load_delivery, load_delivery_orders,\
-            load_parent_extra_stops
-        from os import path
-
-        self = load_delivery(self)
-        if path.exists(Order(self).file_list()['completed_ids']):
-            self = load_delivery_orders(self)
-        if path.exists(Extra_Stop(self).file_list()['completed_ids']):
-            self = load_parent_extra_stops(self)
-        return self
-
-    def save(self):
-        from os import path
-        from utility.file import write
-        write(self.csv(), self.file_list()['info'])
-
-    def start(self):
-        from processes.track import start_delivery
-        self = start_delivery(self)
-
 
 class Order:
     def __init__(self, delivery, id=None):
         if not isinstance(delivery, Delivery):
             from resources.error_messages import Order__class__wrong_parent_type
-            raise TypeError(Order__class__wrong_parent_type.format(type(delivery)))
+            message = Order__class__wrong_parent_type.format(type(delivery))
+            raise TypeError(message)
 
         self.parent = delivery
 
@@ -732,12 +815,150 @@ class Order:
         self.end_time = None
         self.in_progress = True
 
+    # data changing methods
+    def change_id(self):
+        # todo: need to write unittest for this
+        import os
+        from utility.file import Read, write
+
+        # get old id
+        original_order_id = self.id
+
+        # user input new id
+        print(f'\nCurrent I.D. #:{self.id}')
+        self.input_id()
+
+        # update completed ids file
+        if os.path.exists(self.file_list()['completed_ids']):
+            # get order id(s) currently in file
+            order_ids = Read(self.file_list()['completed_ids']).integer_list()
+            # check if old order id is in list, if so remove it
+            if original_order_id in order_ids:
+                order_ids[order_ids.index(original_order_id)] = self.id
+            # write updated list to completed ids file
+            write(','.join([str(id) for id in order_ids]),
+                  self.file_list()['completed_ids'])
+
+        # remove file
+        if os.path.exists(self.file_list()['info']):
+            os.remove(self.file_list()['info'])
+        elif os.path.exists(self.file_list()['id']):
+            os.remove(self.file_list()['id'])
+        # rewrite file
+        if self.in_progress is False:
+            write(self.csv(), self.file_list()['info'])
+        else:
+            write(self.id, self.file_list()['id'])
+        
+        return original_order_id
+
+    def change_distance(self):
+        import os
+
+        # display current value
+        if self.distance is not None:
+            print(f'Current distance traveled: {self.distance} miles')
+        # user inputs new value
+        self.input_distance()
+
+        # save change
+        # completed order
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # order in progress
+        elif os.path.exists(self.file_list()['distance']):
+            from utility.file import write
+            write(self.distance, self.file_list()['distance'])
+
+    def change_tip(self):
+        import os
+        from processes.revise import Revise_Tip
+
+        # user revise's tip
+        revise_tip = Revise_Tip(self.tip)
+        # change current tip values to new tip values
+        self.tip = revise_tip.tip
+
+        # save change
+        # completed order
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # order in progress
+        elif os.path.exists(self.file_list()['tip']):
+            from utility.file import write
+            write(self.tip.csv(), self.file_list()['tip'])
+
+    def change_end_time(self):
+        import os
+        from utility.utility import Change_Datetime
+
+        change_time = Change_Datetime(self.end_time).time()
+        self.end_time = change_time.datetime
+
+        # save change
+        # completed order
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # order in progress
+        elif os.path.exists(self.file_list()['end_time']):
+            from utility.file import write
+            write(self.end_time, self.file_list()['end_time'])
+
+    # data input methods
+    def input_id(self):
+        from resources.strings import Order__input_id__prompt
+        from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        self.id = User_Input(add_newlines(Order__input_id__prompt)).id()
+
+    def input_distance(self):
+        from resources.strings import Order__input_miles_traveled__prompt
+        from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Order__input_miles_traveled__prompt)
+        self.distance = User_Input(prompt).distance()
+
+    def input_tip(self):
+        self.tip = Tip().input_both()
+
+    # time setting methods
+    def set_end_time(self):
+        from utility.utility import now
+        self.end_time = now()
+
+    def set_start_time(self):
+        from utility.utility import now
+        self.start_time = now()
+
+    # object loading/saving methods
+    def load_completed(self):
+        from processes.load import load_order
+        self.in_progress = False
+        self = load_order(self)
+        return self
+    
+    def load_current(self):
+        from processes.load import load_order
+        self = load_order(self)
+        return self
+
+    def save(self):
+        from utility.file import write
+        write(self.csv(), self.file_list()['info'])
+
+    # utility methods
     def collection(self):
         return (self.tip.card, self.tip.cash, self.tip.unknown,
                 self.distance, self.end_time)
 
     def csv(self):
         return f'{self.tip.csv()},{self.distance},{self.end_time}'
+
+    def delete(self):
+        from processes.delete import delete_order
+        delete_order(self.order)
 
     def file_list(self):
         from os import path
@@ -785,107 +1006,6 @@ class Order:
 
         return view_parts
 
-    def change_id(self):
-        # todo: need to write unittest for this
-        import os
-        from utility.file import Read, write
-
-        # get old id
-        original_order_id = self.id
-
-        # remove file
-        completed = False
-        if os.path.exists(self.file_list()['info']):
-            os.remove(self.file_list()['info'])
-            completed = True
-        elif os.path.exists(self.file_list()['id']):
-            os.remove(self.file_list()['id'])
-
-        # user input new id
-        print(f'\nCurrent I.D. #:{self.id}')
-        self.input_id()
-
-        # update completed ids file
-        if os.path.exists(self.file_list()['completed_ids']):
-            # get order id(s) currently in file
-            order_ids = Read(self.file_list()['completed_ids']).integer_list()
-            # check if old order id is in list, if so remove it
-            if original_order_id in order_ids:
-                order_ids[order_ids.index(original_order_id)] = self.id
-            # write updated list to completed ids file
-            write(','.join([str(id) for id in order_ids]),
-                  self.file_list()['completed_ids'])
-
-        # rewrite file
-        if completed is True:
-            write(self.csv(), self.file_list()['info'])
-        else:
-            write(self.id, self.file_list()['id'])
-        
-        return original_order_id
-
-    def change_distance(self):
-        import os
-        # display current value
-        if self.distance is not None:
-            print(f'Current distance traveled: {self.distance} miles')
-        # user inputs new value
-        self.input_distance()
-        # update completed order file
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update in progress file
-        elif os.path.exists(self.file_list()['distance']):
-            from utility.file import write
-            write(self.distance, self.file_list()['distance'])
-
-    def change_tip(self):
-        import os
-        from processes.revise import Revise_Tip
-        # user revise's tip
-        revise_tip = Revise_Tip(self.tip)
-        # change current tip values to new tip values
-        self.tip = revise_tip.tip
-        # update completed order file
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update in progress tip file
-        elif os.path.exists(self.file_list()['tip']):
-            from utility.file import write
-            write(self.tip.csv(), self.file_list()['tip'])
-
-    def change_end_time(self):
-        import os
-        from utility.utility import Change_Datetime
-
-        change_time = Change_Datetime(self.end_time).time()
-        self.end_time = change_time.datetime
-        # update file if order has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if order is in progress
-        elif os.path.exists(self.file_list()['end_time']):
-            from utility.file import write
-            write(self.end_time, self.file_list()['end_time'])
-
-    def input_id(self):
-        from resources.strings import Order__input_id__prompt
-        from utility.user_input import User_Input
-        from utility.utility import add_newlines
-
-        self.id = User_Input(add_newlines(Order__input_id__prompt)).id()
-
-    def input_distance(self):
-        from resources.strings import Order__input_miles_traveled__prompt
-        from utility.user_input import User_Input
-        from utility.utility import add_newlines
-
-        prompt = add_newlines(Order__input_miles_traveled__prompt)
-        self.distance = User_Input(prompt).distance()
-
-    def input_tip(self):
-        self.tip = Tip().input_both()
-
     def remove_id_from_file(self):
         import os
 
@@ -901,36 +1021,9 @@ class Order:
                 # update file without id
                 write(','.join([str(id) for id in id_list]), id_file)
 
-    def set_end_time(self):
-        from utility.utility import now
-        self.end_time = now()
-
-    def set_start_time(self):
-        from utility.utility import now
-        self.start_time = now()
-
-    def load_completed(self):
-        from processes.load import load_order
-        self.in_progress = False
-        self = load_order(self)
-        return self
-    
-    def load_current(self):
-        from processes.load import load_order
-        self = load_order(self)
-        return self
-
-    def delete(self):
-        from processes.delete import delete_order
-        delete_order(self.order)
-
     def track(self):
         from processes.track import track_order
         self = track_order(self)
-
-    def save(self):
-        from utility.file import write
-        write(self.csv(), self.file_list()['info'])
 
 
 class Tip:
@@ -944,42 +1037,7 @@ class Tip:
         
         self.evaluate()
 
-    def csv(self):
-        return f'{self.card},{self.cash},{self.unknown}'
-
-    def collection(self):
-        return (self.card, self.cash, self.unknown)
-
-    def evaluate(self):
-        if self.card != 0.0:
-            self.has_card = True
-        else:
-            self.has_card = False
-
-        if self.cash != 0.0:
-            self.has_cash = True
-        else:
-            self.has_cash = False
-
-        if self.unknown != 0.0:
-            self.has_unknown = True
-        else:
-            self.has_unknown = False
-
-    def total_amount(self):
-        return self.card + self.cash + self.unknown
-
-    def view(self):
-        from utility.utility import to_money
-        view_parts = {}
-
-        view_parts['total'] = f'Total tip: {to_money(self.total_amount())}'
-        view_parts['card'] = f'Card tip: {to_money(self.card)}'
-        view_parts['cash'] = f'Cash tip: {to_money(self.cash)}'
-        view_parts['unknown'] = f'Unknown tip: {to_money(self.unknown)}'
-
-        return view_parts
-    
+    # data input methods
     def input_both(self):
         from resources.strings import\
             Tip__input_card__prompt as card_prompt,\
@@ -1015,6 +1073,43 @@ class Tip:
         self.evaluate()
         return self
 
+    # utility methods
+    def csv(self):
+        return f'{self.card},{self.cash},{self.unknown}'
+
+    def collection(self):
+        return (self.card, self.cash, self.unknown)
+
+    def evaluate(self):
+        if self.card != 0.0:
+            self.has_card = True
+        else:
+            self.has_card = False
+
+        if self.cash != 0.0:
+            self.has_cash = True
+        else:
+            self.has_cash = False
+
+        if self.unknown != 0.0:
+            self.has_unknown = True
+        else:
+            self.has_unknown = False
+
+    def total_amount(self):
+        return self.card + self.cash + self.unknown
+
+    def view(self):
+        from utility.utility import to_money
+        view_parts = {}
+
+        view_parts['total'] = f'Total tip: {to_money(self.total_amount())}'
+        view_parts['card'] = f'Card tip: {to_money(self.card)}'
+        view_parts['cash'] = f'Cash tip: {to_money(self.cash)}'
+        view_parts['unknown'] = f'Unknown tip: {to_money(self.unknown)}'
+
+        return view_parts
+
 
 class Split:
     def __init__(self, shift):
@@ -1028,8 +1123,98 @@ class Split:
         self.distance = None
         self.in_progress = True
 
+    # data changing methods
+    def change_end_time(self):
+        import os
+        from utility.utility import Change_Datetime
+
+        change_time = Change_Datetime(self.end_time).time()
+        self.end_time = change_time.datetime
+
+        # save change
+        # completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # in progress
+        elif os.path.exists(self.file_list()['end_time']):
+            from utility.file import write
+            write(self.end_time, self.file_list()['end_time'])
+
+    def change_distance(self):
+        import os
+
+        # get old value
+        old_value = self.distance
+        # display old value to user
+        print(f'\nCurrent miles traveled: {self.distance}')
+        # user inputs new value
+        self.input_distance()
+
+        # save change
+        # completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # in progress
+        elif os.path.exists(self.file_list()['distance']):
+            from utility.file import write
+            write(self.distance, self.file_list()['distance'])
+
+    def change_start_time(self):
+        import os
+        from utility.utility import Change_Datetime
+
+        change_time = Change_Datetime(self.start_time).time()
+        self.start_time = change_time.datetime
+
+        # save change
+        # completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # in progress
+        elif os.path.exists(self.file_list()['start_time']):
+            from utility.file import write
+            write(self.start_time, self.file_list()['start_time'])
+
+    # data input methods
+    def input_distance(self):
+        from utility.user_input import User_Input
+        from utility.utility import add_newlines
+        # todo: need to write prompt for distance and put it in resoursces file
+        prompt = add_newlines('enter miles traveled')
+        self.distance = User_Input(prompt).distance()
+
+    # time setting methods
+    def set_end_time(self):
+        from utility.utility import now
+        self.end_time = now()
+
+    def set_start_time(self):
+        from utility.utility import now
+        self.start_time = now()
+
+    # object loading/saving methods
+    def load_completed(self):
+        from processes.load import load_split
+        self.in_progress = False
+        self = load_split(self)
+        return self
+
+    def load_current(self):
+        from processes.load import load_split
+        self = load_split(self)
+        return self
+
+    def save(self):
+        from utility.file import write
+        write(self.csv(), self.file_list()['info'])
+
+    # utility methods
     def csv(self):
         return f'{self.distance},{self.start_time},{self.end_time}'
+
+    def end(self):
+        from processes.track import end_split
+        self = end_split(self)
 
     def file_list(self):
         from os import path
@@ -1047,6 +1232,11 @@ class Split:
             'start_time': path.join(directory, start_time)
         }
 
+    def start(self):
+        from processes.track import start_split
+        self = start_split(self)
+        return self
+
     def view(self):
         from datetime import datetime
 
@@ -1062,89 +1252,6 @@ class Split:
             view_parts['end_time'] = f'Ended at: {end_time}'
         
         return view_parts
-
-    def change_end_time(self):
-        import os
-        from utility.utility import Change_Datetime
-
-        change_time = Change_Datetime(self.end_time).time()
-        self.end_time = change_time.datetime
-        # update file if split has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if split is in progress
-        elif os.path.exists(self.file_list()['end_time']):
-            from utility.file import write
-            write(self.end_time, self.file_list()['end_time'])
-
-    def change_distance(self):
-        import os
-        # get old value
-        old_value = self.distance
-        # display old value to user
-        print(f'\nCurrent miles traveled: {self.distance}')
-        # user inputs new value
-        self.input_distance()
-        # update file if split was completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if split is in progress
-        elif os.path.exists(self.file_list()['distance']):
-            from utility.file import write
-            write(self.distance, self.file_list()['distance'])
-
-    def change_start_time(self):
-        import os
-        from utility.utility import Change_Datetime
-
-        change_time = Change_Datetime(self.start_time).time()
-        self.start_time = change_time.datetime
-        # update file if split has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if split is in progress
-        elif os.path.exists(self.file_list()['start_time']):
-            from utility.file import write
-            write(self.start_time, self.file_list()['start_time'])
-
-    def input_distance(self):
-        from utility.user_input import User_Input
-        from utility.utility import add_newlines
-        # todo: need to write prompt for distance and put it in resoursces file
-        prompt = add_newlines('enter miles traveled')
-        self.distance = User_Input(prompt).distance()
-
-    def set_end_time(self):
-        from utility.utility import now
-        self.end_time = now()
-
-    def set_start_time(self):
-        from utility.utility import now
-        self.start_time = now()
-
-    def end(self):
-        from processes.track import end_split
-        self = end_split(self)
-
-    def load_completed(self):
-        from processes.load import load_split
-        self.in_progress = False
-        self = load_split(self)
-        return self
-
-    def load_current(self):
-        from processes.load import load_split
-        self = load_split(self)
-        return self
-
-    def save(self):
-        from utility.file import write
-        write(self.csv(), self.file_list()['info'])
-
-    def start(self):
-        from processes.track import start_split
-        self = start_split(self)
-        return self
 
 
 class Extra_Stop:
@@ -1174,6 +1281,158 @@ class Extra_Stop:
         self.end_time = None
         self.in_progress = True
 
+    # data changing methods
+    def change_end_time(self):
+        import os
+        from utility.utility import Change_Datetime
+
+        change_time = Change_Datetime(self.end_time).time()
+        self.end_time = change_time.datetime
+
+        # save change
+        # completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # in progress
+        elif os.path.exists(self.file_list()['end_time']):
+            from utility.file import write
+            write(self.end_time, self.file_list()['end_time'])
+
+    def change_location(self):
+        import os
+
+        # get old location
+        old_location = self.location
+        # display old location to user
+        print(f'\nCurrent location: {self.location}')
+        # user inputs new location
+        self.input_location()
+
+        # save change
+        # completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # in progress
+        elif os.path.exists(self.file_list()['location']):
+            from utility.file import write
+            write(self.location, self.file_list()['location'])
+
+    def change_distance(self):
+        import os
+
+        # get old distance
+        old_reason = self.distance
+        # display old distance to user
+        print(f'\nCurrent miles traveled: {self.distance}')
+        # user inputs new distance
+        self.input_distance()
+
+        # save change
+        # completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # in progress
+        elif os.path.exists(self.file_list()['distance']):
+            from utility.file import write
+            write(self.distance, self.file_list()['distance'])
+
+    def change_reason(self):
+        import os
+
+        # get old reason
+        old_reason = self.reason
+        # display old reason to user
+        print(f'\nCurrent reason: {self.reason}')
+        # user inputs new reason
+        self.input_reason()
+
+        # save change
+        # completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # in progress
+        elif os.path.exists(self.file_list()['reason']):
+            from utility.file import write
+            write(self.reason, self.file_list()['reason'])
+
+    def change_start_time(self):
+        import os
+        from utility.utility import Change_Datetime
+
+        change_time = Change_Datetime(self.start_time).time()
+        self.start_time = change_time.datetime
+
+        # save change
+        # completed
+        if os.path.exists(self.file_list()['info']):
+            self.save()
+        # in progress
+        elif os.path.exists(self.file_list()['start_time']):
+            from utility.file import write
+            write(self.start_time, self.file_list()['start_time'])
+
+    # data input methods
+    def input_location(self):
+        from resources.strings import Extra_Stop__location__prompt
+        from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Extra_Stop__location__prompt)
+        self.location = User_Input(prompt).location()
+
+    def input_distance(self):
+        from resources.strings import Extra_Stop__miles_traveled__prompt
+        from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Extra_Stop__miles_traveled__prompt)
+        self.distance = User_Input(prompt).distance()
+
+    def input_reason(self):
+        from resources.strings import Extra_Stop__reason__prompt
+        from utility.user_input import User_Input
+        from utility.utility import add_newlines
+
+        prompt = add_newlines(Extra_Stop__reason__prompt)
+        self.reason = User_Input(prompt).reason()
+
+    # time setting methods
+    def set_end_time(self):
+        from utility.utility import now
+        self.end_time = now()
+
+    def set_start_time(self):
+        from utility.utility import now
+        self.start_time = now()
+
+    # object loading/saving methods
+    def load_completed(self):
+        from processes.load import load_extra_stop
+        self.in_progress = False
+        self = load_extra_stop(self)
+        return self
+
+    def load_current(self):
+        from processes.load import load_extra_stop
+        self = load_extra_stop(self)
+        return self
+
+    def save(self):
+        from utility.file import write
+        write(self.nlsv(), self.file_list()['info'])
+
+    # utility methods
+    def assign_id(self):
+        from os import path
+
+        self.id = 0
+
+        if path.exists(self.file_list()['running_id']):
+            from utility.file import Read
+            self.id = Read(self.file_list()['running_id']).integer()
+
+        return self
+
     def collection(self):
         from objects import Shift
 
@@ -1184,9 +1443,11 @@ class Extra_Stop:
         return (self.location, self.reason, self.distance, self.end_time)
 
     def csv(self):
+        # shift parent
         if isinstance(self.parent, Shift):
             return f'{self.location},{self.reason},{self.distance},'\
                    f'{self.start_time},{self.end_time}'
+        # delivery parent
         elif isinstance(self.parent, Delivery):
             return f'{self.location},{self.reason},{self.distance},'\
                    f'{self.end_time}'
@@ -1221,17 +1482,23 @@ class Extra_Stop:
         }
 
     def nlsv(self):
+        # shift parent
         if isinstance(self.parent, Shift):
             return f'{self.location}\n'\
                    f'{self.reason}\n'\
                    f'{self.distance}\n'\
                    f'{self.start_time}\n'\
                    f'{self.end_time}'
+        # delivery parent
         elif isinstance(self.parent, Delivery):
             return f'{self.location}\n'\
                    f'{self.reason}\n'\
                    f'{self.distance}\n'\
                    f'{self.end_time}'
+
+    def track(self):
+        from processes.track import track_extra_stop
+        self = track_extra_stop(self)
 
     def view(self):
         from datetime import datetime
@@ -1246,145 +1513,8 @@ class Extra_Stop:
             'end_time': f'Extra stop was completed at: {end_time}'
         }
 
+        # shift parent
         if isinstance(self.start_time, datetime):
             view_parts['start_time'] = self.start_time.strftime('%I:%M:%S %p')
         
         return view_parts
-
-    def assign_id(self):
-        from os import path
-
-        self.id = 0
-
-        if path.exists(self.file_list()['running_id']):
-            from utility.file import Read
-            self.id = Read(self.file_list()['running_id']).integer()
-
-        return self
-
-    def change_end_time(self):
-        import os
-        from utility.utility import Change_Datetime
-
-        change_time = Change_Datetime(self.end_time).time()
-        self.end_time = change_time.datetime
-        # update file if extra stop has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if extra stop is in progress
-        elif os.path.exists(self.file_list()['end_time']):
-            from utility.file import write
-            write(self.end_time, self.file_list()['end_time'])
-
-    def change_location(self):
-        import os
-        # get old location
-        old_location = self.location
-        # display old location to user
-        print(f'\nCurrent location: {self.location}')
-        # user inputs new location
-        self.input_location()
-        # update file if extra stop has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if extra stop is in progress
-        elif os.path.exists(self.file_list()['location']):
-            from utility.file import write
-            write(self.location, self.file_list()['location'])
-
-    def change_distance(self):
-        import os
-        # get old distance
-        old_reason = self.distance
-        # display old distance to user
-        print(f'\nCurrent miles traveled: {self.distance}')
-        # user inputs new distance
-        self.input_distance()
-        # update file if extra stop has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if extra stop is in progress
-        elif os.path.exists(self.file_list()['distance']):
-            from utility.file import write
-            write(self.distance, self.file_list()['distance'])
-
-    def change_reason(self):
-        import os
-        # get old reason
-        old_reason = self.reason
-        # display old reason to user
-        print(f'\nCurrent reason: {self.reason}')
-        # user inputs new reason
-        self.input_reason()
-        # update file if extra stop has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if extra stop is in progress
-        elif os.path.exists(self.file_list()['reason']):
-            from utility.file import write
-            write(self.reason, self.file_list()['reason'])
-
-    def change_start_time(self):
-        import os
-        from utility.utility import Change_Datetime
-
-        change_time = Change_Datetime(self.start_time).time()
-        self.start_time = change_time.datetime
-        # update file if extra stop has been completed
-        if os.path.exists(self.file_list()['info']):
-            self.save()
-        # update file if extra stop is in progress
-        elif os.path.exists(self.file_list()['start_time']):
-            from utility.file import write
-            write(self.start_time, self.file_list()['start_time'])
-
-    def input_location(self):
-        from resources.strings import Extra_Stop__location__prompt
-        from utility.user_input import User_Input
-        from utility.utility import add_newlines
-
-        prompt = add_newlines(Extra_Stop__location__prompt)
-        self.location = User_Input(prompt).location()
-
-    def input_distance(self):
-        from resources.strings import Extra_Stop__miles_traveled__prompt
-        from utility.user_input import User_Input
-        from utility.utility import add_newlines
-
-        prompt = add_newlines(Extra_Stop__miles_traveled__prompt)
-        self.distance = User_Input(prompt).distance()
-
-    def input_reason(self):
-        from resources.strings import Extra_Stop__reason__prompt
-        from utility.user_input import User_Input
-        from utility.utility import add_newlines
-
-        prompt = add_newlines(Extra_Stop__reason__prompt)
-        self.reason = User_Input(prompt).reason()
-    
-    def set_end_time(self):
-        from utility.utility import now
-        self.end_time = now()
-
-    def set_start_time(self):
-        from utility.utility import now
-        self.start_time = now()
-
-    def load_completed(self):
-        from processes.load import load_extra_stop
-        self.in_progress = False
-        self = load_extra_stop(self)
-        return self
-
-    def load_current(self):
-        from processes.load import load_extra_stop
-        self = load_extra_stop(self)
-        return self
-
-    def track(self):
-        from processes.track import track_extra_stop
-        self = track_extra_stop(self)
-
-    def save(self):
-        from utility.file import write
-        write(self.nlsv(), self.file_list()['info'])
