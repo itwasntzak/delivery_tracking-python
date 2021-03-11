@@ -18,7 +18,7 @@ class Shift:
         self.fuel_economy = None
         self.vehicle_compensation = None
         self.device_compensation = None
-        self.total_hours = None
+        self.hours = None
         self.extra_tips_claimed = None
         self.split = None
         self.in_progress = True
@@ -97,7 +97,7 @@ class Shift:
         import os
         from utility.utility import Change_Datetime
 
-        change_time = Change_Datetime(self.end_time).time()
+        change_time = Change_Datetime(self.end_time).time()()
         self.end_time = change_time.datetime
 
         # save change
@@ -174,7 +174,7 @@ class Shift:
         import os
         from utility.utility import Change_Datetime
 
-        change_time = Change_Datetime(self.start_time).time()
+        change_time = Change_Datetime(self.start_time).time()()
         self.start_time = change_time.datetime
 
         # save change
@@ -191,7 +191,7 @@ class Shift:
         import os
 
         # get old value
-        old_value = self.total_hours
+        old_value = self.hours
         # display old value to user
         print(f'\nCurrent amount of total hours: {old_value}')
         # user inputs new value
@@ -202,9 +202,9 @@ class Shift:
         if os.path.exists(self.file_list()['info']):
             self.save()
         # shift is in progress
-        elif os.path.exists(self.file_list()['total_hours']):
+        elif os.path.exists(self.file_list()['hours']):
             from utility.file import write
-            write(self.total_hours, self.file_list()['total_hours'])
+            write(self.hours, self.file_list()['hours'])
 
     def change_vehicle_compensation(self):
         # todo: need to move string
@@ -272,7 +272,7 @@ class Shift:
         from utility.utility import add_newlines
 
         prompt = add_newlines(Shift__total_hours__prompt)
-        self.total_hours = User_Input(prompt).total_hours()
+        self.hours = User_Input(prompt).hours()
     
     def input_vehicle_compensation(self):
         # todo: need to move string
@@ -350,7 +350,7 @@ class Shift:
         return '{0},{1},{2},{3},{4},{5},{6},{7}'.format(
             self.distance, self.fuel_economy, self.vehicle_compensation,
             self.device_compensation, self.extra_tips_claimed,
-            self.total_hours, self.start_time, self.end_time)
+            self.hours, self.start_time, self.end_time)
 
     def end(self):
         from processes.track import end_shift
@@ -368,7 +368,7 @@ class Shift:
             shifts_directory,\
             Shift__extra_tips_claimed as extra_claimed,\
             Shift__fuel_economy as fuel_economy,\
-            Shift__total_hours as total_hours,\
+            Shift__total_hours as hours,\
             Shift__vehicle_compensation as vehicle_compensation,\
             data_directory
 
@@ -386,9 +386,39 @@ class Shift:
             'info': path.join(directory, info_file),
             'distance': path.join(directory, distance),
             'start_time': path.join(directory, start_time),
-            'total_hours': path.join(directory, total_hours),
+            'hours': path.join(directory, hours),
             'vehicle_compensation': path.join(directory, vehicle_compensation)
         }
+
+    def json_prep(self):
+        data = {
+            'date': str(self.id),
+            'start_time': str(self.start_time.time()),
+            'end_time': str(self.end_time.time()),
+            'distance': self.distance,
+            'fuel_economy': self.fuel_economy,
+            'vehicle_compensation': self.vehicle_compensation,
+            'device_compensation': self.device_compensation,
+            'hours': self.hours,
+            'extra_tips_claimed': self.extra_tips_claimed
+            }
+        
+        deliveries = []
+        for delivery in self.deliveries:
+            deliveries.append(delivery.json_prep())
+        data['deliveries'] = deliveries
+
+        extra_stops = []
+        for extra_stop in self.extra_stops:
+            extra_stops.append(extra_stop.json_prep())
+        data['extra_stops'] = extra_stops
+
+        carry_out_tips = []
+        for tip in self.carry_out_tips:
+            carry_out_tips.append(tip.collection())
+        data['carry_out_tips'] = carry_out_tips
+
+        return data
 
     def remove_id_from_file(self):
         from utility.file import Read, write
@@ -457,9 +487,9 @@ class Shift:
                 f'Total miles traveled: {self.distance} miles'
 
         # total hours
-        if isinstance(self.total_hours, float) and self.total_hours > 0.0:
-            view_parts['total_hours'] =\
-                f'Work recorded hours: {self.total_hours} hours'
+        if isinstance(self.hours, float) and self.hours > 0.0:
+            view_parts['hours'] =\
+                f'Work recorded hours: {self.hours} hours'
 
         # vehicle compensation
         if isinstance(self.vehicle_compensation, float)\
@@ -558,7 +588,7 @@ class Delivery:
         import os
         from utility.utility import Change_Datetime
 
-        change_time = Change_Datetime(self.end_time).time()
+        change_time = Change_Datetime(self.end_time).time()()
         self.end_time = change_time.datetime
 
         # save change
@@ -593,7 +623,7 @@ class Delivery:
         import os
         from utility.utility import Change_Datetime
 
-        change_time = Change_Datetime(self.start_time).time()
+        change_time = Change_Datetime(self.start_time).time()()
         self.start_time = change_time.datetime
 
         # save change
@@ -710,6 +740,27 @@ class Delivery:
             'distance': path.join(directory, distance),
             'start_time': path.join(directory, start_time)
         }
+
+    def json_prep(self):
+        data = {
+            'daily_id': self.id,
+            'start_time': str(self.start_time.time()),
+            'end_time': str(self.end_time.time()),
+            'distance': self.distance,
+            'average_speed': self.average_speed,
+            }
+
+        orders = []
+        for order in self.orders:
+            orders.append(order.json_prep())
+        data['orders'] = orders
+
+        extra_stops = []
+        for extra_stop in self.extra_stops:
+            extra_stops.append(extra_stop.json_prep())
+        data['extra_stops'] = extra_stops
+
+        return data
 
     def remove_id_from_file(self):
         import os
@@ -892,7 +943,7 @@ class Order:
         import os
         from utility.utility import Change_Datetime
 
-        change_time = Change_Datetime(self.end_time).time()
+        change_time = Change_Datetime(self.end_time).time()()
         self.end_time = change_time.datetime
 
         # save change
@@ -978,6 +1029,13 @@ class Order:
             'distance': path.join(directory, distance),
             'tip': path.join(directory, tip)
         }
+
+    def json_prep(self):
+        return {'daily_id': self.id,
+                'end_time': str(self.end_time.time()),
+                'distance': self.distance,
+                'tip': self.tip.collection()
+            }
 
     def view(self):
         # id
@@ -1128,7 +1186,7 @@ class Split:
         import os
         from utility.utility import Change_Datetime
 
-        change_time = Change_Datetime(self.end_time).time()
+        change_time = Change_Datetime(self.end_time).time()()
         self.end_time = change_time.datetime
 
         # save change
@@ -1163,7 +1221,7 @@ class Split:
         import os
         from utility.utility import Change_Datetime
 
-        change_time = Change_Datetime(self.start_time).time()
+        change_time = Change_Datetime(self.start_time).time()()
         self.start_time = change_time.datetime
 
         # save change
@@ -1232,6 +1290,13 @@ class Split:
             'start_time': path.join(directory, start_time)
         }
 
+    def json_prep(self):
+        return {
+            'start_time': str(self.start_time.time()),
+            'end_time': str(self.end_time.time()),
+            'distance': self.distance
+        }
+
     def start(self):
         from processes.track import start_split
         self = start_split(self)
@@ -1286,7 +1351,7 @@ class Extra_Stop:
         import os
         from utility.utility import Change_Datetime
 
-        change_time = Change_Datetime(self.end_time).time()
+        change_time = Change_Datetime(self.end_time).time()()
         self.end_time = change_time.datetime
 
         # save change
@@ -1359,7 +1424,7 @@ class Extra_Stop:
         import os
         from utility.utility import Change_Datetime
 
-        change_time = Change_Datetime(self.start_time).time()
+        change_time = Change_Datetime(self.start_time).time()()
         self.start_time = change_time.datetime
 
         # save change
@@ -1480,6 +1545,19 @@ class Extra_Stop:
             'reason': path.join(directory, reason),
             'start_time': path.join(directory, start_time)
         }
+
+    def json_prep(self):
+        data = {
+            'daily_id': self.id,
+            'end_time': str(self.end_time.time()),
+            'location': self.location,
+            'reason': self.reason,
+            'distance': self.distance,
+        }
+        if isinstance(self.parent, Shift):
+            data['start_time'] = str(self.start_time.time())
+
+        return data
 
     def nlsv(self):
         # shift parent

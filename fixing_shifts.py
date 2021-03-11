@@ -8,11 +8,27 @@ import os
 from utility.file import Read, write
 from utility.utility import To_Datetime
 
-shift_id = '2020-01-31'
-shift = Shift(To_Datetime(shift_id).from_date().date())
-path = os.path.join('data', 'shifts', shift_id)
+
+count = 0
+string = ''
+with open(os.path.join('data', 'shift_ids.txt'), 'r') as shift_ids_file:
+    string_ids = shift_ids_file.read()
+    for id in string_ids.split(','):
+        string += id + ', '
+        count += 1
+
+        if count > 15:
+            string += '\n'
+            count = 0
+    
+print(string)
+
+
+# shift_id = '2020-01-31'
+# shift = Shift(To_Datetime(shift_id).from_date().date())
+# path = os.path.join('data', 'shifts', shift_id)
 # os.mkdir(path)
-os.chdir(path)
+# os.chdir(path)
 
 # delivery_directories = os.listdir()
 # delivery_ids = Read('delivery_ids.txt').integer_list()
@@ -27,10 +43,10 @@ os.chdir(path)
 #     os.chdir('..')
 
 # untracked_delivery_ids = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
-untracked_delivery_ids = range(11)
-for id in untracked_delivery_ids:
-    # os.mkdir(f'{id}')
-    os.chdir(f'{id}')
+# untracked_delivery_ids = range(11)
+# for id in untracked_delivery_ids:
+#     # os.mkdir(f'{id}')
+#     os.chdir(f'{id}')
 
     # print(f'{id}')
     # order_ids = input('input order ids\n')
@@ -41,25 +57,25 @@ for id in untracked_delivery_ids:
         # write('', f'{order_id}.txt')
         # os.system(f'code {order_id}.txt')
 
-    if os.path.exists('order_numbers.txt'):
-        os.rename('order_numbers.txt', 'order_ids.txt')
-    os.system('code delivery_info.txt')
-    for order_id in Read('order_ids.txt').integer_list():
-        os.system(f'code {order_id}.txt')
-    os.chdir('..')
+    # if os.path.exists('order_numbers.txt'):
+    #     os.rename('order_numbers.txt', 'order_ids.txt')
+    # os.system('code delivery_info.txt')
+    # for order_id in Read('order_ids.txt').integer_list():
+    #     os.system(f'code {order_id}.txt')
+    # os.chdir('..')
 
-delivery_ids_string = ''
-for id in range(untracked_delivery_ids[-1] + 1):
-# for id in untracked_delivery_ids:
-    delivery_ids_string += f'{id},'
+# delivery_ids_string = ''
+# for id in range(untracked_delivery_ids[-1] + 1):
+# # for id in untracked_delivery_ids:
+#     delivery_ids_string += f'{id},'
 
-if delivery_ids_string[-1] == ',':
-    delivery_ids_string = delivery_ids_string[:-1]
+# if delivery_ids_string[-1] == ',':
+#     delivery_ids_string = delivery_ids_string[:-1]
 
-write(delivery_ids_string, 'delivery_ids.txt')
+# write(delivery_ids_string, 'delivery_ids.txt')
 
 # os.rename('start_time.txt', 'shift_info.txt')
 # write('', 'shift_info.txt')
-os.system(f'code shift_info.txt')
+# os.system(f'code shift_info.txt')
 
 # os.system(f'explorer {os.path.join("data", "shifts", shift_id)}')

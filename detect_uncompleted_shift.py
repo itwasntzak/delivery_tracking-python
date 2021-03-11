@@ -4,6 +4,8 @@ from utility.file import Read
 from utility.utility import now, To_Datetime
 
 
+# todo: need to add data for 2-11
+
 
 id_list = Read(Shift(now().date()).file_list()['completed_ids']).comma()
 uncompleted_id_list = []
