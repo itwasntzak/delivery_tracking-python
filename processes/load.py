@@ -34,8 +34,8 @@ def load_shift(shift):
             shift.device_compensation =\
                 Read(file_list['device_compensation']).decimal()
         # total hours
-        if path.exists(file_list['total_hours']):
-            shift.total_hours = Read(file_list['total_hours']).decimal()
+        if path.exists(file_list['hours']):
+            shift.hours = Read(file_list['hours']).decimal()
         # extra tips claimed
         if path.exists(file_list['extra_tips_claimed']):
             shift.extra_tips_claimed =\
@@ -61,7 +61,7 @@ def load_shift(shift):
             shift.extra_tips_claimed = float(shift_data[4])
         # total hours
         if shift_data[5] != '':
-            shift.total_hours = float(shift_data[5])
+            shift.hours = float(shift_data[5])
         # start time
         if shift_data[6] != '':
             shift.start_time = To_Datetime(shift_data[6]).from_datetime()

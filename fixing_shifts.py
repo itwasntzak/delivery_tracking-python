@@ -6,25 +6,35 @@
 from objects import Delivery, Shift
 import os
 from utility.file import Read, write
-from utility.utility import To_Datetime
+from utility.utility import now, To_Datetime
+from synchronize import send_completed_shift
 
 
-count = 0
-string = ''
-with open(os.path.join('data', 'shift_ids.txt'), 'r') as shift_ids_file:
-    string_ids = shift_ids_file.read()
-    for id in string_ids.split(','):
-        string += id + ', '
-        count += 1
+list = Read(Shift(now().date()).file_list()['completed_ids']).comma()
+# shift = Shift(To_Datetime(list[-3]).from_date().date()).load_completed()
+id_list = [To_Datetime(date).from_date().date() for date in list]
+shifts_list = [Shift(date).load_completed() for date in id_list]
 
-        if count > 15:
-            string += '\n'
-            count = 0
+for shift in shifts_list:
+    print(str(shift.id))
+    send_completed_shift(shift)
+
+# count = 0
+# string = ''
+# with open(os.path.join('data', 'shift_ids.txt'), 'r') as shift_ids_file:
+#     string_ids = shift_ids_file.read()
+#     for id in string_ids.split(','):
+#         string += id + ', '
+#         count += 1
+
+#         if count > 15:
+#             string += '\n'
+#             count = 0
     
-print(string)
+# print(string)
 
 
-# shift_id = '2020-01-31'
+# shift_id = '2021-03-09'
 # shift = Shift(To_Datetime(shift_id).from_date().date())
 # path = os.path.join('data', 'shifts', shift_id)
 # os.mkdir(path)

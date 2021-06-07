@@ -3,17 +3,16 @@ import requests
 from testing_tools import completed_shift
 
 
-main_url = 'http://localhost:8000/api/'
+base_url = 'http://localhost:8000/api/'
 
-def send_completed_shift():
-    csrftoken = requests.get(main_url).cookies['csrftoken']
+def send_completed_shift(shift):
+    send_url = f'{base_url}receive_completed_shift/'
+    csrftoken = requests.get(send_url).cookies['csrftoken']
     headers = {'X-CSRFToken': csrftoken}
     cookies = {'csrftoken': csrftoken}
 
-    shift = completed_shift()
-
     send_shift = requests.post(
-        f'{main_url}receive_completed_shift/',
+        send_url,
         data=json.dumps(shift.json_prep()),
         headers=headers,
         cookies=cookies,
@@ -24,4 +23,10 @@ def send_completed_shift():
     # shift_pk = json.loads(send_shift.content)
 
 
-send_completed_shift()
+def recieve_completed_shift(primary_key):
+    recieve_url = f'{base_url}send_completed_shift/'
+    request = requests.get(
+        recieve_url,
+        data=json.dumps( { 'pk': primary_key } )
+        )
+    print(request.text)

@@ -313,7 +313,7 @@ class Shift:
             self = load_parent_extra_stops(self)
         # load split
         if path.exists(Split(self).file_list()['info']):
-            self.split = load_split(Split(self))
+            self.split = Split(self).load_completed()
         return self
 
     def load_current(self):
@@ -368,7 +368,7 @@ class Shift:
             shifts_directory,\
             Shift__extra_tips_claimed as extra_claimed,\
             Shift__fuel_economy as fuel_economy,\
-            Shift__total_hours as hours,\
+            Shift__hours as hours,\
             Shift__vehicle_compensation as vehicle_compensation,\
             data_directory
 
@@ -393,30 +393,41 @@ class Shift:
     def json_prep(self):
         data = {
             'date': str(self.id),
-            'start_time': str(self.start_time.time()),
-            'end_time': str(self.end_time.time()),
             'distance': self.distance,
             'fuel_economy': self.fuel_economy,
             'vehicle_compensation': self.vehicle_compensation,
             'device_compensation': self.device_compensation,
-            'hours': self.hours,
+            'recorded_hours': self.hours,
             'extra_tips_claimed': self.extra_tips_claimed
             }
+
+
+        if self.start_time is not None:
+            data['start_time'] = str(self.start_time.time())
+
+        if self.end_time is not None:
+            data['end_time'] = str(self.end_time.time())
         
         deliveries = []
         for delivery in self.deliveries:
             deliveries.append(delivery.json_prep())
-        data['deliveries'] = deliveries
+        if len(deliveries) > 0:
+            data['deliveries'] = deliveries
 
         extra_stops = []
         for extra_stop in self.extra_stops:
             extra_stops.append(extra_stop.json_prep())
-        data['extra_stops'] = extra_stops
+        if len(extra_stops) > 0:
+            data['extra_stops'] = extra_stops
 
         carry_out_tips = []
         for tip in self.carry_out_tips:
-            carry_out_tips.append(tip.collection())
-        data['carry_out_tips'] = carry_out_tips
+            carry_out_tips.append(tip.dictionary())
+        if len(carry_out_tips) > 0:
+            data['carry_out_tips'] = carry_out_tips
+
+        if self.split is not None:
+            data['split'] = self.split.json_prep()
 
         return data
 
@@ -744,21 +755,28 @@ class Delivery:
     def json_prep(self):
         data = {
             'daily_id': self.id,
-            'start_time': str(self.start_time.time()),
-            'end_time': str(self.end_time.time()),
             'distance': self.distance,
             'average_speed': self.average_speed,
             }
 
+        if self.start_time is not None:
+            data['start_time'] = str(self.start_time.time())
+
+        if self.end_time is not None:
+            data['end_time'] = str(self.end_time.time())
+
+
         orders = []
         for order in self.orders:
             orders.append(order.json_prep())
-        data['orders'] = orders
+        if len(orders) > 0:
+            data['orders'] = orders
 
         extra_stops = []
         for extra_stop in self.extra_stops:
             extra_stops.append(extra_stop.json_prep())
-        data['extra_stops'] = extra_stops
+        if len(extra_stops) > 0:
+            data['extra_stops'] = extra_stops
 
         return data
 
@@ -1031,11 +1049,16 @@ class Order:
         }
 
     def json_prep(self):
-        return {'daily_id': self.id,
-                'end_time': str(self.end_time.time()),
-                'distance': self.distance,
-                'tip': self.tip.collection()
-            }
+        data = {
+            'daily_id': self.id,
+            'distance': self.distance,
+            'tip': self.tip.dictionary()
+        }
+
+        if self.end_time is not None:
+            data['end_time'] = str(self.end_time.time())
+
+        return data
 
     def view(self):
         # id
@@ -1137,6 +1160,13 @@ class Tip:
 
     def collection(self):
         return (self.card, self.cash, self.unknown)
+
+    def dictionary(self):
+        return {
+            'card': self.card,
+            'cash': self.cash,
+            'unknown': self.unknown,
+        }
 
     def evaluate(self):
         if self.card != 0.0:
@@ -1291,11 +1321,17 @@ class Split:
         }
 
     def json_prep(self):
-        return {
-            'start_time': str(self.start_time.time()),
-            'end_time': str(self.end_time.time()),
+        data = {
             'distance': self.distance
         }
+
+        if self.start_time is not None:
+            data['start_time'] = str(self.start_time.time())
+
+        if self.end_time is not None:
+            data['end_time'] = str(self.end_time.time())
+
+        return data
 
     def start(self):
         from processes.track import start_split
@@ -1549,13 +1585,16 @@ class Extra_Stop:
     def json_prep(self):
         data = {
             'daily_id': self.id,
-            'end_time': str(self.end_time.time()),
             'location': self.location,
             'reason': self.reason,
             'distance': self.distance,
         }
-        if isinstance(self.parent, Shift):
+
+        if isinstance(self.parent, Shift) and self.start_time is not None:
             data['start_time'] = str(self.start_time.time())
+
+        if self.end_time is not None:
+            data['end_time'] = str(self.end_time.time())
 
         return data
 

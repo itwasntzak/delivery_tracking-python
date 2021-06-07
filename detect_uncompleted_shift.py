@@ -4,7 +4,13 @@ from utility.file import Read
 from utility.utility import now, To_Datetime
 
 
-# todo: need to add data for 2-11
+# todo: need to add all data for 12-18
+# todo: need to add all data for 12-19
+# todo: need to add all data for 12-31
+# todo: need to add all data for 1-5
+# todo: need to add all data for 1-7
+# todo: need to add all data for 2-11
+# todo: need to add all data for 2-14
 
 
 id_list = Read(Shift(now().date()).file_list()['completed_ids']).comma()

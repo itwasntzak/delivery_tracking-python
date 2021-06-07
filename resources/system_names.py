@@ -25,7 +25,7 @@ Shift__carry_out_tips = 'carry_out_tips.txt'
 Shift__device_compensation = 'device_compensation.txt'
 Shift__extra_tips_claimed = 'extra_tips_claimed.txt'
 Shift__fuel_economy = 'fuel_economy.txt'
-Shift__total_hours = 'total_hours.txt'
+Shift__hours = 'hours.txt'
 Shift__vehicle_compensation = 'vehicle_compensation.txt'
 
 # delivery files
