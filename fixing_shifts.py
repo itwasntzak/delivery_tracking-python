@@ -11,81 +11,9 @@ from synchronize import send_completed_shift
 
 
 list = Read(Shift(now().date()).file_list()['completed_ids']).comma()
-# shift = Shift(To_Datetime(list[-3]).from_date().date()).load_completed()
 id_list = [To_Datetime(date).from_date().date() for date in list]
-shifts_list = [Shift(date).load_completed() for date in id_list]
 
+shifts_list = [Shift(date).load_completed() for date in id_list]
 for shift in shifts_list:
     print(str(shift.id))
     send_completed_shift(shift)
-
-# count = 0
-# string = ''
-# with open(os.path.join('data', 'shift_ids.txt'), 'r') as shift_ids_file:
-#     string_ids = shift_ids_file.read()
-#     for id in string_ids.split(','):
-#         string += id + ', '
-#         count += 1
-
-#         if count > 15:
-#             string += '\n'
-#             count = 0
-    
-# print(string)
-
-
-# shift_id = '2021-03-09'
-# shift = Shift(To_Datetime(shift_id).from_date().date())
-# path = os.path.join('data', 'shifts', shift_id)
-# os.mkdir(path)
-# os.chdir(path)
-
-# delivery_directories = os.listdir()
-# delivery_ids = Read('delivery_ids.txt').integer_list()
-# for delivery_id in delivery_ids:
-#     os.chdir(f'{delivery_id}')
-
-#     order_ids = Read('order_ids.txt').integer_list()
-#     for order_id in order_ids:
-#         order_file = f'{order_id}.txt'
-#         os.system(f'code {order_file}')
-
-#     os.chdir('..')
-
-# untracked_delivery_ids = [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]
-# untracked_delivery_ids = range(11)
-# for id in untracked_delivery_ids:
-#     # os.mkdir(f'{id}')
-#     os.chdir(f'{id}')
-
-    # print(f'{id}')
-    # order_ids = input('input order ids\n')
-    # write('', 'delivery_info.txt')
-    # os.system(f'code delivery_info.txt')
-    # write(f'{order_ids}', 'order_ids.txt')
-    # for order_id in order_ids.split(','):
-        # write('', f'{order_id}.txt')
-        # os.system(f'code {order_id}.txt')
-
-    # if os.path.exists('order_numbers.txt'):
-    #     os.rename('order_numbers.txt', 'order_ids.txt')
-    # os.system('code delivery_info.txt')
-    # for order_id in Read('order_ids.txt').integer_list():
-    #     os.system(f'code {order_id}.txt')
-    # os.chdir('..')
-
-# delivery_ids_string = ''
-# for id in range(untracked_delivery_ids[-1] + 1):
-# # for id in untracked_delivery_ids:
-#     delivery_ids_string += f'{id},'
-
-# if delivery_ids_string[-1] == ',':
-#     delivery_ids_string = delivery_ids_string[:-1]
-
-# write(delivery_ids_string, 'delivery_ids.txt')
-
-# os.rename('start_time.txt', 'shift_info.txt')
-# write('', 'shift_info.txt')
-# os.system(f'code shift_info.txt')
-
-# os.system(f'explorer {os.path.join("data", "shifts", shift_id)}')
